@@ -248,11 +248,26 @@
       <div class="models__intro">
         <p class="eyeline"><span class="eyeline__symbol">✳</span> Từ nét vẽ thành không gian</p>
         <h2 id="models-title">Mái ngói<br>có <em>chiều sâu.</em></h2>
-        <p>Ba mô hình phối cảnh được dựng lại bằng nét vector, dựa trên ảnh tư liệu và bản vẽ tham khảo. Đây là minh họa không theo tỷ lệ khảo sát.</p>
+        <p>Chọn một công trình, kéo thanh xoay và nhìn các lớp mái, cột cùng khoảng sân hiện lên. Mô hình là bản dựng diễn giải từ ảnh và tư liệu bản vẽ, không theo tỷ lệ khảo sát.</p>
         <div class="model-tabs" role="tablist" aria-label="Chọn mô hình kiến trúc">
-          <button class="model-tab is-active" type="button" role="tab" id="tab-khue" aria-selected="true" aria-controls="panel-khue" data-model-tab="khue"><span>01</span>Khuê Văn Các</button>
-          <button class="model-tab" type="button" role="tab" id="tab-mamay" aria-selected="false" aria-controls="panel-mamay" data-model-tab="mamay" tabindex="-1"><span>02</span>Nhà ống Mã Mây</button>
-          <button class="model-tab" type="button" role="tab" id="tab-turtle" aria-selected="false" aria-controls="panel-turtle" data-model-tab="turtle" tabindex="-1"><span>03</span>Tháp Rùa</button>
+          <button class="model-tab is-active" type="button" role="tab" id="tab-khue" aria-selected="true" aria-controls="panel-khue" data-model-tab="khue">
+            <span class="model-tab__number">01</span>
+            <svg class="model-tab__sketch" viewBox="0 0 64 44" aria-hidden="true"><path d="M7 19L32 9l25 10-25 10L7 19Z"></path><path d="M15 17l17-7 17 7M18 24v12m10-10v14m10-14v14m9-16v12M10 37h44"></path><path d="M20 15h24"></path></svg>
+            <span class="model-tab__label"><strong>Khuê Văn Các</strong><small>Gác bát giác · mái chồng</small></span>
+            <span class="model-tab__arrow" aria-hidden="true">↗</span>
+          </button>
+          <button class="model-tab" type="button" role="tab" id="tab-mamay" aria-selected="false" aria-controls="panel-mamay" data-model-tab="mamay" tabindex="-1">
+            <span class="model-tab__number">02</span>
+            <svg class="model-tab__sketch" viewBox="0 0 64 44" aria-hidden="true"><path d="M7 31l25 9 26-10-25-9L7 31Z"></path><path d="M13 27l20-8 20 7m-33 3v7m11-3v7m12-16v9"></path><path d="M25 29l8 3 8-3-8-3-8 3Z"></path></svg>
+            <span class="model-tab__label"><strong>Nhà ống Mã Mây</strong><small>Gian trước · sân trong</small></span>
+            <span class="model-tab__arrow" aria-hidden="true">↗</span>
+          </button>
+          <button class="model-tab" type="button" role="tab" id="tab-turtle" aria-selected="false" aria-controls="panel-turtle" data-model-tab="turtle" tabindex="-1">
+            <span class="model-tab__number">03</span>
+            <svg class="model-tab__sketch" viewBox="0 0 64 44" aria-hidden="true"><path d="M8 34c9 6 37 6 48 0"></path><path d="M21 31h22l-3-3H24l-3 3Zm3-7 8 3 9-4-8-3-9 4Zm3-7 5 2 5-2-5-2-5 2Z"></path><path d="M26 23v6m7-4v5m4-8v5"></path></svg>
+            <span class="model-tab__label"><strong>Tháp Rùa</strong><small>Tháp đá · đảo cỏ · mặt hồ</small></span>
+            <span class="model-tab__arrow" aria-hidden="true">↗</span>
+          </button>
         </div>
         <label class="rotation-control" for="model-rotation"><span>Xoay góc nhìn</span><input id="model-rotation" type="range" min="-24" max="24" value="-8"><span aria-hidden="true">↔</span></label>
       </div>
@@ -261,7 +276,7 @@
         <div class="model-stage__mist" aria-hidden="true"></div>
         <div class="model-stage__grid" aria-hidden="true"></div>
         <div class="model-stage__rule model-stage__rule--top" aria-hidden="true">BẢN DỰNG · 01—03</div>
-        <div class="model-stage__rule model-stage__rule--bottom" aria-hidden="true">DÙNG CHUỘT HOẶC THANH TRƯỢT ĐỂ XOAY</div>
+        <div class="model-stage__rule model-stage__rule--bottom" aria-hidden="true">KÉO THANH ĐỂ ĐỔI GÓC NHÌN</div>
 
         <div class="model-panel is-active" id="panel-khue" role="tabpanel" aria-labelledby="tab-khue" data-model-panel="khue">
           <svg class="model-svg" viewBox="0 0 460 360" role="img" aria-labelledby="khue-svg-title">
@@ -271,6 +286,7 @@
               <circle cx="230" cy="176" r="128"></circle><circle cx="230" cy="176" r="144"></circle>
               <path d="M70 176H390M230 24V334M92 74L360 295M362 73L94 295"></path>
             </g>
+            <ellipse cx="227" cy="321" rx="128" ry="16" fill="#08130f" opacity=".62"></ellipse>
             <g class="building building--khue">
               <polygon points="91,260 224,310 366,253 233,207" fill="#d8c79f"></polygon>
               <polygon points="91,260 224,310 224,326 91,278" fill="#8e6a45"></polygon>
@@ -302,6 +318,29 @@
                 <path d="M168 170L174 172V230L168 228Z"></path><path d="M200 182L206 184V242L200 240Z"></path>
                 <path d="M244 184L250 182V240L244 242Z"></path><path d="M275 172L281 170V229L275 232Z"></path>
               </g>
+              <g fill="none" stroke="#edd29a" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M137 153Q148 139 165 134L224 112L286 135Q301 141 310 153" stroke-width="2.2"></path>
+                <path d="M166 109Q178 97 190 93L224 80L258 93Q268 97 280 107" stroke-width="1.7"></path>
+                <path d="M154 150L222 174L297 147M171 107L224 126L273 107" stroke-width="1.1" opacity=".8"></path>
+                <path d="M165 145L216 163M179 138L230 157M194 132L245 151M209 126L260 145M227 127L278 146M244 134L294 151" stroke-width=".9" opacity=".65"></path>
+                <path d="M179 202L224 218L270 200M179 208L224 225L270 207M179 214L224 232L270 214" stroke-width="1"></path>
+                <path d="M177 230L177 239M190 235L190 244M204 240L204 249M239 249L239 240M253 244L253 235M267 238L267 229" stroke-width="1.1"></path>
+                <path d="M119 263L222 301L347 252M127 271L222 307L339 262" stroke-width="1" opacity=".8"></path>
+                <path d="M215 170L224 165L233 170V188L224 193L215 188Z" stroke-width="1.5"></path>
+                <path d="M224 171V188M218 179H230" stroke-width="1"></path>
+              </g>
+              <g fill="#e8c98b" stroke="#7a3028" stroke-width="1">
+                <circle cx="224" cy="108" r="3.2"></circle>
+                <circle cx="165" cy="135" r="2.2"></circle>
+                <circle cx="286" cy="136" r="2.2"></circle>
+                <circle cx="188" cy="92" r="2"></circle>
+                <circle cx="260" cy="94" r="2"></circle>
+              </g>
+              <g fill="#7d3b2e" opacity=".9">
+                <path d="M124 262L133 260L137 264L127 268Z"></path>
+                <path d="M340 250L350 247L354 251L344 255Z"></path>
+                <path d="M219 309L229 305L234 308L224 313Z"></path>
+              </g>
             </g>
             <g class="drawing-label"><path d="M303 111L360 85H410"></path><circle cx="303" cy="111" r="3"></circle><text x="363" y="79">MÁI CHỒNG DIÊM</text><path d="M273 194L350 202H409"></path><circle cx="273" cy="194" r="3"></circle><text x="353" y="197">GÁC BÁT GIÁC</text></g>
           </svg>
@@ -316,6 +355,7 @@
               <circle cx="230" cy="176" r="128"></circle><circle cx="230" cy="176" r="144"></circle>
               <path d="M70 176H390M230 24V334M92 74L360 295M362 73L94 295"></path>
             </g>
+            <ellipse cx="224" cy="308" rx="139" ry="18" fill="#08130f" opacity=".62"></ellipse>
             <g class="building building--mamay">
               <polygon points="88,252 207,297 363,236 245,194" fill="#d4c197"></polygon>
               <polygon points="88,252 207,297 207,317 88,272" fill="#8a6245"></polygon>
@@ -333,6 +373,27 @@
               <path d="M151 219V250m16-24V256m56-38V270m57-60V245" stroke="#d9c28d" stroke-width="3"></path>
               <path d="M136 164L223 196L322 157M148 169L224 199L312 165" fill="none" stroke="#e6cd95" stroke-width="2"></path>
               <path d="M190 206L216 216M190 213L216 223M190 220L216 230" stroke="#d3b783" stroke-width="2"></path>
+              <g fill="none" stroke="#e7cf9e" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M126 161Q143 149 158 143L211 121L239 126" stroke-width="2"></path>
+                <path d="M239 126L310 151Q322 155 330 158" stroke-width="2"></path>
+                <path d="M143 161L218 188L301 155M155 156L221 180L310 146" stroke-width="1.1" opacity=".82"></path>
+                <path d="M157 151L197 166M171 145L211 160M186 139L226 154M202 133L242 148M219 128L259 143M237 132L277 147M256 138L296 153" stroke-width=".8" opacity=".65"></path>
+                <path d="M179 187V225M185 189V228M227 201V245M235 199V243M281 183V224M288 181V221" stroke-width="1.15"></path>
+                <path d="M237 207L267 196M237 213L267 202M237 219L267 208" stroke-width="1"></path>
+                <path d="M157 228L188 240M160 234L190 246M163 240L193 252" stroke-width=".75" opacity=".72"></path>
+                <path d="M192 252L194 233M194 240L185 233M194 237L202 228M194 244L204 240" stroke="#789078" stroke-width="2"></path>
+                <path d="M187 250L199 254L201 260L184 254Z" fill="#9b533a" stroke="#d5b57c"></path>
+              </g>
+              <g fill="#6f8870" stroke="#d8c18e" stroke-width=".7">
+                <ellipse cx="185" cy="230" rx="4" ry="2.5"></ellipse>
+                <ellipse cx="202" cy="226" rx="4" ry="2.5"></ellipse>
+                <ellipse cx="204" cy="240" rx="4" ry="2.5"></ellipse>
+              </g>
+              <g fill="#49372b" opacity=".82">
+                <path d="M180 190L186 192V225L180 223Z"></path>
+                <path d="M229 203L235 201V241L229 243Z"></path>
+                <path d="M277 185L283 183V221L277 223Z"></path>
+              </g>
             </g>
             <g class="drawing-label"><path d="M212 234L102 277H49"></path><circle cx="212" cy="234" r="3"></circle><text x="50" y="271">SÂN TRONG</text><path d="M282 199L350 120H408"></path><circle cx="282" cy="199" r="3"></circle><text x="352" y="114">MÁI NGÓI</text></g>
           </svg>
@@ -347,6 +408,7 @@
               <circle cx="230" cy="176" r="128"></circle><circle cx="230" cy="176" r="144"></circle>
               <path d="M70 176H390M230 24V334M92 74L360 295M362 73L94 295"></path>
             </g>
+            <ellipse cx="230" cy="281" rx="158" ry="21" fill="#08130f" opacity=".55"></ellipse>
             <g class="building building--turtle">
               <path d="M74 258C126 221 322 213 390 258L389 281C315 317 145 317 75 283Z" fill="#314d48" stroke="#9b9a70" stroke-width="2"></path>
               <path d="M74 258C147 288 315 288 390 258" fill="none" stroke="#c9b679" stroke-width="3"></path>
@@ -365,6 +427,26 @@
               <path d="M192 133L216 141L242 131L220 123Z" fill="#8c4c39"></path>
               <path d="M187 213V253m14-35V259m31-36V266m23-42V241" stroke="#f0dfb6" stroke-width="2"></path>
               <path d="M92 258C150 280 318 280 371 258M110 245C171 268 299 269 350 245" fill="none" stroke="#849185" stroke-width="2"></path>
+              <g>
+                <path d="M158 213Q174 194 220 181Q265 190 287 204L278 214Q249 202 223 199Q193 203 168 220Z" fill="#39352c" stroke="#d6bd86" stroke-width="1.8"></path>
+                <path d="M173 170Q189 155 218 147Q250 151 268 163L261 171Q239 162 219 162Q195 165 181 177Z" fill="#3d382e" stroke="#d6bd86" stroke-width="1.6"></path>
+                <path d="M185 137Q198 124 219 118Q239 122 253 131L247 138Q232 132 219 132Q201 135 192 143Z" fill="#403a30" stroke="#dfc58e" stroke-width="1.5"></path>
+                <path d="M161 211Q179 201 193 196M248 197Q271 198 284 207M176 169Q193 160 204 157M234 157Q253 158 266 165M187 136Q199 129 208 126M229 127Q245 128 251 133" fill="none" stroke="#a96b47" stroke-width="1.5"></path>
+                <path d="M219 119V110M218 110L219 105L222 110" fill="none" stroke="#e5cb93" stroke-width="1.6"></path>
+                <path d="M181 223V216Q190 204 199 216V230M237 233V223Q246 213 255 221V226" fill="#28302a" stroke="#e4d1a9" stroke-width="1.2"></path>
+                <path d="M187 224V216Q190 211 193 216V226M242 230V223Q246 218 250 221V229" fill="none" stroke="#a5a080" stroke-width="1"></path>
+                <path d="M196 233V218m44 17v-16m-44 5h-8m51 2h-8" stroke="#e7d4ab" stroke-width="1.3"></path>
+                <path d="M177 209L218 224L272 203M181 174L216 186L258 169M190 140L216 150L248 137" fill="none" stroke="#e7ca8a" stroke-width=".9" opacity=".8"></path>
+              </g>
+              <g fill="none" stroke="#b7bd9e" stroke-width="1.3" stroke-linecap="round">
+                <path d="M112 254l2-12m-2 8-5-5m5 3 5-7M329 252l2-12m-2 8-5-5m5 3 5-7M138 267l2-9m-2 6-4-4m4 2 4-5"></path>
+                <path d="M99 258C145 271 173 273 198 271M269 274C309 272 343 267 365 258" opacity=".72"></path>
+              </g>
+              <g fill="#d9c58e">
+                <circle cx="218" cy="104" r="2.2"></circle>
+                <circle cx="160" cy="213" r="2"></circle>
+                <circle cx="286" cy="204" r="2"></circle>
+              </g>
             </g>
             <g class="drawing-label"><path d="M318 244L367 217H417"></path><circle cx="318" cy="244" r="3"></circle><text x="370" y="211">ĐẢO NHỎ</text><path d="M250 165L318 112H410"></path><circle cx="250" cy="165" r="3"></circle><text x="322" y="106">MÁI THÁP</text></g>
           </svg>
