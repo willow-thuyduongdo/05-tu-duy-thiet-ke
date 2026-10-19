@@ -2492,13 +2492,13 @@ img {
 
 .model-console {
   position: sticky;
-  top: 0;
+  top: var(--header-height);
   display: flex;
   min-width: 0;
-  height: 100svh;
-  min-height: 650px;
+  height: calc(100svh - var(--header-height));
+  min-height: 540px;
   flex-direction: column;
-  padding: clamp(5.2rem, 8vh, 7.5rem) clamp(1.5rem, 4.25vw, 4.8rem) 1.45rem;
+  padding: clamp(1rem, 2.8vh, 1.85rem) clamp(1.5rem, 4.25vw, 4.8rem) 1.15rem;
   overflow: hidden;
   border-right: 1px solid rgba(239, 196, 109, 0.21);
   background:
@@ -2573,7 +2573,7 @@ img {
   position: relative;
   display: grid;
   flex: 1 1 auto;
-  min-height: 290px;
+  min-height: 245px;
   margin: 0.5rem -1rem 0;
   overflow: hidden;
   place-items: center;
@@ -3021,6 +3021,21 @@ img {
   }
 }
 
+@media (max-height: 760px) and (min-width: 681px) {
+  .model-console {
+    min-height: 0;
+    padding-top: 0.8rem;
+  }
+
+  .model-console__scene {
+    min-height: 190px;
+  }
+
+  .model-console__note {
+    display: none;
+  }
+}
+
 @media (max-width: 680px) {
   .journey__heading {
     grid-template-columns: 1fr;
@@ -3137,4 +3152,12 @@ img {
   #architecture-canvas {
     animation: none;
   }
+}
+
+.site-header.is-immersive {
+  color: var(--paper-bright);
+  background: rgba(17, 19, 15, 0.92);
+  border-color: rgba(239, 196, 109, 0.16);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.17);
+  backdrop-filter: blur(14px);
 }

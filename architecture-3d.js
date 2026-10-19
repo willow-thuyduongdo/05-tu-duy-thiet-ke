@@ -353,6 +353,7 @@ function createLake() {
 }
 
 const builders = [createBatTrang, createMaMay, createOldQuarter, createMausoleum, createTemple, createCitadel, createLake];
+const modelScales = [1.48, 1.26, 1.3, 1.18, 1.27, 1.2, 1.34];
 let activeIndex = 0;
 let yaw = THREE.MathUtils.degToRad(-28);
 let targetYaw = yaw;
@@ -360,8 +361,9 @@ let targetPitch = 0;
 let dragging = false;
 let lastX = 0;
 let lastY = 0;
-let introScale = 0.88;
+let introScale = 0.84;
 let currentBuilding = builders[0]();
+currentBuilding.scale.setScalar(modelScales[0] * introScale);
 building.add(currentBuilding);
 
 const title = document.getElementById("scene-title");
@@ -395,9 +397,9 @@ function setSpot(index) {
   });
   building.remove(currentBuilding);
   currentBuilding = builders[index]();
-  currentBuilding.scale.setScalar(0.88);
+  currentBuilding.scale.setScalar(modelScales[index] * 0.84);
   building.add(currentBuilding);
-  introScale = 0.88;
+  introScale = 0.84;
   targetYaw = THREE.MathUtils.degToRad(Number(rotation?.value || -28));
 }
 
@@ -480,7 +482,7 @@ function animate(now) {
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const idlePitch = prefersReducedMotion ? 0 : Math.sin(now * 0.00042) * 0.018;
   currentBuilding.rotation.x += ((targetPitch || idlePitch) - currentBuilding.rotation.x) * Math.min(1, dt * 2);
-  currentBuilding.scale.setScalar(introScale);
+  currentBuilding.scale.setScalar(modelScales[activeIndex] * introScale);
   world.position.y = prefersReducedMotion ? 0 : Math.sin(now * 0.00065) * 0.035;
   renderer.render(scene, camera);
 }

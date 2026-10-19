@@ -4,6 +4,7 @@
   const navToggle = document.getElementById("nav-toggle");
   const nav = document.getElementById("site-nav");
   const routeSection = document.getElementById("ban-do");
+  const journeySection = document.getElementById("diem-dung");
   const mapBoard = document.getElementById("map-board");
   const toast = document.getElementById("toast");
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -16,11 +17,18 @@
     const amount = scrollable > 0 ? window.scrollY / scrollable : 0;
     progress.style.transform = "scaleX(" + Math.min(1, Math.max(0, amount)) + ")";
     header.classList.toggle("is-solid", window.scrollY > 28);
+    if (journeySection) {
+      const bounds = journeySection.getBoundingClientRect();
+      const immersive = bounds.top < window.innerHeight * 0.72 && bounds.bottom > window.innerHeight * 0.28;
+      header.classList.toggle("is-immersive", immersive);
+    }
   };
 
   window.addEventListener("scroll", () => {
     if (!scrollFrame) scrollFrame = window.requestAnimationFrame(updateScrollState);
   }, { passive: true });
+  window.addEventListener("load", updateScrollState, { once: true });
+  window.addEventListener("hashchange", updateScrollState);
   updateScrollState();
 
   if (navToggle && nav) {
