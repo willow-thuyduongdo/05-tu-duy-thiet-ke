@@ -1201,7 +1201,8 @@ function createCar(env, url) {
   scene.add(catcher);
   const holder = new THREE.Group();
   scene.add(holder);
-  const smoke = particles({ count: 28, origin: [0, 0.24, 2.15], spread: [0.52, 0.16, 0.2], velocity: [0, 0.5, 1.4], life: 2.1, size: [0.55, 1.8], color: 0xb7b4ad, opacity: 0.33, turbulence: 0.55 });
+  // The car's front faces local +Z, so exhaust must drift from the rear on -Z.
+  const smoke = particles({ count: 28, origin: [0, 0.24, -2.15], spread: [0.52, 0.16, 0.2], velocity: [0, 0.5, -1.4], life: 2.1, size: [0.55, 1.8], color: 0xb7b4ad, opacity: 0.33, turbulence: 0.55 });
   scene.add(smoke);
   const car = { scene, holder, sun, smoke, wheels: [], ready: false };
 

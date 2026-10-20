@@ -1,5 +1,5 @@
 import * as maplibregl from "https://unpkg.com/maplibre-gl@6.14.0/dist/maplibre-gl.mjs";
-import { createLandmarkLayer } from "./landmarks.js?v=20261021g";
+import { createLandmarkLayer } from "./landmarks.js?v=20261021i";
 
 /* ============================================================== content */
 // Stops in walking-tour order. `face` = compass bearing the model front faces
@@ -80,6 +80,7 @@ const STOPS = [
 const $ = (sel) => document.querySelector(sel);
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
 const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+const travelProgress = (t) => 1 - Math.pow(1 - clamp01(t), 1.6);
 const smooth = (a, b, t) => { const x = clamp01((t - a) / (b - a)); return x * x * (3 - 2 * x); };
 const lerp = (a, b, t) => a + (b - a) * t;
 const wrap = (deg) => ((deg % 360) + 540) % 360 - 180;
@@ -219,9 +220,9 @@ function buildShots(legs) {
       shots.push({
         chapter: i, leg, tech: long ? "AERIAL CHASE" : "CHASE CAM · TRACKING", lens: long ? "35mm" : "24mm",
         note: `Máy bám theo xe trên lộ trình thật, ${fmtKm(leg.distance_m)}.`,
-        len: long ? 7.5 : leg.length > 900 ? 3 : 2, fx: { route: 1 },
+        len: long ? 5.5 : leg.length > 900 ? 3 : 2, fx: { route: 1 },
         cam: (t) => {
-          const d = ease(t) * leg.length;
+          const d = travelProgress(t) * leg.length;
           const here = pointAt(leg, d);
           return C(here, zoom, long ? 66 : 74, heading(here, pointAt(leg, d + look)));
         },
@@ -345,7 +346,7 @@ function renderItinerary(legs) {
 async function main() {
   const [sites, routes, streets, lake, driveGallery] = await Promise.all([
     ...["./data/sites.geojson", "./data/routes.geojson", "./data/old-quarter.geojson", "./data/lake.geojson"].map((u) => fetch(`${u}?v=20261020h`).then((r) => r.json())),
-    fetch("./data/drive-gallery.json?v=20261021g").then((r) => r.json()),
+    fetch("./data/drive-gallery.json?v=20261021i").then((r) => r.json()),
   ]);
   for (const stop of STOPS) stop.gallery = [...(stop.gallery || []), ...(driveGallery[stop.id] || [])];
   for (const f of sites.features) {
@@ -570,7 +571,7 @@ async function main() {
     // Live navigation HUD and drawn progress line during tracking shots.
     if (shot.leg) {
       const leg = shot.leg;
-      const d = ease(t) * leg.length;
+      const d = travelProgress(t) * leg.length;
       const step = [...leg.steps].reverse().find((s) => s.start <= d) || leg.steps[0];
       const next = leg.steps[leg.steps.indexOf(step) + 1];
       navHud.hidden = false;
