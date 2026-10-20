@@ -1201,7 +1201,9 @@ function createCar(env, url) {
   scene.add(catcher);
   const holder = new THREE.Group();
   scene.add(holder);
-  const car = { scene, holder, sun, wheels: [], ready: false };
+  const smoke = particles({ count: 36, origin: [0, 0.26, 2.15], spread: [0.75, 0.25, 0.28], velocity: [0.02, 0.5, 1.2], life: 2.4, size: [0.45, 1.7], color: 0xc9c6bf, opacity: 0.23, turbulence: 0.6 });
+  scene.add(smoke);
+  const car = { scene, holder, sun, smoke, wheels: [], ready: false };
 
   const draco = new DRACOLoader().setDecoderPath("https://cdn.jsdelivr.net/npm/three@0.177.0/examples/jsm/libs/draco/gltf/");
   new GLTFLoader().setDRACOLoader(draco).load(url, (gltf) => {
@@ -1331,6 +1333,14 @@ export function createLandmarkLayer(maplibregl, sites, { lake, carUrl } = {}) {
         car.sun.position.copy(SUN_DIR).applyAxisAngle(new THREE.Vector3(0, 1, 0), -yaw).multiplyScalar(14);
         for (const w of car.wheels) w.rotation.x = vehicle.distance / WHEEL_RADIUS;
         camera.projectionMatrix.copy(base).multiply(carMatrix);
+        const P = camera.projectionMatrix;
+        v0.set(0, 0, 0, 1).applyMatrix4(P);
+        v1.set(1, 0, 0, 1).applyMatrix4(P);
+        const pxPerM = Math.hypot(v1.x / v1.w - v0.x / v0.w, v1.y / v1.w - v0.y / v0.w) * 0.5 * Math.max(w, h);
+        car.smoke.material.uniforms.uTime.value = time;
+        car.smoke.material.uniforms.uPxPerM.value = pxPerM;
+        car.smoke.material.uniforms.uCenterW.value = v0.w;
+        animating = true;
         renderer.resetState();
         renderer.render(car.scene, camera);
       }

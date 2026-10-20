@@ -1,5 +1,5 @@
 import * as maplibregl from "https://unpkg.com/maplibre-gl@6.14.0/dist/maplibre-gl.mjs";
-import { createLandmarkLayer } from "./landmarks.js?v=20261020h";
+import { createLandmarkLayer } from "./landmarks.js?v=20261021d";
 
 /* ============================================================== content */
 // Stops in walking-tour order. `face` = compass bearing the model front faces
@@ -10,7 +10,10 @@ const STOPS = [
     id: "bat-trang", short: "Gốm", title: "Làng gốm Bát Tràng", kicker: "Gia Lâm · bên sông Bắc Hưng Hải",
     text: "Làng nghề hơn 500 năm nay có Bảo tàng gốm Bát Tràng (1+1>2 Architects): bảy khối hình bàn xoay gốm lồng nhau, bậc thang như hẻm núi, ốp gạch đất, bê tông sợi và gốm mosaic, sân lễ hội lộ thiên dưới chân và vườn trên mái. Cách đó vài trăm mét, lò bầu cổ năm bầu nung vẫn đứng trong chợ gốm.",
     photo: "./assets/bat-trang.jpg", alt: "Người thợ Bát Tràng bên những sản phẩm gốm mộc",
-    gallery: [{ src: "./assets/gallery/bat-trang-village.jpg", alt: "Các quầy bày đồ gốm trong chợ Bát Tràng dưới bóng cây" }],
+    gallery: [
+      { src: "./assets/gallery/bat-trang-village.jpg", alt: "Các quầy bày đồ gốm trong chợ Bát Tràng dưới bóng cây" },
+      { src: "./assets/gallery/bat-trang-drive.jpg", alt: "Khách trải nghiệm nặn gốm tại làng gốm Bát Tràng" },
+    ],
     quote: { who: "Ca dao", text: "Ước gì anh lấy được nàng / Để anh mua gạch Bát Tràng về xây." },
     facts: ["7 khối bàn xoay", "4 tầng + vườn mái", "6.300 m² sàn", "lò bầu 5 bầu nung"], face: 180,
   },
@@ -26,7 +29,10 @@ const STOPS = [
     id: "ma-may", short: "Nhà", title: "Nhà cổ 87 Mã Mây", kicker: "Nhà phố · cuối thế kỷ XIX",
     text: "Ngôi nhà mở ra theo chiều sâu: gian hàng phía trước, sân trong lấy sáng, nhà chính, rồi lớp sinh hoạt phía sau. Mặt tiền hẹp, nở hậu, kể cách sống và buôn bán của một gia đình phố thị.",
     photo: "./assets/ma-may.jpg", alt: "Không gian gỗ trong ngôi nhà cổ số 87 Mã Mây",
-    gallery: [{ src: "./assets/gallery/ma-may-courtyard.jpg", alt: "Sân trong nhà cổ 87 Mã Mây với mái ngói và hàng hiên gỗ" }],
+    gallery: [
+      { src: "./assets/gallery/ma-may-courtyard.jpg", alt: "Sân trong nhà cổ 87 Mã Mây với mái ngói và hàng hiên gỗ" },
+      { src: "./assets/gallery/ma-may-drive.jpg", alt: "Mặt tiền Ngôi nhà Di sản 87 Mã Mây" },
+    ],
     quote: { who: "Người kể chuyện", text: "Mặt tiền chỉ năm mét, nhưng phải đi hết hai mươi tám mét mới tới gian sau." },
     facts: ["sâu 28 m", "mặt tiền 5 → 6 m", "157,6 m²"], face: 275,
   },
@@ -34,7 +40,10 @@ const STOPS = [
     id: "ho-guom", short: "Hồ Gươm", title: "Tháp Rùa · Hồ Gươm", kicker: "Hồ Hoàn Kiếm · 1884–1886",
     text: "Hồ gắn với truyền thuyết vua Lê trả gươm báu cho Rùa Vàng. Tháp Rùa ba tầng cửa cuốn trên gò giữa hồ là khoảng lặng ở tâm thành phố.",
     photo: "./assets/ho-guom.jpg", alt: "Tháp Rùa trên đảo nhỏ giữa Hồ Gươm",
-    gallery: [{ src: "./assets/gallery/ho-guom-turtle-tower.jpg", alt: "Tháp Rùa trong nắng chiều bên Hồ Gươm" }],
+    gallery: [
+      { src: "./assets/gallery/ho-guom-turtle-tower.jpg", alt: "Tháp Rùa trong nắng chiều bên Hồ Gươm" },
+      { src: "./assets/gallery/ho-guom-drive.jpg", alt: "Du khách bên hồ Hoàn Kiếm dưới tán cây cổ thụ" },
+    ],
     quote: { who: "Truyền thuyết Hồ Gươm", text: "Rùa Vàng nổi lên giữa hồ: “Xin bệ hạ hoàn gươm lại cho Long Quân.”" },
     facts: ["cao 8,8 m", "tầng 1: 6,28 × 4,54 m", "3 tầng + vọng lâu"], face: 270,
   },
@@ -42,7 +51,10 @@ const STOPS = [
     id: "van-mieu", short: "Văn Miếu", title: "Khuê Văn Các", kicker: "Văn Miếu · xây năm 1805",
     text: "Văn Miếu lập năm 1070, Quốc Tử Giám năm 1076. Khuê Văn Các đứng trên bốn trụ gạch, gác gỗ sơn son, bốn cửa tròn tỏa tia và tám mái — biểu tượng Thăng Long hiếu học.",
     photo: "./assets/van-mieu.jpg", alt: "Khoảng sân và kiến trúc cổ tại Văn Miếu – Quốc Tử Giám",
-    gallery: [{ src: "./assets/gallery/van-mieu-khue-van-cac.jpg", alt: "Khuê Văn Các tại Văn Miếu – Quốc Tử Giám" }],
+    gallery: [
+      { src: "./assets/gallery/van-mieu-khue-van-cac.jpg", alt: "Khuê Văn Các tại Văn Miếu – Quốc Tử Giám" },
+      { src: "./assets/gallery/van-mieu-drive.jpg", alt: "Điện Đại Thành và đỉnh hương tại Văn Miếu – Quốc Tử Giám" },
+    ],
     quote: { who: "Văn bia khoa 1442 · Thân Nhân Trung", text: "Hiền tài là nguyên khí của quốc gia." },
     facts: ["đế 6,8 m", "4 trụ 1 × 1 m", "8 mái"], face: 200,
   },
@@ -74,6 +86,7 @@ const wrap = (deg) => ((deg % 360) + 540) % 360 - 180;
 const fmtKm = (m) => (m >= 1000 ? `${(m / 1000).toLocaleString("vi-VN", { maximumFractionDigits: 1 })} km` : `${Math.round(m / 10) * 10} m`);
 const fmtMin = (s) => `${Math.max(1, Math.round(s / 60))} phút`;
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const PLAYBACK_DURATION_SECONDS = 600;
 const escapeHtml = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 
 function lerpCam(a, b, t) {
@@ -206,7 +219,7 @@ function buildShots(legs) {
       shots.push({
         chapter: i, leg, tech: long ? "AERIAL CHASE" : "CHASE CAM · TRACKING", lens: long ? "35mm" : "24mm",
         note: `Máy bám theo xe trên lộ trình thật, ${fmtKm(leg.distance_m)}.`,
-        len: long ? 2.2 : leg.length > 900 ? 1.5 : 0.8, fx: { route: 1 },
+        len: long ? 7.5 : leg.length > 900 ? 3 : 2, fx: { route: 1 },
         cam: (t) => {
           const d = ease(t) * leg.length;
           const here = pointAt(leg, d);
@@ -350,6 +363,22 @@ async function main() {
   const unitPx = () => window.innerHeight * (window.innerWidth < 760 ? 0.9 : 1);
   const sizeTrack = () => { track.style.height = `${total * unitPx() + window.innerHeight}px`; };
   sizeTrack();
+  const autoplayBtn = $("#autoplay-toggle");
+  let autoplay = false;
+  let autoplayProgress = 0;
+  function setAutoplay(active) {
+    autoplay = Boolean(active);
+    if (autoplay) {
+      const progress = progressUnits();
+      if (progress >= total - 0.01) {
+        window.scrollTo(0, 0);
+        autoplayProgress = 0;
+      } else autoplayProgress = progress;
+    }
+    autoplayBtn.setAttribute("aria-pressed", String(autoplay));
+    autoplayBtn.textContent = autoplay ? "Tạm dừng" : "Tự chạy";
+    autoplayBtn.setAttribute("aria-label", autoplay ? "Tạm dừng hành trình tự chạy" : "Tự chạy hành trình");
+  }
 
   const first = shots[0].cam(0);
   const map = new maplibregl.Map({
@@ -417,6 +446,7 @@ async function main() {
       map.setSky({ "sky-color": "#9fc3dd", "horizon-color": "#f4ead6", "fog-color": "#efe9de", "sky-horizon-blend": 0.55, "horizon-fog-blend": 0.7, "fog-ground-blend": 0.6, "atmosphere-blend": 0 });
     } catch (error) { console.warn("Sky unsupported:", error.message); }
     map.setLight({ anchor: "map", color: "#fff1d8", intensity: 0.35, position: [1.4, 210, 35] });
+    setAutoplay(!reduceMotion);
   });
   // Animated layers keep repainting, so "idle" rarely fires: scan when tiles arrive.
   let hideTimer = 0;
@@ -455,6 +485,7 @@ async function main() {
   document.addEventListener("click", (e) => {
     const galleryButton = e.target.closest("[data-gallery-step]");
     if (galleryButton) {
+      setAutoplay(false);
       const card = galleryButton.closest(".card");
       const stop = STOPS[Number(card.dataset.chapter)];
       const photos = [{ src: stop.photo, alt: stop.alt }, ...(stop.gallery || [])];
@@ -469,11 +500,12 @@ async function main() {
     const btn = e.target.closest("[data-jump-shot], [data-jump]");
     if (!btn) return;
     e.preventDefault();
+    setAutoplay(false);
     jumpToShot(Number(btn.dataset.jumpShot ?? btn.dataset.jump ?? 0));
   });
 
   function updateTimecode(u) {
-    const seconds = (u / total) * 420;
+    const seconds = (u / total) * PLAYBACK_DURATION_SECONDS;
     const f = Math.floor((seconds % 1) * 24);
     const s = Math.floor(seconds) % 60, m = Math.floor(seconds / 60) % 60;
     $("#timecode").textContent = `00:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}:${String(f).padStart(2, "0")}`;
@@ -592,6 +624,11 @@ async function main() {
     const dt = Math.min(0.25, (now - last) / 1000);
     last = now;
     if (explore) return;
+    if (autoplay) {
+      autoplayProgress = Math.min(total, autoplayProgress + (dt * total) / PLAYBACK_DURATION_SECONDS);
+      window.scrollTo(0, autoplayProgress * unitPx());
+      if (autoplayProgress >= total) setAutoplay(false);
+    }
     const k = reduceMotion ? 1 : 1 - Math.exp(-dt * 7);
     const far = metres(current.center, target.center) > 3000 || Math.abs(current.zoom - target.zoom) > 3;
     current = far && reduceMotion ? { ...target } : lerpCam(current, target, k);
@@ -605,14 +642,28 @@ async function main() {
     requestAnimationFrame(() => { scheduled = false; if (!explore) applyShot(progressUnits()); });
   };
   window.addEventListener("scroll", onScroll, { passive: true });
+  const pauseAutoplay = () => { if (autoplay) setAutoplay(false); };
+  window.addEventListener("wheel", pauseAutoplay, { passive: true });
+  window.addEventListener("touchstart", pauseAutoplay, { passive: true });
+  window.addEventListener("pointerdown", (e) => {
+    if (e.target instanceof Element && e.target.closest("#autoplay-toggle")) return;
+    pauseAutoplay();
+  }, { passive: true });
+  window.addEventListener("keydown", (e) => {
+    if (!["ArrowDown", "ArrowUp", "PageDown", "PageUp", "Home", "End", " "].includes(e.key)) return;
+    if (e.target instanceof Element && e.target.closest("button, a, input, textarea, select, summary")) return;
+    pauseAutoplay();
+  });
   window.addEventListener("resize", () => { const u = progressUnits(); sizeTrack(); window.scrollTo(0, u * unitPx()); applyShot(u); });
   applyShot(progressUnits());
   current = { ...target };
   requestAnimationFrame(frame);
 
   /* ---------- controls ---------- */
+  autoplayBtn.addEventListener("click", () => setAutoplay(!autoplay));
   const exploreBtn = $("#explore-toggle");
   exploreBtn.addEventListener("click", () => {
+    setAutoplay(false);
     explore = !explore;
     exploreBtn.setAttribute("aria-pressed", String(explore));
     exploreBtn.textContent = explore ? "Về chế độ phim" : "Tự khám phá";
@@ -625,7 +676,7 @@ async function main() {
   });
 
   const dialog = $("#itinerary");
-  $("#route-open").addEventListener("click", () => dialog.showModal());
+  $("#route-open").addEventListener("click", () => { setAutoplay(false); dialog.showModal(); });
   dialog.querySelector("[data-close]").addEventListener("click", () => dialog.close());
 
   const toast = $("#toast");
