@@ -2,306 +2,137 @@
 <html lang="vi">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#172522">
-  <meta name="description" content="Một chuyến đi qua bảy dấu xưa của Hà Nội: Bát Tràng, Mã Mây, Phố Cổ, Lăng Bác, Văn Miếu, Hoàng Thành và Hồ Gươm.">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f3efe6">
+  <meta name="description" content="Hà Nội qua bảy cảnh quay: cuộn để máy quay bay trên bản đồ 3D thật, theo lộ trình từ Bát Tràng đến Hồ Gươm.">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Hà Nội Xưa — một vòng ký ức">
-  <meta property="og:description" content="Từ đất đỏ Bát Tràng đến mặt nước Hồ Gươm, gặp Hà Nội qua bảy điểm dừng di sản.">
-  <meta property="og:url" content="https://ha-noi-xua.snappy-ape-3303.chatgpt.site">
-  <meta property="og:image" content="https://ha-noi-xua.snappy-ape-3303.chatgpt.site/assets/hero-hanoi-film.jpg">
-  <link rel="canonical" href="https://ha-noi-xua.snappy-ape-3303.chatgpt.site">
+  <meta property="og:title" content="Hà Nội xưa — bảy cảnh quay">
+  <meta property="og:description" content="Bản đồ 3D, lộ trình đi bộ thật và mô hình kiến trúc dựng theo số đo công bố.">
+  <meta property="og:image" content="./assets/backdrop/thap-rua.jpg">
   <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap" rel="stylesheet">
-  <link rel="preload" as="image" href="./assets/hero-hanoi-film.jpg" fetchpriority="high">
+  <link rel="preconnect" href="https://tiles.openfreemap.org">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Charm:wght@400;700&family=JetBrains+Mono:wght@400;600&family=Vujahday+Script&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/maplibre-gl@6.14.0/dist/maplibre-gl.css" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css">
-  <title>Hà Nội Xưa — một vòng ký ức</title>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.177.0/build/three.module.js"
+      }
+    }
+  </script>
+  <script type="module" src="./app.js"></script>
+  <title>Hà Nội xưa — bảy cảnh quay</title>
 </head>
-<body>
-  <a class="skip-link" href="#noi-dung">Bỏ qua phần mở đầu</a>
-  <div class="page-progress" id="page-progress" aria-hidden="true"></div>
-  <div class="film-grain" aria-hidden="true"></div>
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<body class="is-loading">
+  <a class="skip-link" href="#story">Bỏ qua phần quay, đọc nội dung</a>
 
-  <header class="site-header" id="site-header">
-    <a class="brand" href="#dau-phim" aria-label="Hà Nội Xưa, về đầu trang">
-      <span class="brand__seal" aria-hidden="true">
-        <svg viewBox="0 0 44 44">
-          <circle cx="22" cy="22" r="19"></circle>
-          <circle cx="22" cy="22" r="14"></circle>
-          <path d="M14 28V16h3.2l9.6 12h3.2V16"></path>
-        </svg>
-      </span>
-      <span class="brand__words">Hà Nội <i>Xưa</i></span>
+  <div class="stage" aria-hidden="false">
+    <div id="map" role="application" aria-label="Bản đồ 3D Hà Nội, máy quay di chuyển theo vị trí cuộn trang"></div>
+    <div class="fx fx-vignette" aria-hidden="true"></div>
+    <div class="fx fx-grain" aria-hidden="true"></div>
+    <div class="fx fx-tilt" aria-hidden="true"></div>
+    <div class="fx fx-whip" aria-hidden="true"></div>
+    <div class="letterbox letterbox--top" aria-hidden="true"></div>
+    <div class="letterbox letterbox--bottom" aria-hidden="true"></div>
+    <div class="backdrop" aria-hidden="true">
+      <img src="./assets/backdrop/thap-rua.jpg" alt="">
+      <img src="./assets/backdrop/long-bien.jpg" alt="">
+      <img src="./assets/backdrop/chua-mot-cot.jpg" alt="">
+    </div>
+    <div class="clouds" aria-hidden="true">
+      <img class="cloud c1" src="./assets/clouds/cloud-03.webp" alt="">
+      <img class="cloud c2" src="./assets/clouds/cloud-01.webp" alt="">
+      <img class="cloud c3" src="./assets/clouds/cloud-06.webp" alt="">
+      <img class="cloud c4" src="./assets/clouds/cloud-02.webp" alt="">
+      <img class="cloud c5" src="./assets/clouds/cloud-04.webp" alt="">
+      <img class="cloud c6" src="./assets/clouds/cloud-10.webp" alt="">
+      <img class="cloud c7" src="./assets/clouds/cloud-03.webp" alt="">
+      <img class="cloud c8" src="./assets/clouds/cloud-01.webp" alt="">
+    </div>
+  </div>
+
+  <header class="hud-top">
+    <a class="brand" href="#top" data-jump="0" aria-label="Về cảnh mở đầu">
+      <span class="brand__mark" aria-hidden="true">HN</span>
+      <span class="brand__text"><b>Hà Nội</b><i>bảy cảnh quay</i></span>
     </a>
-    <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Mở trình đơn">
-      <span></span><span></span>
-    </button>
-    <nav class="site-nav" id="site-nav" aria-label="Điều hướng chính">
-      <a href="#ban-do">Bản đồ</a>
-      <a href="#diem-dung">Bảy điểm dừng</a>
-      <a href="#mo-hinh">Mô hình kiến trúc</a>
-      <a class="site-nav__share" href="#ket-phim">Rủ người đi cùng <span aria-hidden="true">↗</span></a>
-    </nav>
+    <ol class="chapters" id="chapters" aria-label="Chương"></ol>
+    <div class="hud-top__right">
+      <span class="rec" aria-hidden="true"><i></i>REC</span>
+      <span class="timecode" id="timecode" aria-label="Thời điểm trong phim">00:00:00:00</span>
+      <button class="chip" id="route-open" type="button">Lộ trình</button>
+      <button class="chip chip--ghost" id="explore-toggle" type="button" aria-pressed="false">Tự khám phá</button>
+    </div>
   </header>
 
-  <main id="noi-dung">
-    <section class="hero" id="dau-phim" aria-labelledby="hero-title">
-      <div class="hero__picture" aria-hidden="true">
-        <img src="./assets/hero-hanoi-film.jpg" alt="" fetchpriority="high">
-        <div class="hero__shade"></div>
-        <div class="mist mist--one"></div>
-        <div class="mist mist--two"></div>
-        <div class="mist mist--three"></div>
-      </div>
-      <div class="hero__frame" aria-hidden="true">
-        <span>Phim ký ức · Hà Nội</span>
-        <span class="hero__frame-mark">01 — 07</span>
-      </div>
-      <div class="hero__content">
-        <p class="hero__kicker"><span class="kicker-line"></span> Một cuộc dạo bước qua thời gian</p>
-        <h1 id="hero-title">Hà Nội<br><em>Xưa</em></h1>
-        <p class="hero__intro">Từ lò gốm bên sông Hồng đến những mái ngói nép mình trong phố cũ — bảy điểm dừng, một thành phố để nhớ.</p>
-        <div class="hero__actions">
-          <a class="button button--lacquer" href="#ban-do"><span>Đi vào hành trình</span><span class="button__seal" aria-hidden="true">↘</span></a>
-          <a class="hero__text-link" href="#diem-dung">Xem bảy điểm dừng</a>
-        </div>
-      </div>
-      <div class="hero__footer">
-        <span>21°01′B · 105°51′Đ</span>
-        <span class="hero__footer-rule"></span>
-        <span>Hà Nội, trong một thước phim</span>
-      </div>
-      <a class="scroll-cue" href="#loi-mo" aria-label="Cuộn xuống để khám phá">
-        <span class="scroll-cue__line"></span>
-        <span>Cuộn để nhớ</span>
-      </a>
-    </section>
+  <div class="slate" id="slate" aria-live="polite">
+    <span class="slate__shot" id="slate-shot">SHOT 01</span>
+    <span class="slate__tech" id="slate-tech">AERIAL ESTABLISHING</span>
+    <span class="slate__lens" id="slate-lens">24mm</span>
+    <p class="slate__note" id="slate-note">Máy bay cao, vén mây để lộ toàn thành phố.</p>
+  </div>
 
-    <section class="opening" id="loi-mo" aria-labelledby="opening-title">
-      <div class="opening__left">
-        <p class="eyeline"><span class="eyeline__symbol">✳</span> Một thành phố, nhiều lớp thời gian</p>
-        <h2 id="opening-title">Có những con đường<br>đi qua rồi <em>vẫn còn ở lại.</em></h2>
-      </div>
-      <div class="opening__right">
-        <p>Hà Nội không kể chuyện bằng một giọng. Có tiếng guồng gốm quay bên bờ sông, tiếng cửa gỗ khép lại trong một ngôi nhà ống, và khoảng lặng mở ra khi phố chạm mặt hồ.</p>
-        <p>Hãy đi chậm qua bảy nơi chốn này. Mỗi nơi giữ một mảnh khác nhau của Hà Nội xưa.</p>
-        <a class="underlined-link" href="#ban-do">Mở tấm bản đồ <span aria-hidden="true">↘</span></a>
-      </div>
-      <div class="opening__photo" aria-label="Phố cổ Hà Nội">
-        <img src="./assets/pho-co.jpg" alt="Phố cổ Hà Nội với những mái nhà cũ, hàng quán và dòng xe qua phố" loading="lazy">
-        <span class="opening__photo-caption">Một góc phố, một cuộn phim</span>
-      </div>
-      <span class="opening__watermark" aria-hidden="true">HÀ NỘI</span>
-    </section>
-
-    <section class="route" id="ban-do" aria-labelledby="route-title">
-      <div class="section-heading section-heading--light">
-        <p class="eyeline"><span class="eyeline__symbol">✳</span> Tấm bản đồ mở đầu</p>
-        <h2 id="route-title">Từ làng gốm<br>về <em>phố cũ.</em></h2>
-        <p class="section-heading__copy">Mượn đường nét trên bản đồ Hà Nội năm 1891 để dẫn lối cho một hành trình hôm nay. Tuyến vẽ mang tính gợi ý, không theo tỷ lệ bản đồ.</p>
-      </div>
-
-      <div class="route__layout">
-        <figure class="map-board" id="map-board">
-          <div class="map-board__paper">
-            <img src="./assets/hanoi-map-1891.jpg" alt="" loading="lazy">
-            <div class="map-board__wash"></div>
-            <svg class="map-route-line" viewBox="0 0 1000 920" preserveAspectRatio="none" aria-hidden="true">
-              <path d="M 900 690 C 840 650 800 560 710 540 S 650 500 675 475 S 555 410 470 435 S 425 525 420 620 S 485 505 515 445 S 630 515 655 595"></path>
-              <circle cx="900" cy="690" r="7"></circle>
-              <circle cx="655" cy="595" r="7"></circle>
-            </svg>
-            <a class="map-pin map-pin--pottery" style="--x:90%;--y:75%" href="#bat-trang" aria-label="Đến điểm dừng Bát Tràng"><span class="map-pin__dot">1</span><span class="map-pin__label">Bát Tràng</span></a>
-            <a class="map-pin map-pin--mamay" style="--x:71%;--y:59%" href="#ma-may" aria-label="Đến điểm dừng Mã Mây"><span class="map-pin__dot">2</span><span class="map-pin__label">Mã Mây</span></a>
-            <a class="map-pin map-pin--oldquarter" style="--x:68%;--y:52%" href="#pho-co" aria-label="Đến điểm dừng Phố Cổ"><span class="map-pin__dot">3</span><span class="map-pin__label">Phố Cổ</span></a>
-            <a class="map-pin map-pin--mausoleum" style="--x:47%;--y:42%" href="#lang-bac" aria-label="Đến điểm dừng Lăng Bác"><span class="map-pin__dot">4</span><span class="map-pin__label">Lăng Bác</span></a>
-            <a class="map-pin map-pin--temple" style="--x:42%;--y:68%" href="#van-mieu" aria-label="Đến điểm dừng Văn Miếu"><span class="map-pin__dot">5</span><span class="map-pin__label">Văn Miếu</span></a>
-            <a class="map-pin map-pin--citadel" style="--x:51%;--y:47%" href="#hoang-thanh" aria-label="Đến điểm dừng Hoàng Thành"><span class="map-pin__dot">6</span><span class="map-pin__label">Hoàng Thành</span></a>
-            <a class="map-pin map-pin--lake" style="--x:66%;--y:64%" href="#ho-guom" aria-label="Đến điểm dừng Hồ Gươm"><span class="map-pin__dot">7</span><span class="map-pin__label">Hồ Gươm</span></a>
-            <span class="map-board__north" aria-hidden="true">BẮC <span>↑</span></span>
-            <span class="map-board__stamp" aria-hidden="true">1891<br><small>HANOÏ</small></span>
-          </div>
-          <figcaption><span>Bản đồ Hanoï et ses environs · 1891</span><span>Đường đi ngày nay là sơ đồ gợi ý</span></figcaption>
-        </figure>
-
-        <aside class="route-index" aria-label="Danh sách các điểm dừng">
-          <p class="route-index__intro">Bảy dấu chân trên bản đồ</p>
-          <ol>
-            <li><a href="#bat-trang"><span class="route-index__number">01</span><span>Làng gốm Bát Tràng</span><span class="route-index__arrow">↗</span></a></li>
-            <li><a href="#ma-may"><span class="route-index__number">02</span><span>Nhà cổ Mã Mây</span><span class="route-index__arrow">↗</span></a></li>
-            <li><a href="#pho-co"><span class="route-index__number">03</span><span>Phố Cổ</span><span class="route-index__arrow">↗</span></a></li>
-            <li><a href="#lang-bac"><span class="route-index__number">04</span><span>Lăng Bác</span><span class="route-index__arrow">↗</span></a></li>
-            <li><a href="#van-mieu"><span class="route-index__number">05</span><span>Văn Miếu – Quốc Tử Giám</span><span class="route-index__arrow">↗</span></a></li>
-            <li><a href="#hoang-thanh"><span class="route-index__number">06</span><span>Hoàng Thành Thăng Long</span><span class="route-index__arrow">↗</span></a></li>
-            <li><a href="#ho-guom"><span class="route-index__number">07</span><span>Hồ Gươm</span><span class="route-index__arrow">↗</span></a></li>
-          </ol>
-          <div class="route-index__note">
-            <span class="route-index__compass" aria-hidden="true">✳</span>
-            <p>Bắt đầu từ đất và lửa. Khép lại bên mặt nước phẳng yên.</p>
-          </div>
-        </aside>
-      </div>
-      <div class="route__mist" aria-hidden="true"></div>
-    </section>
-
-    <section class="journey" id="diem-dung" aria-labelledby="journey-title">
-      <header class="journey__heading">
-        <div>
-          <p class="eyeline"><span class="eyeline__symbol">✳</span> 07 dấu xưa · một thành phố</p>
-          <h2 id="journey-title">Bước vào<br><em>Hà Nội xưa.</em></h2>
-        </div>
-        <p>Cuộn chậm qua từng điểm dừng. Mô hình kiến trúc sẽ đổi theo câu chuyện, như một bản đồ sống của Thăng Long — Hà Nội.</p>
-      </header>
-
-      <div class="journey__split" id="mo-hinh">
-        <aside class="model-console" aria-label="Mô hình 3D và chọn điểm dừng">
-          <div class="model-console__topline">
-            <span class="model-console__brand"><i></i> HÀ NỘI · ARCHIVE Nº 01</span>
-            <span class="model-console__mode">MÔ PHỎNG 3D</span>
-          </div>
-          <div class="model-console__scene">
-            <canvas id="architecture-canvas" aria-label="Mô hình 3D kiến trúc Hà Nội, có thể xoay bằng chuột hoặc cảm ứng"></canvas>
-            <div class="scene-fallback" aria-hidden="true">
-              <svg viewBox="0 0 600 440">
-                <ellipse cx="300" cy="354" rx="195" ry="36" fill="#222923" stroke="#bd9a5d" stroke-opacity=".48"/>
-                <path d="M158 290 300 342 442 290 300 237Z" fill="#77705d" stroke="#e1c791" stroke-width="2"/>
-                <path d="M158 290v27l142 54v-29M442 290v27l-142 54" fill="#393e37" stroke="#8e774d" stroke-width="2"/>
-                <path d="M223 248h155v75H223z" fill="#9a6745" stroke="#e4ce9e" stroke-width="2"/>
-                <path d="M212 246 300 208l98 38-98 39Z" fill="#9b3b2f" stroke="#e4ce9e" stroke-width="2"/>
-                <path d="M226 244 300 211l81 32M234 249l66 27 77-32" fill="none" stroke="#d9bd82" stroke-width="2"/>
-                <path d="M239 256v60m31-48v60m61-60v59m28-72v62" stroke="#e0cb9d" stroke-width="7"/>
-                <path d="M246 205 300 181l60 23-60 24Z" fill="#493f30" stroke="#e4ce9e" stroke-width="2"/>
-                <path d="M257 201 300 183l47 19-47 18Z" fill="#9b3b2f"/>
-                <path d="M300 97v85m0-85 29 17" stroke="#d3b875" stroke-width="3"/>
-                <circle cx="300" cy="96" r="4" fill="#f2c14e"/>
-                <path d="M63 362h474M89 381h422" stroke="#bd9a5d" stroke-opacity=".3"/>
-                <circle cx="300" cy="289" r="166" fill="none" stroke="#d8c18f" stroke-opacity=".13"/>
-                <circle cx="300" cy="289" r="190" fill="none" stroke="#d8c18f" stroke-opacity=".09" stroke-dasharray="3 10"/>
-              </svg>
-              <span>Đang khởi tạo bản dựng…</span>
-            </div>
-            <div class="model-console__mist model-console__mist--one"></div>
-            <div class="model-console__mist model-console__mist--two"></div>
-            <div class="model-console__corner model-console__corner--tl">21°01′B<br>105°51′Đ</div>
-            <div class="model-console__corner model-console__corner--br">XOAY MÔ HÌNH <span>↻</span></div>
-            <span class="scene-crosshair" aria-hidden="true">+</span>
-          </div>
-
-          <div class="model-console__caption" aria-live="polite">
-            <div class="model-console__chapter"><span id="scene-number">01</span><i>/ 07</i><b></b><small id="scene-era">DI SẢN SỐNG · VEN SÔNG HỒNG</small></div>
-            <h3 id="scene-title">Làng gốm Bát Tràng</h3>
-            <p id="scene-subtitle">Đất đỏ · lò nung · bàn tay người thợ</p>
-          </div>
-
-          <div class="model-console__controls">
-            <label for="scene-rotation">GÓC NHÌN <input id="scene-rotation" type="range" min="-180" max="180" value="-28" aria-label="Xoay mô hình 3D"></label>
-            <div class="model-console__hint"><span class="drag-symbol">⤢</span> Kéo để xoay · cuộn để khám phá</div>
-          </div>
-
-          <nav class="scene-rail" aria-label="Chọn nhanh điểm dừng">
-            <button type="button" data-journey-select="bat-trang" class="is-active" aria-label="Điểm 1: Bát Tràng"><span>01</span><i>Gốm</i></button>
-            <button type="button" data-journey-select="ma-may" aria-label="Điểm 2: Mã Mây"><span>02</span><i>Nhà</i></button>
-            <button type="button" data-journey-select="pho-co" aria-label="Điểm 3: Phố Cổ"><span>03</span><i>Phố</i></button>
-            <button type="button" data-journey-select="lang-bac" aria-label="Điểm 4: Lăng Bác"><span>04</span><i>Ba Đình</i></button>
-            <button type="button" data-journey-select="van-mieu" aria-label="Điểm 5: Văn Miếu"><span>05</span><i>Văn Miếu</i></button>
-            <button type="button" data-journey-select="hoang-thanh" aria-label="Điểm 6: Hoàng Thành"><span>06</span><i>Thăng Long</i></button>
-            <button type="button" data-journey-select="ho-guom" aria-label="Điểm 7: Hồ Gươm"><span>07</span><i>Mặt hồ</i></button>
-          </nav>
-          <p class="model-console__note">Bản dựng 3D diễn giải từ ảnh và tư liệu kiến trúc; không thay thế mô hình đo đạc khảo cổ.</p>
-        </aside>
-
-        <div class="journey__stories" aria-label="Ảnh và lịch sử các điểm tham quan">
-          <article class="journey-card is-active" id="bat-trang" data-scene-index="0" aria-labelledby="bat-trang-title">
-            <div class="journey-card__photo"><img src="./assets/bat-trang.jpg" alt="Người thợ Bát Tràng bên những sản phẩm gốm mộc" loading="lazy"><span class="journey-card__photo-note">TƯ LIỆU HÌNH ẢNH · 01</span></div>
-            <div class="journey-card__copy"><p class="journey-card__eyeline"><span>01 / 07</span> LÀNG NGHỀ · GIA LÂM</p><h3 id="bat-trang-title">Đất sông Hồng<br>qua bàn tay.</h3><p>Bên bờ sông Hồng, những lớp đất sét được nhào, vuốt và nung thành đồ dùng, đồ thờ, vật trang trí. Bát Tràng giữ nhịp nghề qua nhiều thế hệ; mỗi dáng gốm là một dấu tay riêng.</p><div class="journey-card__foot"><span>ĐẤT · NƯỚC · LỬA</span><a href="#ma-may" aria-label="Tiếp tục đến Mã Mây">ĐI TIẾP <b>↘</b></a></div></div>
-          </article>
-
-          <article class="journey-card" id="ma-may" data-scene-index="1" aria-labelledby="ma-may-title">
-            <div class="journey-card__photo"><img src="./assets/ma-may.jpg" alt="Không gian gỗ trong ngôi nhà cổ số 87 Mã Mây" loading="lazy"><span class="journey-card__photo-note">TƯ LIỆU HÌNH ẢNH · 02</span></div>
-            <div class="journey-card__copy"><p class="journey-card__eyeline"><span>02 / 07</span> NHÀ CỔ · HOÀN KIẾM</p><h3 id="ma-may-title">Nếp nhà dài<br>trong lòng phố.</h3><p>Ngôi nhà 87 Mã Mây mở ra theo chiều sâu: gian hàng phía trước, sân trong lấy sáng, rồi những lớp sinh hoạt phía sau. Mặt tiền hẹp và cấu trúc nhà ống kể về cách sống, buôn bán của một gia đình phố thị xưa.</p><div class="journey-card__foot"><span>GIAN HÀNG · SÂN TRONG</span><a href="#pho-co" aria-label="Tiếp tục đến Phố Cổ">ĐI TIẾP <b>↘</b></a></div></div>
-          </article>
-
-          <article class="journey-card" id="pho-co" data-scene-index="2" aria-labelledby="pho-co-title">
-            <div class="journey-card__photo"><img src="./assets/pho-co.jpg" alt="Mái nhà, biển hiệu và dòng xe trên một con phố Hà Nội" loading="lazy"><span class="journey-card__photo-note">TƯ LIỆU HÌNH ẢNH · 03</span></div>
-            <div class="journey-card__copy"><p class="journey-card__eyeline"><span>03 / 07</span> PHỐ THỊ · HOÀN KIẾM</p><h3 id="pho-co-title">Mỗi con phố<br>một nghề xưa.</h3><p>Phố Cổ hình thành từ những phường nghề và tuyến buôn bán sát bên kinh thành. Tên phố, mặt tiền nhỏ, mái hiên và cửa hàng nối nhau thành một cấu trúc đô thị vừa để ở, vừa để làm nghề — vẫn chuyển động trong nhịp sống hôm nay.</p><div class="journey-card__foot"><span>MÁI HIÊN · PHƯỜNG NGHỀ</span><a href="#lang-bac" aria-label="Tiếp tục đến Lăng Bác">ĐI TIẾP <b>↘</b></a></div></div>
-          </article>
-
-          <article class="journey-card" id="lang-bac" data-scene-index="3" aria-labelledby="lang-bac-title">
-            <div class="journey-card__photo"><img src="./assets/lang-bac.jpg" alt="Lăng Chủ tịch Hồ Chí Minh tại quảng trường Ba Đình" loading="lazy"><span class="journey-card__photo-note">TƯ LIỆU HÌNH ẢNH · 04</span></div>
-            <div class="journey-card__copy"><p class="journey-card__eyeline"><span>04 / 07</span> BA ĐÌNH · THẾ KỶ XX</p><h3 id="lang-bac-title">Quảng trường<br>của một lời thề.</h3><p>Ba Đình là nơi Chủ tịch Hồ Chí Minh đọc Tuyên ngôn Độc lập ngày 2 tháng 9 năm 1945. Lăng được khánh thành năm 1975, trên trục quảng trường rộng và hàng cây thẳng tắp — một không gian trang nghiêm giữa lòng thủ đô.</p><div class="journey-card__foot"><span>BA ĐÌNH · 1945 / 1975</span><a href="#van-mieu" aria-label="Tiếp tục đến Văn Miếu">ĐI TIẾP <b>↘</b></a></div></div>
-          </article>
-
-          <article class="journey-card" id="van-mieu" data-scene-index="4" aria-labelledby="van-mieu-title">
-            <div class="journey-card__photo"><img src="./assets/van-mieu.jpg" alt="Một khoảng sân và kiến trúc cổ tại Văn Miếu – Quốc Tử Giám" loading="lazy"><span class="journey-card__photo-note">TƯ LIỆU HÌNH ẢNH · 05</span></div>
-            <div class="journey-card__copy"><p class="journey-card__eyeline"><span>05 / 07</span> DI TÍCH · THÀNH LẬP NĂM 1070</p><h3 id="van-mieu-title">Mái son<br>soi bóng chữ nghĩa.</h3><p>Văn Miếu được lập năm 1070; Quốc Tử Giám hình thành năm 1076, gắn với lịch sử giáo dục và khoa cử của đất nước. Qua nhiều lớp cổng, sân và hồ, Khuê Văn Các trở thành hình ảnh biểu tượng của Thăng Long hiếu học.</p><div class="journey-card__foot"><span>VĂN MIẾU · QUỐC TỬ GIÁM</span><a href="#hoang-thanh" aria-label="Tiếp tục đến Hoàng Thành">ĐI TIẾP <b>↘</b></a></div></div>
-          </article>
-
-          <article class="journey-card" id="hoang-thanh" data-scene-index="5" aria-labelledby="hoang-thanh-title">
-            <div class="journey-card__photo"><img src="./assets/hoang-thanh.jpg" alt="Đoan Môn, cổng chính phía nam của khu di tích Hoàng Thành Thăng Long" loading="lazy"><span class="journey-card__photo-note">TƯ LIỆU HÌNH ẢNH · 06</span></div>
-            <div class="journey-card__copy"><p class="journey-card__eyeline"><span>06 / 07</span> KINH ĐÔ · DI SẢN UNESCO</p><h3 id="hoang-thanh-title">Thành xưa,<br>đất còn kể chuyện.</h3><p>Trung tâm Hoàng thành Thăng Long lưu giữ dấu tích quyền lực liên tục qua nhiều triều đại. Những lớp nền, cổng thành và di vật khảo cổ dưới lòng đất mở ra lịch sử lâu dài của kinh đô; khu trung tâm được UNESCO ghi danh năm 2010.</p><div class="journey-card__foot"><span>THĂNG LONG · HÀ NỘI</span><a href="#ho-guom" aria-label="Tiếp tục đến Hồ Gươm">ĐI TIẾP <b>↘</b></a></div></div>
-          </article>
-
-          <article class="journey-card" id="ho-guom" data-scene-index="6" aria-labelledby="ho-guom-title">
-            <div class="journey-card__photo"><img src="./assets/ho-guom.jpg" alt="Tháp Rùa trên đảo nhỏ giữa Hồ Gươm" loading="lazy"><span class="journey-card__photo-note">TƯ LIỆU HÌNH ẢNH · 07</span></div>
-            <div class="journey-card__copy"><p class="journey-card__eyeline"><span>07 / 07</span> HỒ GƯƠM · TRUYỀN THUYẾT</p><h3 id="ho-guom-title">Mặt hồ giữ<br>nhịp thành phố.</h3><p>Hồ Hoàn Kiếm gắn với truyền thuyết vua Lê trả gươm báu cho Rùa Vàng. Từ tháp rùa nhỏ giữa hồ đến những hàng cây quanh bờ, nơi đây là khoảng nghỉ dịu dàng và cũng là tâm điểm gặp gỡ của Hà Nội.</p><div class="journey-card__foot"><span>THÁP RÙA · HỒ HOÀN KIẾM</span><a href="#ket-phim" aria-label="Khép lại hành trình">KHÉP PHIM <b>↗</b></a></div></div>
-          </article>
-        </div>
-      </div>
-      <p class="journey__sources">Tư liệu ảnh và giấy phép được ghi tại <a href="#nguon-tu-lieu">cuối hành trình</a>. Dữ kiện lịch sử được biên tập từ hồ sơ di tích và nguồn tư liệu tham khảo.</p>
-    </section>
-
-    <section class="closing" id="ket-phim" aria-labelledby="closing-title">
-      <div class="closing__backdrop" aria-hidden="true">
-        <img src="./assets/ho-guom.jpg" alt="" loading="lazy">
-        <div class="closing__shade"></div>
-        <div class="mist mist--closing"></div>
-      </div>
-      <div class="closing__content">
-        <p class="eyeline eyeline--light"><span class="eyeline__symbol">✳</span> Hết một vòng, còn một nỗi nhớ</p>
-        <h2 id="closing-title">Hẹn gặp nhau<br><em>ở Hà Nội xưa.</em></h2>
-        <p>Gửi cuộn phim này cho người bạn muốn cùng đi chậm qua phố cũ.</p>
-        <div class="closing__actions">
-          <a class="button button--lacquer" href="#ban-do"><span>Xem lại hành trình</span><span class="button__seal" aria-hidden="true">↗</span></a>
-          <button class="share-button" id="share-tour" type="button"><span aria-hidden="true">⌁</span> Rủ người đi cùng</button>
-        </div>
-      </div>
-      <span class="closing__endmark" aria-hidden="true">HẾT CUỘN PHIM</span>
-    </section>
-  </main>
-
-  <footer class="site-footer">
-    <div class="site-footer__top">
-      <a class="brand brand--footer" href="#dau-phim">
-        <span class="brand__seal" aria-hidden="true"><svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="19"></circle><circle cx="22" cy="22" r="14"></circle><path d="M14 28V16h3.2l9.6 12h3.2V16"></path></svg></span>
-        <span class="brand__words">Hà Nội <i>Xưa</i></span>
-      </a>
-      <p>Một ý niệm du lịch kể bằng hình ảnh, kiến trúc và ký ức.</p>
-      <a class="back-to-top" href="#dau-phim">Lên đầu phim <span aria-hidden="true">↑</span></a>
+  <section class="title-card" id="title-card" aria-labelledby="film-title">
+    <div class="title-card__inner">
+      <p class="eyebrow">Thăng Long · Hà Nội · một thước phim cuộn</p>
+      <h1 id="film-title">Hà Nội <span>xưa</span></h1>
+      <blockquote class="slogan">
+        <p>Gió đưa cành trúc la đà,<br>Tiếng chuông Trấn Vũ, canh gà Thọ Xương.</p>
+        <cite>Ca dao Thăng Long</cite>
+      </blockquote>
+      <p class="title-card__lead">Cuộn xuống để vén mây. Máy quay bay trên bản đồ thật, qua bảy dấu xưa từ làng gốm Bát Tràng đến mặt nước Hồ Gươm.</p>
+      <span class="scroll-hint" aria-hidden="true"><i></i>Cuộn để bấm máy</span>
     </div>
-    <details class="credits" id="nguon-tu-lieu">
-      <summary>Nguồn tư liệu, hình ảnh và giấy phép</summary>
-      <div class="credits__content">
-        <p>Ảnh bìa là minh họa mới tạo bằng ImageGen. Ảnh tư liệu bên dưới được cắt cúp và phối sắc độ cho giao diện.</p>
-        <ul>
-          <li><a href="https://commons.wikimedia.org/wiki/File:Bat-Trang-Ceramic-Village3.jpg" target="_blank" rel="noreferrer">Bát Tràng</a> — Steven C. Price, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer">CC BY-SA 4.0</a>.</li>
-          <li><a href="https://commons.wikimedia.org/wiki/File:Maison_longue_traditionnelle_(1).jpg" target="_blank" rel="noreferrer">Nhà cổ Mã Mây</a> — Guerinf, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer">CC BY-SA 4.0</a>.</li>
-          <li><a href="https://commons.wikimedia.org/wiki/File:Old_Quarter_street_scene,_Hanoi_(8)_(37610044625).jpg" target="_blank" rel="noreferrer">Phố Cổ</a> — Richard Mortel, <a href="https://creativecommons.org/licenses/by/2.0/" target="_blank" rel="noreferrer">CC BY 2.0</a>.</li>
-          <li><a href="https://commons.wikimedia.org/wiki/File:Ho_Chi_Minh_Mausoleum_in_Hanoi.jpg" target="_blank" rel="noreferrer">Lăng Bác</a> — Christophe95, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer">CC BY-SA 4.0</a>.</li>
-          <li><a href="https://commons.wikimedia.org/wiki/File:Temple_of_Literature_Hanoi_1.jpg" target="_blank" rel="noreferrer">Văn Miếu – Quốc Tử Giám</a> — Christophe95, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer">CC BY-SA 4.0</a>.</li>
-          <li><a href="https://commons.wikimedia.org/wiki/File:Hanoi_Citadel.jpg" target="_blank" rel="noreferrer">Hoàng Thành</a> — Gryffindor, <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noreferrer">CC BY-SA 3.0</a>.</li>
-          <li><a href="https://commons.wikimedia.org/wiki/File:Hanoi_-_Hoan_Kiem_See_-_Schildkr%C3%B6tenturm_0002.JPG" target="_blank" rel="noreferrer">Hồ Gươm</a> — Stefan Fussan, <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noreferrer">CC BY-SA 3.0</a>.</li>
-          <li><a href="https://commons.wikimedia.org/wiki/File:Ville_de_Hano%C3%AF_(Plan_de_Hano%C3%AF_et_de_ses_Environs).png" target="_blank" rel="noreferrer">Bản đồ Hanoï et ses environs, 1891</a> — Charles Halais, Raphaël Enguéhard và A. Simon; <a href="https://creativecommons.org/publicdomain/mark/1.0/" target="_blank" rel="noreferrer">Public Domain Mark 1.0</a>. Bản gốc từ <a href="https://gallica.bnf.fr/ark:/12148/btv1b8439869f" target="_blank" rel="noreferrer">Gallica, Bibliothèque nationale de France</a>.</li>
-        </ul>
-        <p class="credits__research">Tham khảo kiến trúc: <a href="https://www.envr.tsukuba.ac.jp/~jds/pdf/2013Seminar%20presentation/Le%20Khanh%20Ly.pdf" target="_blank" rel="noreferrer">nghiên cứu nhà ống cổ Hà Nội và bản vẽ 87 Mã Mây</a>; <a href="https://vanmieu.gov.vn/vi/khue-van-pavilion" target="_blank" rel="noreferrer">Ban quản lý di tích Văn Miếu – Quốc Tử Giám</a>. Các mô hình vector trên trang là bản dựng diễn giải của dự án, không phải bản vẽ đo đạc.</p>
+  </section>
+
+  <aside class="nav-hud" id="nav-hud" hidden>
+    <span class="nav-hud__mode" id="nav-mode">ĐI BỘ</span>
+    <b class="nav-hud__to" id="nav-to">Đến Nhà cổ 87 Mã Mây</b>
+    <span class="nav-hud__left" id="nav-left">Còn 2,0 km · 26 phút</span>
+    <span class="nav-hud__step" id="nav-step">Rẽ phải vào Phố Hàng Bạc</span>
+  </aside>
+
+  <main class="story" id="story" aria-label="Nội dung các điểm dừng"></main>
+
+  <section class="credits" id="credits" aria-labelledby="credits-title">
+    <p class="eyebrow">Hết phim</p>
+    <h2 id="credits-title">Hẹn gặp ở<br><span>Hà Nội.</span></h2>
+    <div class="credits__actions">
+      <button class="chip chip--solid" id="share-tour" type="button">Gửi lộ trình cho bạn</button>
+      <button class="chip" data-jump="0" type="button">Quay lại từ đầu</button>
+    </div>
+    <details class="sources">
+      <summary>Nguồn dữ liệu, số đo và giấy phép</summary>
+      <div class="sources__body">
+        <p>Bản đồ nền: <a href="https://openfreemap.org/" target="_blank" rel="noreferrer">OpenFreeMap</a>, dữ liệu © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap contributors</a> (ODbL). Nhà 3D trong thành phố đùn từ chiều cao OSM.</p>
+        <p>Lộ trình: <a href="https://routing.openstreetmap.de/" target="_blank" rel="noreferrer">FOSSGIS OSRM</a> trên dữ liệu OSM, truy vấn ngày 20/10/2026. Thời gian đi là ước tính của bộ định tuyến.</p>
+        <p>Footprint dùng đặt mô hình: OSM way <a href="https://www.openstreetmap.org/way/37625751" target="_blank" rel="noreferrer">37625751</a> (Lăng), <a href="https://www.openstreetmap.org/way/696389268" target="_blank" rel="noreferrer">696389268</a> (Đoan Môn), <a href="https://www.openstreetmap.org/way/702185155" target="_blank" rel="noreferrer">702185155</a> (Khuê Văn Các), <a href="https://www.openstreetmap.org/way/178995269" target="_blank" rel="noreferrer">178995269</a> (Tháp Rùa), <a href="https://www.openstreetmap.org/way/323366879" target="_blank" rel="noreferrer">323366879</a> (87 Mã Mây). Vị trí lò bầu Bát Tràng lấy theo chợ gốm (gần đúng).</p>
+        <p>Số đo mô hình: Lăng cao 21,6 m, rộng 41,2 m (<a href="https://en.wikipedia.org/wiki/Ho_Chi_Minh_Mausoleum" target="_blank" rel="noreferrer">Wikipedia</a>); Khuê Văn Các đế 6,8 m, 4 trụ gạch 1 m, 8 mái (<a href="https://vi.wikipedia.org/wiki/V%C4%83n_Mi%E1%BA%BFu_%E2%80%93_Qu%E1%BB%91c_T%E1%BB%AD_Gi%C3%A1m" target="_blank" rel="noreferrer">Wikipedia</a>); Đoan Môn dài 46,5 m, 5 cửa vòm (<a href="https://special.nhandan.vn/ditichdoanmon/" target="_blank" rel="noreferrer">Nhân Dân</a>), cao 6 m (<a href="https://vov.vn/ha-noi-ngan-nam/thanh-co-ha-noi-xung-tam-di-san-van-hoa-the-gioi-134774.vov" target="_blank" rel="noreferrer">VOV</a>); Tháp Rùa cao 8,8 m, ba tầng 6,28 × 4,54 / 4,8 × 3,64 / 2,97 × 1,9 m (<a href="https://mia.vn/cam-nang-du-lich/ve-tham-thap-rua-bieu-tuong-du-lich-tam-linh-giua-long-ha-noi-2911" target="_blank" rel="noreferrer">Mia.vn</a>); 87 Mã Mây sâu 28 m (<a href="https://www.rfa.org/vietnamese/news/comment/blog/old-houses-in-hang-streets-09212020100856.html" target="_blank" rel="noreferrer">RFA</a>); lò bầu cổ 5 bầu nung (<a href="https://baolaichau.vn/van-hoa/bat-trang-lua-nghe-truyen-doi" target="_blank" rel="noreferrer">Báo Lai Châu</a>). Footprint OSM khớp số đo: Lăng 41,1 m, Khuê Văn Các 6,4 m, Tháp Rùa 6,3 × 4,6 m. Số cột Lăng, kích thước bầu lò và chiều cao Khuê Văn Các là ước tính từ ảnh.</p>
+        <p>Phông chữ: ThuPhap Thien An — Michael Đinh Kiên (fontchudep), “Free for everyone”; Charm và Vujahday Script — SIL Open Font License (Google Fonts).</p>
+        <p>Mây: <a href="https://opengameart.org/content/clouds-with-transparency" target="_blank" rel="noreferrer">Clouds with transparency</a> — WickedInsignia, CC0. Ảnh nền trang mở đầu: <a href="https://commons.wikimedia.org/wiki/File:Hanoi_-_Turtle_Tower_(Th%C3%A1p_R%C3%B9a),_Ho%C3%A0n_Ki%E1%BA%BFm_Lake.jpg" target="_blank" rel="noreferrer">Tháp Rùa</a> — P. Hughes, CC BY 4.0; <a href="https://commons.wikimedia.org/wiki/File:Long_Bien_bridge.jpg" target="_blank" rel="noreferrer">Cầu Long Biên</a> — Amenoc, CC0; <a href="https://commons.wikimedia.org/wiki/File:One_Pillar_Pagoda_-_Hanoi,_Vietnam_-_DSC03500.JPG" target="_blank" rel="noreferrer">Chùa Một Cột</a> — Daderot, CC0. Ảnh được thu nhỏ và làm mờ.</p>
+        <p>Ảnh tư liệu: <a href="https://commons.wikimedia.org/wiki/File:Bat-Trang-Ceramic-Village3.jpg" target="_blank" rel="noreferrer">Bát Tràng</a> — Steven C. Price, CC BY-SA 4.0; <a href="https://commons.wikimedia.org/wiki/File:Maison_longue_traditionnelle_(1).jpg" target="_blank" rel="noreferrer">Mã Mây</a> — Guerinf, CC BY-SA 4.0; <a href="https://commons.wikimedia.org/wiki/File:Old_Quarter_street_scene,_Hanoi_(8)_(37610044625).jpg" target="_blank" rel="noreferrer">Phố Cổ</a> — Richard Mortel, CC BY 2.0; <a href="https://commons.wikimedia.org/wiki/File:Ho_Chi_Minh_Mausoleum_in_Hanoi.jpg" target="_blank" rel="noreferrer">Lăng</a> — Christophe95, CC BY-SA 4.0; <a href="https://commons.wikimedia.org/wiki/File:Temple_of_Literature_Hanoi_1.jpg" target="_blank" rel="noreferrer">Văn Miếu</a> — Christophe95, CC BY-SA 4.0; <a href="https://commons.wikimedia.org/wiki/File:Hanoi_Citadel.jpg" target="_blank" rel="noreferrer">Hoàng Thành</a> — Gryffindor, CC BY-SA 3.0; <a href="https://commons.wikimedia.org/wiki/File:Hanoi_-_Hoan_Kiem_See_-_Schildkr%C3%B6tenturm_0002.JPG" target="_blank" rel="noreferrer">Hồ Gươm</a> — Stefan Fussan, CC BY-SA 3.0.</p>
       </div>
     </details>
-    <div class="site-footer__bottom"><span>© Hà Nội Xưa · Hành trình di sản</span><span>Được dựng bằng mực, ánh sáng và một chút sương.</span></div>
-  </footer>
+  </section>
 
-  <script src="./app.js" defer></script>
-  <script type="module" src="./architecture-3d.js"></script>
+  <nav class="timeline" aria-label="Dòng thời gian phim">
+    <div class="timeline__bar"><i id="timeline-fill"></i></div>
+    <ol class="timeline__marks" id="timeline-marks"></ol>
+  </nav>
+
+  <dialog class="itinerary" id="itinerary" aria-labelledby="itinerary-title">
+    <header>
+      <div><p class="eyebrow">Lộ trình thật trên bản đồ</p><h2 id="itinerary-title">6 chặng · Bát Tràng → Hồ Gươm</h2></div>
+      <button class="chip" type="button" data-close>Đóng</button>
+    </header>
+    <ol class="itinerary__legs" id="itinerary-legs"></ol>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="scroll-track" id="scroll-track" aria-hidden="true"></div>
+  <noscript><p class="noscript">Trang cần JavaScript và WebGL để hiển thị bản đồ 3D.</p></noscript>
 </body>
 </html>
