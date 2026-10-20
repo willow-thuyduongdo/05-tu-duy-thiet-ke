@@ -210,20 +210,18 @@ body:not(.fx-whip-on) .fx-whip { display: none; }
 .brand { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; }
 .brand__mark {
   display: grid;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   place-items: center;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 11px;
   background: var(--glass);
   backdrop-filter: blur(12px);
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
+  color: #9a5a14;
 }
+.brand__mark svg { width: 30px; height: 30px; }
 .brand__text { display: grid; line-height: 1.1; }
-.brand__text b { font-family: var(--brush-read); font-size: 18px; font-weight: 700; letter-spacing: 0; }
+.brand__text b { font-family: var(--brush-read); font-size: 21px; font-weight: 700; letter-spacing: 0; line-height: 1; }
 .brand__text i { color: var(--ink-3); font-size: 11px; font-style: normal; }
 
 .chapters {

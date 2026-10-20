@@ -1,6 +1,6 @@
 # Hà Nội xưa — bảy cảnh quay
 
-A buildless, scroll-driven film over a real 3D map of Hà Nội. Scrolling does not move a page: it moves the camera. Each scroll step is a named camera move (aerial establishing, push-in, crane, orbit, tracking, tilt-shift, whip pan, Dutch tilt, one-point dolly, top shot, pull-back reveal) that travels the real walking and driving route from Bát Tràng to Hồ Gươm.
+A buildless, scroll-driven film over a real 3D map of Hà Nội. Scrolling does not move a page: it moves the camera. Each scroll step is a named camera move (aerial establishing, push-in, crane, orbit, tracking, tilt-shift, whip pan, Dutch tilt, one-point dolly, top shot, pull-back reveal) that follows the real driving route Bát Tràng → Phố Cổ → 87 Mã Mây → Hồ Gươm → Văn Miếu → Hoàng thành → Lăng Bác, with a car driving each leg.
 
 ## Preview
 
@@ -15,8 +15,9 @@ Open http://localhost:4173. The page needs WebGL and network access for the base
 - Opening: Hà Nội xưa title in Vietnamese calligraphy over blurred, slowly crossfading photographs of Tháp Rùa, Long Biên and Chùa Một Cột, with the ca dao "Gió đưa cành trúc la đà / Tiếng chuông Trấn Vũ, canh gà Thọ Xương". Photographic CC0 clouds gather and part to reveal the light map.
 - Materials: a weathering layer injected into the PBR shader adds moss on sky-facing surfaces, rain streaks on walls and rising damp near the ground; lacquer, granite and glass use clearcoat, bronze is metallic, and every model reflects a PMREM sky environment.
 - Water: Hồ Hoàn Kiếm is built from OSM relation 198437 with a wave shader (directional waves + noise normals, fresnel sky reflection, sun glints, ripples from the island) and grassy islands with earth banks.
+- Car: a Ferrari 458 Italia glTF (Draco) drives every leg in a chase-cam shot, wheels turning with distance and casting shadows; it is scaled up on the high, long Bát Tràng leg so it stays readable.
 - Particles: GPU point sprites simulated in the vertex shader — kiln smoke and embers (Bát Tràng), incense (Mã Mây), sunlit dust (Đoan Môn), falling leaves (Văn Miếu), water glints and drifting mist (Hồ Gươm).
-- `data/` — `lake.geojson` (Hồ Hoàn Kiếm), `sites.geojson` (footprints and anchors), `routes.geojson` (6 legs with turn-by-turn steps) and `old-quarter.geojson` (45 guild streets). `scripts/fetch_geodata.py` regenerates them from Overpass and FOSSGIS OSRM.
+- `data/` — `lake.geojson` (Hồ Hoàn Kiếm), `sites.geojson` (footprints and anchors), `routes.geojson` (6 driving legs with turn-by-turn steps) and `old-quarter.geojson` (45 guild streets). `scripts/fetch_geodata.py` regenerates them from Overpass and FOSSGIS OSRM.
 - `dist/` — the published static copy (`.openai/hosting.json` serves it). Copy `index.html`, `app.js`, `landmarks.js`, `styles.css` and `data/` into it after changes.
 
 ## Shots
@@ -25,13 +26,13 @@ Open http://localhost:4173. The page needs WebGL and network access for the base
 | --- | --- |
 | Opening | Aerial establishing, clouds part over the city |
 | Bát Tràng | Drone push-in, crane down onto the pottery museum, 180° roof-garden orbit, trucking along the village street, push-in on the old kiln |
-| 87 Mã Mây | Aerial tracking (14 km by road), tilt-shift miniature, steadicam orbit |
-| Phố Cổ | Tracking, street-level steadicam, whip pan, top shot over the guild streets |
-| Đoan Môn | Tracking, low-angle Dutch tilt, whip pan, arc shot |
-| Lăng Bác | Tracking, one-point symmetry dolly in, crane-up reveal |
-| Khuê Văn Các | Tracking, god's-eye top-down, tilt down to hero, 120° orbit |
-| Tháp Rùa | Tracking, telephoto arc, pull-back reveal |
-| Ending | Final wide over the whole 22 km route |
+| Phố Cổ | Aerial chase (13.5 km by car), street-level steadicam, whip pan, top shot over the guild streets |
+| 87 Mã Mây | Chase cam, tilt-shift miniature, steadicam orbit |
+| Tháp Rùa | Chase cam, telephoto arc, pull-back reveal |
+| Khuê Văn Các | Chase cam, god's-eye top-down, tilt down to hero, 120° orbit |
+| Đoan Môn | Chase cam, low-angle Dutch tilt, whip pan, arc shot |
+| Lăng Bác | Chase cam, one-point symmetry dolly in, crane-up reveal |
+| Ending | Final wide over the whole 20.3 km route |
 
 ## Model dimensions
 
@@ -51,6 +52,7 @@ Sources and image licences are listed in the page credits. Column counts, kiln c
 
 - Type: ThuPhap Thien An by Michael Đinh Kiên ("Free for everyone") for the big Hà Nội xưa title (`assets/fonts` holds a Vietnamese WOFF2 subset; an installed 9Slide copy is used first); Charm (bold) for stop names and headings and Vujahday Script for the poem and quotes, both SIL OFL from Google Fonts with full Vietnamese diacritics. Body text stays in Be Vietnam Pro.
 - Clouds: `assets/clouds` from "Clouds with transparency" by WickedInsignia (OpenGameArt, CC0), brightened and resized to WebP.
+- Car (`assets/models/ferrari.glb`): Ferrari 458 Italia by vicent091036 (Sketchfab), CC BY 4.0, Draco-compressed copy from the three.js examples.
 - Opening photos (`assets/backdrop`): Tháp Rùa — P. Hughes, CC BY 4.0; Cầu Long Biên — Amenoc, CC0; Chùa Một Cột — Daderot, CC0 (Wikimedia Commons).
 
 ## Accessibility

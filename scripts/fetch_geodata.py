@@ -13,12 +13,12 @@ UA = {"User-Agent": "hanoi-xua-research/1.0"}
 # Stop order follows the walking tour. osm = footprint used to place the 3D model.
 STOPS = [
     {"id": "bat-trang", "name": "Bảo tàng gốm Bát Tràng", "osm": ("way", 1206576120)},
-    {"id": "ma-may", "name": "Nhà cổ 87 Mã Mây", "osm": ("way", 323366879)},
     {"id": "pho-co", "name": "Phố Tạ Hiện · Phố Cổ", "lonlat": [105.85218, 21.03462], "osm": None, "approx": True},
+    {"id": "ma-may", "name": "Nhà cổ 87 Mã Mây", "osm": ("way", 323366879)},
+    {"id": "ho-guom", "name": "Tháp Rùa · Hồ Gươm", "osm": ("way", 178995269)},
+    {"id": "van-mieu", "name": "Khuê Văn Các · Văn Miếu", "osm": ("way", 702185155)},
     {"id": "hoang-thanh", "name": "Đoan Môn · Hoàng thành Thăng Long", "osm": ("way", 696389268)},
     {"id": "lang-bac", "name": "Lăng Chủ tịch Hồ Chí Minh", "osm": ("way", 37625751)},
-    {"id": "van-mieu", "name": "Khuê Văn Các · Văn Miếu", "osm": ("way", 702185155)},
-    {"id": "ho-guom", "name": "Tháp Rùa · Hồ Gươm", "osm": ("way", 178995269)},
 ]
 
 
@@ -63,7 +63,7 @@ def main():
 
     legs = []
     for a, b in zip(STOPS, STOPS[1:]):
-        profile = "driving" if a["id"] == "bat-trang" else "foot"
+        profile = "driving"  # the tour is illustrated by car on every leg
         host = "routed-car/route/v1/driving" if profile == "driving" else "routed-foot/route/v1/foot"
         coords = f"{a['lonlat'][0]},{a['lonlat'][1]};{b['lonlat'][0]},{b['lonlat'][1]}"
         r = get(f"https://routing.openstreetmap.de/{host}/{coords}?overview=full&geometries=geojson&steps=true")
