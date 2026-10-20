@@ -1,5 +1,5 @@
 import * as maplibregl from "https://unpkg.com/maplibre-gl@6.14.0/dist/maplibre-gl.mjs";
-import { createLandmarkLayer } from "./landmarks.js?v=20261021d";
+import { createLandmarkLayer } from "./landmarks.js?v=20261021e";
 
 /* ============================================================== content */
 // Stops in walking-tour order. `face` = compass bearing the model front faces

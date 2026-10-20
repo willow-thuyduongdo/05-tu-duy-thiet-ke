@@ -1201,7 +1201,7 @@ function createCar(env, url) {
   scene.add(catcher);
   const holder = new THREE.Group();
   scene.add(holder);
-  const smoke = particles({ count: 36, origin: [0, 0.26, 2.15], spread: [0.75, 0.25, 0.28], velocity: [0.02, 0.5, 1.2], life: 2.4, size: [0.45, 1.7], color: 0xc9c6bf, opacity: 0.23, turbulence: 0.6 });
+  const smoke = particles({ count: 28, origin: [0, 0.24, 2.15], spread: [0.52, 0.16, 0.2], velocity: [0, 0.5, 1.4], life: 2.1, size: [0.55, 1.8], color: 0xb7b4ad, opacity: 0.33, turbulence: 0.55 });
   scene.add(smoke);
   const car = { scene, holder, sun, smoke, wheels: [], ready: false };
 
