@@ -1,5 +1,5 @@
 import * as maplibregl from "https://unpkg.com/maplibre-gl@6.14.0/dist/maplibre-gl.mjs";
-import { createLandmarkLayer } from "./landmarks.js?v=20261021f";
+import { createLandmarkLayer } from "./landmarks.js?v=20261021g";
 
 /* ============================================================== content */
 // Stops in walking-tour order. `face` = compass bearing the model front faces
@@ -343,9 +343,11 @@ function renderItinerary(legs) {
 
 /* ============================================================== main */
 async function main() {
-  const [sites, routes, streets, lake] = await Promise.all(
-    ["./data/sites.geojson", "./data/routes.geojson", "./data/old-quarter.geojson", "./data/lake.geojson"].map((u) => fetch(`${u}?v=20261020h`).then((r) => r.json())),
-  );
+  const [sites, routes, streets, lake, driveGallery] = await Promise.all([
+    ...["./data/sites.geojson", "./data/routes.geojson", "./data/old-quarter.geojson", "./data/lake.geojson"].map((u) => fetch(`${u}?v=20261020h`).then((r) => r.json())),
+    fetch("./data/drive-gallery.json?v=20261021g").then((r) => r.json()),
+  ]);
+  for (const stop of STOPS) stop.gallery = [...(stop.gallery || []), ...(driveGallery[stop.id] || [])];
   for (const f of sites.features) {
     if (f.properties.kind !== "anchor") continue;
     const stop = STOPS.find((s) => s.id === f.properties.id);
