@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f3efe6">
-  <meta name="description" content="Hà Nội qua bảy cảnh quay: cuộn để máy quay bay trên bản đồ 3D thật, theo lộ trình từ Bát Tràng đến Hồ Gươm.">
+  <meta name="description" content="Hà Nội xưa qua bảy cảnh quay: cuộn để máy quay bay trên bản đồ 3D thật, theo lộ trình từ Bát Tràng qua phố cổ, Hồ Gươm, Văn Miếu, Hoàng thành đến Lăng Bác.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Hà Nội xưa — bảy cảnh quay">
   <meta property="og:description" content="Bản đồ 3D, lộ trình đi bộ thật và mô hình kiến trúc dựng theo số đo công bố.">
@@ -15,15 +15,16 @@
   <link rel="preconnect" href="https://tiles.openfreemap.org">
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Charm:wght@400;700&family=JetBrains+Mono:wght@400;600&family=Vujahday+Script&display=swap" rel="stylesheet">
   <link href="https://unpkg.com/maplibre-gl@6.14.0/dist/maplibre-gl.css" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./styles.css?v=20261020h">
   <script type="importmap">
     {
       "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.177.0/build/three.module.js"
+        "three": "https://cdn.jsdelivr.net/npm/three@0.177.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.177.0/examples/jsm/"
       }
     }
   </script>
-  <script type="module" src="./app.js"></script>
+  <script type="module" src="./app.js?v=20261020h"></script>
   <title>Hà Nội xưa — bảy cảnh quay</title>
 </head>
 <body class="is-loading">
@@ -55,9 +56,9 @@
   </div>
 
   <header class="hud-top">
-    <a class="brand" href="#top" data-jump="0" aria-label="Về cảnh mở đầu">
-      <span class="brand__mark" aria-hidden="true">HN</span>
-      <span class="brand__text"><b>Hà Nội</b><i>bảy cảnh quay</i></span>
+    <a class="brand" href="#top" data-jump="0" aria-label="Hà Nội xưa, về cảnh mở đầu">
+      <span class="brand__mark" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 42.5h41"/> <path d="M6 42.5V19h3.4v23.5M38.6 42.5V19H42v23.5"/> <path d="M5 19h5.4l-2.7-3.6zM37.6 19H43l-2.7-3.6z"/> <path d="M7.7 15.4v-1.7M40.3 15.4v-1.7"/> <path d="M16 42.5V27.5h16v15"/> <path d="M19 30.6h10"/> <path d="M21 42.5V37a3 3 0 0 1 6 0v5.5"/> <path d="M12 27.5c3 0 5-1.6 6.3-4h11.4c1.3 2.4 3.3 4 6.3 4"/> <path d="M12 27.5l-1.7-2.2M36 27.5l1.7-2.2"/> <path d="M19.5 23.5V16.5h9v7"/> <circle cx="24" cy="20" r="1.7"/> <path d="M15.5 16.5c2.6 0 4.2-1.4 5.3-3.5h6.4c1.1 2.1 2.7 3.5 5.3 3.5"/> <path d="M15.5 16.5l-1.6-2M32.5 16.5l1.6-2"/> <path d="M24 13V9.6"/> <circle cx="24" cy="8.4" r="1.1"/></svg></span>
+      <span class="brand__text"><b>Hà Nội xưa</b></span>
     </a>
     <ol class="chapters" id="chapters" aria-label="Chương"></ol>
     <div class="hud-top__right">
@@ -83,7 +84,7 @@
         <p>Gió đưa cành trúc la đà,<br>Tiếng chuông Trấn Vũ, canh gà Thọ Xương.</p>
         <cite>Ca dao Thăng Long</cite>
       </blockquote>
-      <p class="title-card__lead">Cuộn xuống để vén mây. Máy quay bay trên bản đồ thật, qua bảy dấu xưa từ làng gốm Bát Tràng đến mặt nước Hồ Gươm.</p>
+      <p class="title-card__lead">Cuộn xuống để vén mây. Máy quay bay trên bản đồ thật, qua bảy dấu xưa từ làng gốm Bát Tràng, phố cổ, Hồ Gươm, Văn Miếu, Hoàng thành đến Lăng Bác.</p>
       <span class="scroll-hint" aria-hidden="true"><i></i>Cuộn để bấm máy</span>
     </div>
   </section>
@@ -108,10 +109,11 @@
       <summary>Nguồn dữ liệu, số đo và giấy phép</summary>
       <div class="sources__body">
         <p>Bản đồ nền: <a href="https://openfreemap.org/" target="_blank" rel="noreferrer">OpenFreeMap</a>, dữ liệu © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap contributors</a> (ODbL). Nhà 3D trong thành phố đùn từ chiều cao OSM.</p>
-        <p>Lộ trình: <a href="https://routing.openstreetmap.de/" target="_blank" rel="noreferrer">FOSSGIS OSRM</a> trên dữ liệu OSM, truy vấn ngày 20/10/2026. Thời gian đi là ước tính của bộ định tuyến.</p>
+        <p>Lộ trình ô tô: <a href="https://routing.openstreetmap.de/" target="_blank" rel="noreferrer">FOSSGIS OSRM</a> trên dữ liệu OSM, truy vấn ngày 20/10/2026. Thời gian đi là ước tính của bộ định tuyến.</p>
         <p>Footprint dùng đặt mô hình: OSM way <a href="https://www.openstreetmap.org/way/37625751" target="_blank" rel="noreferrer">37625751</a> (Lăng), <a href="https://www.openstreetmap.org/way/696389268" target="_blank" rel="noreferrer">696389268</a> (Đoan Môn), <a href="https://www.openstreetmap.org/way/702185155" target="_blank" rel="noreferrer">702185155</a> (Khuê Văn Các), <a href="https://www.openstreetmap.org/way/178995269" target="_blank" rel="noreferrer">178995269</a> (Tháp Rùa), <a href="https://www.openstreetmap.org/way/323366879" target="_blank" rel="noreferrer">323366879</a> (87 Mã Mây). Vị trí lò bầu Bát Tràng lấy theo chợ gốm (gần đúng).</p>
         <p>Số đo mô hình: Lăng cao 21,6 m, rộng 41,2 m (<a href="https://en.wikipedia.org/wiki/Ho_Chi_Minh_Mausoleum" target="_blank" rel="noreferrer">Wikipedia</a>); Khuê Văn Các đế 6,8 m, 4 trụ gạch 1 m, 8 mái (<a href="https://vi.wikipedia.org/wiki/V%C4%83n_Mi%E1%BA%BFu_%E2%80%93_Qu%E1%BB%91c_T%E1%BB%AD_Gi%C3%A1m" target="_blank" rel="noreferrer">Wikipedia</a>); Đoan Môn dài 46,5 m, 5 cửa vòm (<a href="https://special.nhandan.vn/ditichdoanmon/" target="_blank" rel="noreferrer">Nhân Dân</a>), cao 6 m (<a href="https://vov.vn/ha-noi-ngan-nam/thanh-co-ha-noi-xung-tam-di-san-van-hoa-the-gioi-134774.vov" target="_blank" rel="noreferrer">VOV</a>); Tháp Rùa cao 8,8 m, ba tầng 6,28 × 4,54 / 4,8 × 3,64 / 2,97 × 1,9 m (<a href="https://mia.vn/cam-nang-du-lich/ve-tham-thap-rua-bieu-tuong-du-lich-tam-linh-giua-long-ha-noi-2911" target="_blank" rel="noreferrer">Mia.vn</a>); 87 Mã Mây sâu 28 m (<a href="https://www.rfa.org/vietnamese/news/comment/blog/old-houses-in-hang-streets-09212020100856.html" target="_blank" rel="noreferrer">RFA</a>); lò bầu cổ 5 bầu nung (<a href="https://baolaichau.vn/van-hoa/bat-trang-lua-nghe-truyen-doi" target="_blank" rel="noreferrer">Báo Lai Châu</a>). Footprint OSM khớp số đo: Lăng 41,1 m, Khuê Văn Các 6,4 m, Tháp Rùa 6,3 × 4,6 m. Số cột Lăng, kích thước bầu lò và chiều cao Khuê Văn Các là ước tính từ ảnh.</p>
         <p>Phông chữ: ThuPhap Thien An — Michael Đinh Kiên (fontchudep), “Free for everyone”; Charm và Vujahday Script — SIL Open Font License (Google Fonts).</p>
+        <p>Ô tô minh họa: <a href="https://sketchfab.com/models/57bf6cc56931426e87494f554df1dab6" target="_blank" rel="noreferrer">Ferrari 458 Italia</a> — vicent091036, CC BY 4.0 (bản nén Draco từ ví dụ three.js); kích thước xe được phóng to ở cảnh rộng để dễ nhìn.</p>
         <p>Mây: <a href="https://opengameart.org/content/clouds-with-transparency" target="_blank" rel="noreferrer">Clouds with transparency</a> — WickedInsignia, CC0. Ảnh nền trang mở đầu: <a href="https://commons.wikimedia.org/wiki/File:Hanoi_-_Turtle_Tower_(Th%C3%A1p_R%C3%B9a),_Ho%C3%A0n_Ki%E1%BA%BFm_Lake.jpg" target="_blank" rel="noreferrer">Tháp Rùa</a> — P. Hughes, CC BY 4.0; <a href="https://commons.wikimedia.org/wiki/File:Long_Bien_bridge.jpg" target="_blank" rel="noreferrer">Cầu Long Biên</a> — Amenoc, CC0; <a href="https://commons.wikimedia.org/wiki/File:One_Pillar_Pagoda_-_Hanoi,_Vietnam_-_DSC03500.JPG" target="_blank" rel="noreferrer">Chùa Một Cột</a> — Daderot, CC0. Ảnh được thu nhỏ và làm mờ.</p>
         <p>Ảnh tư liệu: <a href="https://commons.wikimedia.org/wiki/File:Bat-Trang-Ceramic-Village3.jpg" target="_blank" rel="noreferrer">Bát Tràng</a> — Steven C. Price, CC BY-SA 4.0; <a href="https://commons.wikimedia.org/wiki/File:Maison_longue_traditionnelle_(1).jpg" target="_blank" rel="noreferrer">Mã Mây</a> — Guerinf, CC BY-SA 4.0; <a href="https://commons.wikimedia.org/wiki/File:Old_Quarter_street_scene,_Hanoi_(8)_(37610044625).jpg" target="_blank" rel="noreferrer">Phố Cổ</a> — Richard Mortel, CC BY 2.0; <a href="https://commons.wikimedia.org/wiki/File:Ho_Chi_Minh_Mausoleum_in_Hanoi.jpg" target="_blank" rel="noreferrer">Lăng</a> — Christophe95, CC BY-SA 4.0; <a href="https://commons.wikimedia.org/wiki/File:Temple_of_Literature_Hanoi_1.jpg" target="_blank" rel="noreferrer">Văn Miếu</a> — Christophe95, CC BY-SA 4.0; <a href="https://commons.wikimedia.org/wiki/File:Hanoi_Citadel.jpg" target="_blank" rel="noreferrer">Hoàng Thành</a> — Gryffindor, CC BY-SA 3.0; <a href="https://commons.wikimedia.org/wiki/File:Hanoi_-_Hoan_Kiem_See_-_Schildkr%C3%B6tenturm_0002.JPG" target="_blank" rel="noreferrer">Hồ Gươm</a> — Stefan Fussan, CC BY-SA 3.0.</p>
       </div>
@@ -125,7 +127,7 @@
 
   <dialog class="itinerary" id="itinerary" aria-labelledby="itinerary-title">
     <header>
-      <div><p class="eyebrow">Lộ trình thật trên bản đồ</p><h2 id="itinerary-title">6 chặng · Bát Tràng → Hồ Gươm</h2></div>
+      <div><p class="eyebrow">Lộ trình thật trên bản đồ</p><h2 id="itinerary-title">6 chặng · Bát Tràng → Lăng Bác</h2></div>
       <button class="chip" type="button" data-close>Đóng</button>
     </header>
     <ol class="itinerary__legs" id="itinerary-legs"></ol>

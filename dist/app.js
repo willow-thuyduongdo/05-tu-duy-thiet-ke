@@ -1,5 +1,5 @@
 import * as maplibregl from "https://unpkg.com/maplibre-gl@6.14.0/dist/maplibre-gl.mjs";
-import { createLandmarkLayer } from "./landmarks.js";
+import { createLandmarkLayer } from "./landmarks.js?v=20261020h";
 
 /* ============================================================== content */
 // Stops in walking-tour order. `face` = compass bearing the model front faces
@@ -14,6 +14,13 @@ const STOPS = [
     facts: ["7 khối bàn xoay", "4 tầng + vườn mái", "6.300 m² sàn", "lò bầu 5 bầu nung"], face: 180,
   },
   {
+    id: "pho-co", short: "Phố", title: "36 phố phường", kicker: "Phố Cổ · Hoàn Kiếm",
+    text: "Phố Cổ hình thành từ những phường nghề sát kinh thành. Tên phố giữ lại nghề xưa: Hàng Bạc, Hàng Đào, Hàng Mã, Hàng Thiếc. Trên bản đồ, các phố mang chữ “Hàng” được tô sáng.",
+    photo: "./assets/pho-co.jpg", alt: "Mái nhà, biển hiệu và dòng xe trên một con phố Hà Nội",
+    quote: { who: "Ca dao", text: "Rủ nhau chơi khắp Long Thành / Ba mươi sáu phố rành rành chẳng sai." },
+    facts: ["45 phố “Hàng” trên OSM", "phường nghề"], face: 0,
+  },
+  {
     id: "ma-may", short: "Nhà", title: "Nhà cổ 87 Mã Mây", kicker: "Nhà phố · cuối thế kỷ XIX",
     text: "Ngôi nhà mở ra theo chiều sâu: gian hàng phía trước, sân trong lấy sáng, nhà chính, rồi lớp sinh hoạt phía sau. Mặt tiền hẹp, nở hậu, kể cách sống và buôn bán của một gia đình phố thị.",
     photo: "./assets/ma-may.jpg", alt: "Không gian gỗ trong ngôi nhà cổ số 87 Mã Mây",
@@ -21,11 +28,18 @@ const STOPS = [
     facts: ["sâu 28 m", "mặt tiền 5 → 6 m", "157,6 m²"], face: 275,
   },
   {
-    id: "pho-co", short: "Phố", title: "36 phố phường", kicker: "Phố Cổ · Hoàn Kiếm",
-    text: "Phố Cổ hình thành từ những phường nghề sát kinh thành. Tên phố giữ lại nghề xưa: Hàng Bạc, Hàng Đào, Hàng Mã, Hàng Thiếc. Trên bản đồ, các phố mang chữ “Hàng” được tô sáng.",
-    photo: "./assets/pho-co.jpg", alt: "Mái nhà, biển hiệu và dòng xe trên một con phố Hà Nội",
-    quote: { who: "Ca dao", text: "Rủ nhau chơi khắp Long Thành / Ba mươi sáu phố rành rành chẳng sai." },
-    facts: ["45 phố “Hàng” trên OSM", "phường nghề"], face: 0,
+    id: "ho-guom", short: "Hồ Gươm", title: "Tháp Rùa · Hồ Gươm", kicker: "Hồ Hoàn Kiếm · 1884–1886",
+    text: "Hồ gắn với truyền thuyết vua Lê trả gươm báu cho Rùa Vàng. Tháp Rùa ba tầng cửa cuốn trên gò giữa hồ là khoảng lặng ở tâm thành phố.",
+    photo: "./assets/ho-guom.jpg", alt: "Tháp Rùa trên đảo nhỏ giữa Hồ Gươm",
+    quote: { who: "Truyền thuyết Hồ Gươm", text: "Rùa Vàng nổi lên giữa hồ: “Xin bệ hạ hoàn gươm lại cho Long Quân.”" },
+    facts: ["cao 8,8 m", "tầng 1: 6,28 × 4,54 m", "3 tầng + vọng lâu"], face: 270,
+  },
+  {
+    id: "van-mieu", short: "Văn Miếu", title: "Khuê Văn Các", kicker: "Văn Miếu · xây năm 1805",
+    text: "Văn Miếu lập năm 1070, Quốc Tử Giám năm 1076. Khuê Văn Các đứng trên bốn trụ gạch, gác gỗ sơn son, bốn cửa tròn tỏa tia và tám mái — biểu tượng Thăng Long hiếu học.",
+    photo: "./assets/van-mieu.jpg", alt: "Khoảng sân và kiến trúc cổ tại Văn Miếu – Quốc Tử Giám",
+    quote: { who: "Văn bia khoa 1442 · Thân Nhân Trung", text: "Hiền tài là nguyên khí của quốc gia." },
+    facts: ["đế 6,8 m", "4 trụ 1 × 1 m", "8 mái"], face: 200,
   },
   {
     id: "hoang-thanh", short: "Thành", title: "Đoan Môn · Hoàng thành", kicker: "Kinh đô · UNESCO 2010",
@@ -40,20 +54,6 @@ const STOPS = [
     photo: "./assets/lang-bac.jpg", alt: "Lăng Chủ tịch Hồ Chí Minh tại quảng trường Ba Đình",
     quote: { who: "Tuyên ngôn Độc lập · 2/9/1945", text: "Tất cả mọi người đều sinh ra có quyền bình đẳng." },
     facts: ["rộng 41,2 m", "cao 21,6 m", "3 lớp"], face: 101,
-  },
-  {
-    id: "van-mieu", short: "Văn Miếu", title: "Khuê Văn Các", kicker: "Văn Miếu · xây năm 1805",
-    text: "Văn Miếu lập năm 1070, Quốc Tử Giám năm 1076. Khuê Văn Các đứng trên bốn trụ gạch, gác gỗ sơn son, bốn cửa tròn tỏa tia và tám mái — biểu tượng Thăng Long hiếu học.",
-    photo: "./assets/van-mieu.jpg", alt: "Khoảng sân và kiến trúc cổ tại Văn Miếu – Quốc Tử Giám",
-    quote: { who: "Văn bia khoa 1442 · Thân Nhân Trung", text: "Hiền tài là nguyên khí của quốc gia." },
-    facts: ["đế 6,8 m", "4 trụ 1 × 1 m", "8 mái"], face: 200,
-  },
-  {
-    id: "ho-guom", short: "Hồ Gươm", title: "Tháp Rùa · Hồ Gươm", kicker: "Hồ Hoàn Kiếm · 1884–1886",
-    text: "Hồ gắn với truyền thuyết vua Lê trả gươm báu cho Rùa Vàng. Tháp Rùa ba tầng cửa cuốn trên gò giữa hồ là khoảng lặng ở tâm thành phố.",
-    photo: "./assets/ho-guom.jpg", alt: "Tháp Rùa trên đảo nhỏ giữa Hồ Gươm",
-    quote: { who: "Truyền thuyết Hồ Gươm", text: "Rùa Vàng nổi lên giữa hồ: “Xin bệ hạ hoàn gươm lại cho Long Quân.”" },
-    facts: ["cao 8,8 m", "tầng 1: 6,28 × 4,54 m", "3 tầng + vọng lâu"], face: 270,
   },
 ];
 
@@ -193,16 +193,17 @@ function buildShots(legs) {
     } else {
       const leg = legs[i - 1];
       const long = leg.length > 5000;
-      const zoom = long ? 14.3 : leg.length > 900 ? 16.7 : 18.3;
-      const look = long ? 900 : 120;
+      // Chase cam: low and close behind the car; the 13 km leg flies higher.
+      const zoom = long ? 18.4 : 20.9;
+      const look = long ? 120 : 30;
       shots.push({
-        chapter: i, leg, tech: long ? "AERIAL TRACKING" : "TRACKING SHOT", lens: long ? "35mm" : "28mm",
-        note: `Máy bám theo lộ trình ${leg.mode === "driving" ? "xe" : "đi bộ"} thật, ${fmtKm(leg.distance_m)}.`,
+        chapter: i, leg, tech: long ? "AERIAL CHASE" : "CHASE CAM · TRACKING", lens: long ? "35mm" : "24mm",
+        note: `Máy bám theo xe trên lộ trình thật, ${fmtKm(leg.distance_m)}.`,
         len: long ? 2.2 : leg.length > 900 ? 1.5 : 0.8, fx: { route: 1 },
         cam: (t) => {
           const d = ease(t) * leg.length;
           const here = pointAt(leg, d);
-          return C(here, zoom, long ? 55 : 62, heading(here, pointAt(leg, d + look)));
+          return C(here, zoom, long ? 66 : 74, heading(here, pointAt(leg, d + look)));
         },
         cover: (t) => smooth(0.84, 1, t),
       });
@@ -213,7 +214,8 @@ function buildShots(legs) {
   });
   const last = STOPS[STOPS.length - 1];
   const lastEnd = C(last.lonlat, 15.4, 52, (last.face + 320) % 360);
-  shots.push({ chapter: 7, tech: "FINAL WIDE · TOÀN TUYẾN", lens: "24mm", note: "Toàn bộ lộ trình 22 km hiện trên bản đồ.", len: 1.6, fx: { route: 1, letterbox: 1 }, cam: (t) => lerpCam(lastEnd, C([105.875, 21.012], 12.3, 36, -12), ease(t)) });
+  const totalKm = fmtKm(legs.reduce((sum, leg) => sum + leg.distance_m, 0));
+  shots.push({ chapter: 7, tech: "FINAL WIDE · TOÀN TUYẾN", lens: "24mm", note: `Toàn bộ lộ trình ${totalKm} hiện trên bản đồ.`, len: 1.6, fx: { route: 1, letterbox: 1 }, cam: (t) => lerpCam(lastEnd, C([105.875, 21.012], 12.3, 36, -12), ease(t)) });
   let at = 0;
   shots.forEach((s, i) => { s.index = i; s.start = at; at += s.len; });
   return { shots, total: at };
@@ -259,7 +261,9 @@ function addCityLayers(map, data) {
   map.addLayer({ id: "route-progress", type: "line", source: "route-progress", layout: { "line-cap": "round", "line-join": "round" }, paint: { "line-color": "#b0420f", "line-width": ["interpolate", ["linear"], ["zoom"], 11, 3, 18, 7] } });
   const sites = STOPS.filter((s) => s.id !== "pho-co").map((s) => ({ id: s.id, lonlat: s.lonlat, bearing: s.face }));
   if (STOPS[0].kiln) sites.push({ id: "bat-trang-kiln", lonlat: STOPS[0].kiln, bearing: 180 });
-  map.addLayer(createLandmarkLayer(maplibregl, sites, { lake: data.lake }));
+  const layer = createLandmarkLayer(maplibregl, sites, { lake: data.lake, carUrl: "./assets/models/ferrari.glb" });
+  map.addLayer(layer);
+  return layer;
 }
 
 /* ============================================================== UI */
@@ -314,7 +318,7 @@ function renderItinerary(legs) {
 /* ============================================================== main */
 async function main() {
   const [sites, routes, streets, lake] = await Promise.all(
-    ["./data/sites.geojson", "./data/routes.geojson", "./data/old-quarter.geojson", "./data/lake.geojson"].map((u) => fetch(u).then((r) => r.json())),
+    ["./data/sites.geojson", "./data/routes.geojson", "./data/old-quarter.geojson", "./data/lake.geojson"].map((u) => fetch(`${u}?v=20261020h`).then((r) => r.json())),
   );
   for (const f of sites.features) {
     if (f.properties.kind !== "anchor") continue;
@@ -351,6 +355,7 @@ async function main() {
   map.addControl(new maplibregl.AttributionControl({ compact: true }), "bottom-right");
   for (const h of ["scrollZoom", "dragPan", "dragRotate", "keyboard", "doubleClickZoom", "touchZoomRotate", "touchPitch", "boxZoom"]) map[h].disable();
 
+  let landmarks = null;
   const markers = STOPS.map((s, i) => {
     const el = document.createElement("button");
     el.type = "button";
@@ -392,7 +397,8 @@ async function main() {
   }
 
   map.on("load", () => {
-    addCityLayers(map, { streets, routes, lake: lake.features[0] });
+    landmarks = addCityLayers(map, { streets, routes, lake: lake.features[0] });
+    applyShot(progressUnits());
     document.body.classList.remove("is-loading");
     try {
       map.setSky({ "sky-color": "#9fc3dd", "horizon-color": "#f4ead6", "fog-color": "#efe9de", "sky-horizon-blend": 0.55, "horizon-fog-blend": 0.7, "fog-ground-blend": 0.6, "atmosphere-blend": 0 });
@@ -508,6 +514,16 @@ async function main() {
       const step = [...leg.steps].reverse().find((s) => s.start <= d) || leg.steps[0];
       const next = leg.steps[leg.steps.indexOf(step) + 1];
       navHud.hidden = false;
+      const carAt = pointAt(leg, d);
+      const zoomNow = map.getZoom();
+      landmarks?.setVehicle({
+        visible: true,
+        lonlat: carAt,
+        bearing: heading(carAt, pointAt(leg, d + 12)),
+        distance: d,
+        // Illustrative size boost on wide shots so the car stays readable.
+        scale: Math.min(3, Math.max(1, Math.pow(2, 20 - zoomNow))),
+      });
       $("#nav-mode").textContent = leg.mode === "driving" ? "ĐANG DI CHUYỂN · XE" : "ĐANG ĐI BỘ";
       $("#nav-to").textContent = `Đến ${STOPS[shot.chapter].title}`;
       const left = leg.length - d;
@@ -520,6 +536,7 @@ async function main() {
       }
     } else {
       navHud.hidden = true;
+      landmarks?.setVehicle({ visible: false });
       if (lastProgressKey && map.getSource("route-progress")) {
         lastProgressKey = "";
         map.getSource("route-progress").setData({ type: "Feature", geometry: { type: "LineString", coordinates: [] } });
@@ -596,7 +613,7 @@ async function main() {
     setTimeout(() => toast.classList.remove("is-visible"), 2600);
   });
 
-  window.__film = { map, shots, jumpToShot };
+  window.__film = { map, shots, jumpToShot, get landmarks() { return landmarks; } };
 }
 
 main().catch((error) => {

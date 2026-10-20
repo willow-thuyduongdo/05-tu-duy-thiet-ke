@@ -3,6 +3,8 @@
 // placed on its OpenStreetMap footprint. Materials use procedural albedo +
 // normal maps, a baked contact-shadow pass and real shadows on the ground.
 import * as THREE from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 
 const TEX = 1.2; // metres covered by one texture tile
 let seed = 11;
@@ -81,7 +83,7 @@ function pbr(draw, { size = 256, roughness = 0.85, metalness = 0, normal = 3, no
     roughness,
     metalness,
     vertexColors: true,
-    side,
+    ...(side !== undefined ? { side } : {}),
   });
 }
 
@@ -1175,7 +1177,54 @@ function lakeMesh(lake, toLocal) {
   return { water: mesh, islands };
 }
 
-export function createLandmarkLayer(maplibregl, sites, { lake } = {}) {
+/* ---------------------------------------------------------------- car */
+// Ferrari 458 Italia by vicent091036 (CC BY 4.0), the Draco-compressed GLB from
+// the three.js examples. Real length 4.53 m; front faces local +Z.
+const CAR_LENGTH = 4.53;
+const WHEEL_RADIUS = 0.34;
+function createCar(env, url) {
+  const scene = new THREE.Scene();
+  scene.environment = env;
+  scene.environmentIntensity = 0.9;
+  scene.add(new THREE.HemisphereLight(0xeef3f6, 0x6b6150, 1.0));
+  const sun = new THREE.DirectionalLight(0xfff0d6, 3.0);
+  sun.castShadow = true;
+  sun.shadow.mapSize.set(1024, 1024);
+  sun.shadow.bias = -0.0005;
+  sun.shadow.normalBias = 0.02;
+  Object.assign(sun.shadow.camera, { left: -6, right: 6, top: 6, bottom: -6, near: 0.5, far: 40 });
+  scene.add(sun, sun.target);
+  const catcher = new THREE.Mesh(new THREE.PlaneGeometry(14, 14), new THREE.ShadowMaterial({ opacity: 0.38 }));
+  catcher.rotation.x = -Math.PI / 2;
+  catcher.position.y = 0.02;
+  catcher.receiveShadow = true;
+  scene.add(catcher);
+  const holder = new THREE.Group();
+  scene.add(holder);
+  const car = { scene, holder, sun, wheels: [], ready: false };
+
+  const draco = new DRACOLoader().setDecoderPath("https://cdn.jsdelivr.net/npm/three@0.177.0/examples/jsm/libs/draco/gltf/");
+  new GLTFLoader().setDRACOLoader(draco).load(url, (gltf) => {
+    const model = gltf.scene;
+    const paint = new THREE.MeshPhysicalMaterial({ color: 0x8f1d14, metalness: 1, roughness: 0.45, clearcoat: 1, clearcoatRoughness: 0.03 });
+    const chrome = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 1, roughness: 0.25 });
+    const glass = new THREE.MeshPhysicalMaterial({ color: 0x1a2226, metalness: 0.2, roughness: 0.04, transparent: true, opacity: 0.55, clearcoat: 1 });
+    const set = (name, material) => { const o = model.getObjectByName(name); if (o) o.material = material; };
+    set("body", paint);
+    for (const n of ["rim_fl", "rim_fr", "rim_rl", "rim_rr", "trim"]) set(n, chrome);
+    set("glass", glass);
+    for (const n of ["wheel_fl", "wheel_fr", "wheel_rl", "wheel_rr"]) { const w = model.getObjectByName(n); if (w) car.wheels.push(w); }
+    model.traverse((node) => { if (node.isMesh) { node.castShadow = true; node.receiveShadow = true; node.frustumCulled = false; } });
+    const size = new THREE.Box3().setFromObject(model).getSize(new THREE.Vector3());
+    model.scale.setScalar(CAR_LENGTH / Math.max(size.x, size.z));
+    model.rotation.y = Math.PI; // the GLB's front wheels sit at -Z
+    holder.add(model);
+    car.ready = true;
+  }, undefined, (error) => console.warn("Car model failed to load:", error?.message || error));
+  return car;
+}
+
+export function createLandmarkLayer(maplibregl, sites, { lake, carUrl } = {}) {
   let renderer;
   let map;
   const camera = new THREE.Camera();
@@ -1183,7 +1232,13 @@ export function createLandmarkLayer(maplibregl, sites, { lake } = {}) {
   const base = new THREE.Matrix4();
   const clock = new THREE.Clock();
   const v0 = new THREE.Vector4(), v1 = new THREE.Vector4(), inv = new THREE.Matrix4();
+  let car = null;
+  const vehicle = { visible: false, lonlat: [0, 0], bearing: 0, distance: 0, scale: 1 };
+  const carMatrix = new THREE.Matrix4();
   return {
+    /** Place the illustrative car: position, heading (compass °), distance travelled (m), size multiplier. */
+    setVehicle(state) { Object.assign(vehicle, state); },
+    get debug() { return { vehicle, carReady: Boolean(car?.ready), wheels: car?.wheels.length ?? 0 }; },
     id: "landmarks-3d",
     type: "custom",
     renderingMode: "3d",
@@ -1225,6 +1280,7 @@ export function createLandmarkLayer(maplibregl, sites, { lake } = {}) {
         }
         entries.push({ id: site.id, lonlat: site.lonlat, scene, transform, animated });
       }
+      if (carUrl) car = createCar(env, carUrl);
       renderer.resetState();
     },
     render(gl, args) {
@@ -1262,6 +1318,21 @@ export function createLandmarkLayer(maplibregl, sites, { lake } = {}) {
         }
         renderer.resetState();
         renderer.render(e.scene, camera);
+      }
+      if (car?.ready && vehicle.visible) {
+        const mc = maplibregl.MercatorCoordinate.fromLngLat(vehicle.lonlat, 0);
+        const s = mc.meterInMercatorCoordinateUnits() * vehicle.scale;
+        const yaw = Math.PI - THREE.MathUtils.degToRad(vehicle.bearing);
+        carMatrix.makeTranslation(mc.x, mc.y, mc.z)
+          .scale(new THREE.Vector3(s, -s, s))
+          .multiply(new THREE.Matrix4().makeRotationX(Math.PI / 2))
+          .multiply(new THREE.Matrix4().makeRotationY(yaw));
+        // Keep the sun fixed in the world while the car turns.
+        car.sun.position.copy(SUN_DIR).applyAxisAngle(new THREE.Vector3(0, 1, 0), -yaw).multiplyScalar(14);
+        for (const w of car.wheels) w.rotation.x = vehicle.distance / WHEEL_RADIUS;
+        camera.projectionMatrix.copy(base).multiply(carMatrix);
+        renderer.resetState();
+        renderer.render(car.scene, camera);
       }
       if (animating) map.triggerRepaint();
     },
