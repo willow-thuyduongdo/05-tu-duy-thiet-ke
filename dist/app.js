@@ -10,6 +10,7 @@ const STOPS = [
     id: "bat-trang", short: "Gốm", title: "Làng gốm Bát Tràng", kicker: "Gia Lâm · bên sông Bắc Hưng Hải",
     text: "Làng nghề hơn 500 năm nay có Bảo tàng gốm Bát Tràng (1+1>2 Architects): bảy khối hình bàn xoay gốm lồng nhau, bậc thang như hẻm núi, ốp gạch đất, bê tông sợi và gốm mosaic, sân lễ hội lộ thiên dưới chân và vườn trên mái. Cách đó vài trăm mét, lò bầu cổ năm bầu nung vẫn đứng trong chợ gốm.",
     photo: "./assets/bat-trang.jpg", alt: "Người thợ Bát Tràng bên những sản phẩm gốm mộc",
+    gallery: [{ src: "./assets/gallery/bat-trang-village.jpg", alt: "Các quầy bày đồ gốm trong chợ Bát Tràng dưới bóng cây" }],
     quote: { who: "Ca dao", text: "Ước gì anh lấy được nàng / Để anh mua gạch Bát Tràng về xây." },
     facts: ["7 khối bàn xoay", "4 tầng + vườn mái", "6.300 m² sàn", "lò bầu 5 bầu nung"], face: 180,
   },
@@ -17,6 +18,7 @@ const STOPS = [
     id: "pho-co", short: "Phố", title: "36 phố phường", kicker: "Phố Cổ · Hoàn Kiếm",
     text: "Phố Cổ hình thành từ những phường nghề sát kinh thành. Tên phố giữ lại nghề xưa: Hàng Bạc, Hàng Đào, Hàng Mã, Hàng Thiếc. Trên bản đồ, các phố mang chữ “Hàng” được tô sáng.",
     photo: "./assets/pho-co.jpg", alt: "Mái nhà, biển hiệu và dòng xe trên một con phố Hà Nội",
+    gallery: [{ src: "./assets/gallery/pho-co-gia-ngu.jpg", alt: "Phố Gia Ngư trong một buổi tối ở Hà Nội" }],
     quote: { who: "Ca dao", text: "Rủ nhau chơi khắp Long Thành / Ba mươi sáu phố rành rành chẳng sai." },
     facts: ["45 phố “Hàng” trên OSM", "phường nghề"], face: 0,
   },
@@ -24,6 +26,7 @@ const STOPS = [
     id: "ma-may", short: "Nhà", title: "Nhà cổ 87 Mã Mây", kicker: "Nhà phố · cuối thế kỷ XIX",
     text: "Ngôi nhà mở ra theo chiều sâu: gian hàng phía trước, sân trong lấy sáng, nhà chính, rồi lớp sinh hoạt phía sau. Mặt tiền hẹp, nở hậu, kể cách sống và buôn bán của một gia đình phố thị.",
     photo: "./assets/ma-may.jpg", alt: "Không gian gỗ trong ngôi nhà cổ số 87 Mã Mây",
+    gallery: [{ src: "./assets/gallery/ma-may-courtyard.jpg", alt: "Sân trong nhà cổ 87 Mã Mây với mái ngói và hàng hiên gỗ" }],
     quote: { who: "Người kể chuyện", text: "Mặt tiền chỉ năm mét, nhưng phải đi hết hai mươi tám mét mới tới gian sau." },
     facts: ["sâu 28 m", "mặt tiền 5 → 6 m", "157,6 m²"], face: 275,
   },
@@ -31,6 +34,7 @@ const STOPS = [
     id: "ho-guom", short: "Hồ Gươm", title: "Tháp Rùa · Hồ Gươm", kicker: "Hồ Hoàn Kiếm · 1884–1886",
     text: "Hồ gắn với truyền thuyết vua Lê trả gươm báu cho Rùa Vàng. Tháp Rùa ba tầng cửa cuốn trên gò giữa hồ là khoảng lặng ở tâm thành phố.",
     photo: "./assets/ho-guom.jpg", alt: "Tháp Rùa trên đảo nhỏ giữa Hồ Gươm",
+    gallery: [{ src: "./assets/gallery/ho-guom-turtle-tower.jpg", alt: "Tháp Rùa trong nắng chiều bên Hồ Gươm" }],
     quote: { who: "Truyền thuyết Hồ Gươm", text: "Rùa Vàng nổi lên giữa hồ: “Xin bệ hạ hoàn gươm lại cho Long Quân.”" },
     facts: ["cao 8,8 m", "tầng 1: 6,28 × 4,54 m", "3 tầng + vọng lâu"], face: 270,
   },
@@ -38,6 +42,7 @@ const STOPS = [
     id: "van-mieu", short: "Văn Miếu", title: "Khuê Văn Các", kicker: "Văn Miếu · xây năm 1805",
     text: "Văn Miếu lập năm 1070, Quốc Tử Giám năm 1076. Khuê Văn Các đứng trên bốn trụ gạch, gác gỗ sơn son, bốn cửa tròn tỏa tia và tám mái — biểu tượng Thăng Long hiếu học.",
     photo: "./assets/van-mieu.jpg", alt: "Khoảng sân và kiến trúc cổ tại Văn Miếu – Quốc Tử Giám",
+    gallery: [{ src: "./assets/gallery/van-mieu-khue-van-cac.jpg", alt: "Khuê Văn Các tại Văn Miếu – Quốc Tử Giám" }],
     quote: { who: "Văn bia khoa 1442 · Thân Nhân Trung", text: "Hiền tài là nguyên khí của quốc gia." },
     facts: ["đế 6,8 m", "4 trụ 1 × 1 m", "8 mái"], face: 200,
   },
@@ -45,6 +50,7 @@ const STOPS = [
     id: "hoang-thanh", short: "Thành", title: "Đoan Môn · Hoàng thành", kicker: "Kinh đô · UNESCO 2010",
     text: "Cổng chính phía nam của Cấm thành, mặt bằng chữ U, năm cửa vòm; cửa giữa dành cho vua. Công trình hiện còn do nhà Lê sơ dựng, tu bổ thời Nguyễn, trên nền Ngũ Môn Lâu thời Lý.",
     photo: "./assets/hoang-thanh.jpg", alt: "Đoan Môn, cổng chính phía nam của Hoàng Thành Thăng Long",
+    gallery: [{ src: "./assets/gallery/hoang-thanh-doan-mon.jpg", alt: "Cổng Đoan Môn ở Hoàng thành Thăng Long" }],
     quote: { who: "Chiếu dời đô · 1010", text: "Xem khắp đất Việt ta, chỉ nơi này là thắng địa." },
     facts: ["dài 46,5 m", "cao ≈ 6 m", "5 cửa vòm"], face: 186,
   },
@@ -52,6 +58,7 @@ const STOPS = [
     id: "lang-bac", short: "Ba Đình", title: "Lăng Chủ tịch Hồ Chí Minh", kicker: "Ba Đình · 1945 / 1975",
     text: "Quảng trường Ba Đình là nơi đọc Tuyên ngôn Độc lập ngày 2/9/1945. Lăng khánh thành năm 1975, ba lớp: bệ đá, thân hàng cột vuông, mái bậc; ốp đá granite xám.",
     photo: "./assets/lang-bac.jpg", alt: "Lăng Chủ tịch Hồ Chí Minh tại quảng trường Ba Đình",
+    gallery: [{ src: "./assets/gallery/lang-bac-mausoleum.jpg", alt: "Lăng Chủ tịch Hồ Chí Minh nhìn từ góc thấp, bên lá cờ đỏ sao vàng" }],
     quote: { who: "Tuyên ngôn Độc lập · 2/9/1945", text: "Tất cả mọi người đều sinh ra có quyền bình đẳng." },
     facts: ["rộng 41,2 m", "cao 21,6 m", "3 lớp"], face: 101,
   },
@@ -270,6 +277,7 @@ function addCityLayers(map, data) {
 function renderStory(legs) {
   const story = $("#story");
   story.innerHTML = STOPS.map((s, i) => {
+    const photos = [{ src: s.photo, alt: s.alt }, ...(s.gallery || [])];
     const leg = legs[i - 1];
     const from = STOPS[i - 1];
     const directions = leg ? `
@@ -280,12 +288,17 @@ function renderStory(legs) {
       </details>` : `<p class="directions"><a class="gmaps" href="https://www.google.com/maps/search/?api=1&query=${s.lonlat[1]},${s.lonlat[0]}" target="_blank" rel="noreferrer">Mở vị trí trên Google Maps ↗</a></p>`;
     return `<article class="card" id="${s.id}" data-chapter="${i}" aria-labelledby="${s.id}-title">
       <div class="card__photo">
-        <img src="${s.photo}" alt="${escapeHtml(s.alt)}" loading="lazy">
+        <img class="card__image" id="${s.id}-photo" data-gallery-index="0" src="${photos[0].src}" alt="${escapeHtml(photos[0].alt)}" loading="lazy" decoding="async">
         <div class="card__veil" aria-hidden="true">
           <img class="v1" src="./assets/clouds/cloud-03.webp" alt=""><img class="v2" src="./assets/clouds/cloud-01.webp" alt="">
           <img class="v3" src="./assets/clouds/cloud-06.webp" alt=""><img class="v4" src="./assets/clouds/cloud-02.webp" alt="">
         </div>
         <span class="card__num">${String(i + 1).padStart(2, "0")} / 07</span>
+        ${photos.length > 1 ? `<div class="card__gallery" aria-label="Ảnh ${escapeHtml(s.title)}">
+          <button type="button" data-gallery-step="-1" aria-label="Ảnh trước tại ${escapeHtml(s.title)}" aria-controls="${s.id}-photo">‹</button>
+          <span class="card__gallery-count" aria-live="polite">01 / ${String(photos.length).padStart(2, "0")}</span>
+          <button type="button" data-gallery-step="1" aria-label="Ảnh tiếp theo tại ${escapeHtml(s.title)}" aria-controls="${s.id}-photo">›</button>
+        </div>` : ""}
       </div>
       <div class="card__body">
         <p class="card__kicker">${escapeHtml(s.kicker)}</p>
@@ -440,6 +453,19 @@ async function main() {
     window.scrollTo({ top: (s.start + 0.02) * unitPx(), behavior: reduceMotion ? "auto" : "smooth" });
   }
   document.addEventListener("click", (e) => {
+    const galleryButton = e.target.closest("[data-gallery-step]");
+    if (galleryButton) {
+      const card = galleryButton.closest(".card");
+      const stop = STOPS[Number(card.dataset.chapter)];
+      const photos = [{ src: stop.photo, alt: stop.alt }, ...(stop.gallery || [])];
+      const image = card.querySelector(".card__image");
+      const next = (Number(image.dataset.galleryIndex) + Number(galleryButton.dataset.galleryStep) + photos.length) % photos.length;
+      image.src = photos[next].src;
+      image.alt = photos[next].alt;
+      image.dataset.galleryIndex = String(next);
+      card.querySelector(".card__gallery-count").textContent = `${String(next + 1).padStart(2, "0")} / ${String(photos.length).padStart(2, "0")}`;
+      return;
+    }
     const btn = e.target.closest("[data-jump-shot], [data-jump]");
     if (!btn) return;
     e.preventDefault();
@@ -556,7 +582,7 @@ async function main() {
   function framePadding() {
     const w = window.innerWidth, h = window.innerHeight;
     if (shots[activeShot]?.chapter === 7) return w < 760 ? { top: 0, bottom: 0, left: 0, right: 0 } : { top: 60, bottom: 60, left: Math.round(w * 0.45), right: 0 };
-    return w < 760 ? { top: 70, bottom: Math.round(h * 0.42), left: 0, right: 0 } : { top: 60, bottom: 60, left: 0, right: Math.round(Math.min(460, w * 0.4)) };
+    return w < 760 ? { top: 70, bottom: Math.round(h * 0.42), left: 0, right: 0 } : { top: 60, bottom: 60, left: 0, right: Math.round(Math.min(598, w * 0.52)) };
   }
 
   // Damped follow: the camera eases toward the scroll target like a gimbal.
