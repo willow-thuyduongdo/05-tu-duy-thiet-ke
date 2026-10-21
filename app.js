@@ -259,11 +259,6 @@ function addCityLayers(map, data) {
     ["in", ["get", "building"], ["literal", ["apartments", "office", "hotel", "university", "hospital"]]], tallBuildingHeight,
     ordinaryHeight,
   ];
-  const quarterHeight = ["case",
-    [">", ["to-number", ["get", "height"], 0], 0], ["to-number", ["get", "height"], 0],
-    [">", ["to-number", ["get", "building:levels"], 0], 0], ["*", ["to-number", ["get", "building:levels"], 0], 3.2],
-    ["+", 8, ["floor", ["*", 15, ["/", ["%", ["*", ["abs", ["to-number", ["id"], 0]], 37], 101], 101]]],
-  ];
   // Warm the light basemap: paper land, jade water, soft parks.
   for (const l of style.layers) {
     if (l.id === "background") map.setPaintProperty(l.id, "background-color", "#f3efe6");
@@ -282,20 +277,6 @@ function addCityLayers(map, data) {
       "fill-extrusion-height": estimatedHeight,
       "fill-extrusion-base": ["coalesce", ["get", "render_min_height"], 0],
       "fill-extrusion-opacity": 0.95,
-      "fill-extrusion-vertical-gradient": true,
-    },
-  }, firstSymbol);
-  map.addSource("old-quarter-buildings", { type: "geojson", data: data.oldQuarterBuildings });
-  map.addLayer({
-    id: "old-quarter-buildings-3d",
-    type: "fill-extrusion",
-    source: "old-quarter-buildings",
-    minzoom: 14,
-    paint: {
-      "fill-extrusion-color": ["interpolate", ["linear"], quarterHeight, 0, "#e7e1d5", 20, "#ddd5c6", 60, "#cfc6b4"],
-      "fill-extrusion-height": quarterHeight,
-      "fill-extrusion-base": ["to-number", ["get", "min_height"], 0],
-      "fill-extrusion-opacity": 0.98,
       "fill-extrusion-vertical-gradient": true,
     },
   }, firstSymbol);
@@ -377,12 +358,10 @@ function renderItinerary(legs) {
 
 /* ============================================================== main */
 async function main() {
-  const [sites, routes, streets, lake, oldQuarterBuildings, driveGallery] = await Promise.all([
+  const [sites, routes, streets, lake, driveGallery] = await Promise.all([
     ...["./data/sites.geojson", "./data/routes.geojson", "./data/old-quarter.geojson", "./data/lake.geojson"].map((u) => fetch(`${u}?v=20261020h`).then((r) => r.json())),
-    fetch("./data/old-quarter-buildings.geojson?v=20261021o").then((r) => r.json()),
     fetch("./data/drive-gallery.json?v=20261021m").then((r) => r.json()),
   ]);
-  const oldQuarterBuildingIds = new Set(oldQuarterBuildings.features.map((feature) => feature.id));
   for (const stop of STOPS) stop.gallery = [...(stop.gallery || []), ...(driveGallery[stop.id] || [])];
   for (const f of sites.features) {
     if (f.properties.kind !== "anchor") continue;
@@ -470,7 +449,6 @@ async function main() {
     let changed = false;
     for (const f of map.querySourceFeatures("openmaptiles", { sourceLayer: "building" })) {
       if (f.id == null || hiddenIds.has(f.id)) continue;
-      if (oldQuarterBuildingIds.has(f.id)) { hiddenIds.add(f.id); changed = true; continue; }
       const g = f.geometry;
       const rings = g.type === "Polygon" ? [g.coordinates[0]] : g.type === "MultiPolygon" ? g.coordinates.map((p) => p[0]) : [];
       if (rings.some((r) => probes.some((pt) => inside(pt, r)))) { hiddenIds.add(f.id); changed = true; }
@@ -479,7 +457,7 @@ async function main() {
   }
 
   map.on("load", () => {
-    landmarks = addCityLayers(map, { streets, routes, lake: lake.features[0], oldQuarterBuildings });
+    landmarks = addCityLayers(map, { streets, routes, lake: lake.features[0] });
     applyShot(progressUnits());
     document.body.classList.remove("is-loading");
     try {
