@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f3efe6">
-  <meta name="description" content="Hà Nội xưa qua bảy cảnh quay: cuộn để máy quay bay trên bản đồ 3D thật, theo lộ trình từ Bát Tràng qua phố cổ, Hồ Gươm, Văn Miếu, Hoàng thành đến Lăng Bác.">
+  <meta name="description" content="Theo dấu Hà Nội qua bảy điểm dừng: máy quay tự lướt trên bản đồ 3D từ Bát Tràng, phố cổ và Hồ Gươm đến Văn Miếu, Hoàng thành, Lăng Bác.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Hà Nội xưa — bảy cảnh quay">
-  <meta property="og:description" content="Bản đồ 3D, lộ trình đi bộ thật và mô hình kiến trúc dựng theo số đo công bố.">
+  <meta property="og:description" content="Một hành trình qua bảy điểm dừng của Hà Nội, cùng bản đồ 3D và các mô hình kiến trúc dựng theo số đo công bố.">
   <meta property="og:image" content="./assets/backdrop/thap-rua.jpg">
   <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://tiles.openfreemap.org">
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Charm:wght@400;700&family=JetBrains+Mono:wght@400;600&family=Vujahday+Script&display=swap" rel="stylesheet">
   <link href="https://unpkg.com/maplibre-gl@6.14.0/dist/maplibre-gl.css" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css?v=20261021d">
+  <link rel="stylesheet" href="./styles.css?v=20261021m">
   <script type="importmap">
     {
       "imports": {
@@ -24,7 +24,7 @@
       }
     }
   </script>
-  <script type="module" src="./app.js?v=20261021d"></script>
+  <script type="module" src="./app.js?v=20261021m"></script>
   <title>Hà Nội xưa — bảy cảnh quay</title>
 </head>
 <body class="is-loading">
@@ -64,6 +64,7 @@
     <div class="hud-top__right">
       <span class="rec" aria-hidden="true"><i></i>REC</span>
       <span class="timecode" id="timecode" aria-label="Thời điểm trong phim">00:00:00:00</span>
+      <button class="chip chip--ghost" id="autoplay-toggle" type="button" aria-pressed="false">Tự chạy</button>
       <button class="chip" id="route-open" type="button">Lộ trình</button>
       <button class="chip chip--ghost" id="explore-toggle" type="button" aria-pressed="false">Tự khám phá</button>
     </div>
@@ -78,14 +79,14 @@
 
   <section class="title-card" id="title-card" aria-labelledby="film-title">
     <div class="title-card__inner">
-      <p class="eyebrow">Thăng Long · Hà Nội · một thước phim cuộn</p>
+      <p class="eyebrow">Thăng Long · Hà Nội · một hành trình qua ký ức</p>
       <h1 id="film-title">Hà Nội <span>xưa</span></h1>
       <blockquote class="slogan">
         <p>Gió đưa cành trúc la đà,<br>Tiếng chuông Trấn Vũ, canh gà Thọ Xương.</p>
         <cite>Ca dao Thăng Long</cite>
       </blockquote>
-      <p class="title-card__lead">Cuộn xuống để vén mây. Máy quay bay trên bản đồ thật, qua bảy dấu xưa từ làng gốm Bát Tràng, phố cổ, Hồ Gươm, Văn Miếu, Hoàng thành đến Lăng Bác.</p>
-      <span class="scroll-hint" aria-hidden="true"><i></i>Cuộn để bấm máy</span>
+      <p class="title-card__lead">Hà Nội hiện ra qua bảy điểm dừng, từ làng gốm Bát Tràng, phố cổ và Hồ Gươm đến Văn Miếu, Hoàng thành và Lăng Bác. Máy quay tự lướt trên bản đồ; bạn có thể tạm dừng bất cứ lúc nào để ngắm kỹ từng nơi.</p>
+      <span class="scroll-hint" aria-hidden="true"><i></i>Cuộn để khám phá</span>
     </div>
   </section>
 
@@ -115,7 +116,9 @@
         <p>Phông chữ: ThuPhap Thien An — Michael Đinh Kiên (fontchudep), “Free for everyone”; Charm và Vujahday Script — SIL Open Font License (Google Fonts).</p>
         <p>Ô tô minh họa: <a href="https://sketchfab.com/models/57bf6cc56931426e87494f554df1dab6" target="_blank" rel="noreferrer">Ferrari 458 Italia</a> — vicent091036, CC BY 4.0 (bản nén Draco từ ví dụ three.js); kích thước xe được phóng to ở cảnh rộng để dễ nhìn.</p>
         <p>Mây: <a href="https://opengameart.org/content/clouds-with-transparency" target="_blank" rel="noreferrer">Clouds with transparency</a> — WickedInsignia, CC0. Ảnh nền trang mở đầu: <a href="https://commons.wikimedia.org/wiki/File:Hanoi_-_Turtle_Tower_(Th%C3%A1p_R%C3%B9a),_Ho%C3%A0n_Ki%E1%BA%BFm_Lake.jpg" target="_blank" rel="noreferrer">Tháp Rùa</a> — P. Hughes, CC BY 4.0; <a href="https://commons.wikimedia.org/wiki/File:Long_Bien_bridge.jpg" target="_blank" rel="noreferrer">Cầu Long Biên</a> — Amenoc, CC0; <a href="https://commons.wikimedia.org/wiki/File:One_Pillar_Pagoda_-_Hanoi,_Vietnam_-_DSC03500.JPG" target="_blank" rel="noreferrer">Chùa Một Cột</a> — Daderot, CC0. Ảnh được thu nhỏ và làm mờ.</p>
-        <p>Ảnh từng điểm có thông tin tác giả, giấy phép và nguồn gốc trong cửa sổ phóng to. Ảnh Commons dùng bản thu nhỏ theo kích thước hiển thị.</p>
+        <p>Ảnh tư liệu: <a href="https://commons.wikimedia.org/wiki/File:Bat-Trang-Ceramic-Village3.jpg" target="_blank" rel="noreferrer">Bát Tràng</a> — Steven C. Price, CC BY-SA 4.0; <a href="https://commons.wikimedia.org/wiki/File:Maison_longue_traditionnelle_(1).jpg" target="_blank" rel="noreferrer">Mã Mây</a> — Guerinf, CC BY-SA 4.0; <a href="https://commons.wikimedia.org/wiki/File:Old_Quarter_street_scene,_Hanoi_(8)_(37610044625).jpg" target="_blank" rel="noreferrer">Phố Cổ</a> — Richard Mortel, CC BY 2.0; <a href="https://commons.wikimedia.org/wiki/File:Ho_Chi_Minh_Mausoleum_in_Hanoi.jpg" target="_blank" rel="noreferrer">Lăng</a> — Christophe95, CC BY-SA 4.0; <a href="https://commons.wikimedia.org/wiki/File:Temple_of_Literature_Hanoi_1.jpg" target="_blank" rel="noreferrer">Văn Miếu</a> — Christophe95, CC BY-SA 4.0; <a href="https://commons.wikimedia.org/wiki/File:Hanoi_Citadel.jpg" target="_blank" rel="noreferrer">Hoàng Thành</a> — Gryffindor, CC BY-SA 3.0; <a href="https://commons.wikimedia.org/wiki/File:Hanoi_-_Hoan_Kiem_See_-_Schildkr%C3%B6tenturm_0002.JPG" target="_blank" rel="noreferrer">Hồ Gươm</a> — Stefan Fussan, CC BY-SA 3.0.</p>
+        <p>Ảnh bổ sung trong ô địa điểm: <a href="https://commons.wikimedia.org/wiki/File:X%C3%A3_B%C3%A1t_Tr%C3%A0ng%E3%80%81%E9%89%A2%E5%A1%B2%E7%A4%BE_%E3%83%90%E3%83%81%E3%83%A3%E3%83%B3%E6%9D%91_DSCF2654.JPG" target="_blank" rel="noreferrer">Chợ gốm Bát Tràng</a> — 松岡明芳, <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noreferrer">CC BY-SA 3.0</a>; <a href="https://commons.wikimedia.org/wiki/File:Ph%E1%BB%91_Gia_Ng%C6%B0.jpg" target="_blank" rel="noreferrer">Phố Gia Ngư</a> — Larry, <a href="https://creativecommons.org/licenses/by-sa/2.0/" target="_blank" rel="noreferrer">CC BY-SA 2.0</a>; <a href="https://commons.wikimedia.org/wiki/File:Maison_longue_traditionnelle_(4).jpg" target="_blank" rel="noreferrer">Sân nhà cổ 87 Mã Mây</a> — Guerinf, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer">CC BY-SA 4.0</a>; <a href="https://commons.wikimedia.org/wiki/File:Turtle_Tower,_Hoan_Kiem_Lake,_Hanoi_4G4A7301.jpg" target="_blank" rel="noreferrer">Tháp Rùa</a> — Khoitran1957, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer">CC BY-SA 4.0</a>; <a href="https://commons.wikimedia.org/wiki/File:Constellation_of_Literature_pavilion_-_Temple_of_Literature,_Hanoi_-_DSC04688.JPG" target="_blank" rel="noreferrer">Khuê Văn Các</a> — Daderot, <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" rel="noreferrer">CC0 1.0</a>; <a href="https://commons.wikimedia.org/wiki/File:Doan_Mon_Gate_1.jpg" target="_blank" rel="noreferrer">Đoan Môn</a> — Christophe95, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer">CC BY-SA 4.0</a>; <a href="https://commons.wikimedia.org/wiki/File:Hanoi,_Vietnam,_The_Ho_Chi_Minh_Mausoleum.jpg" target="_blank" rel="noreferrer">Lăng Chủ tịch Hồ Chí Minh</a> — Vyacheslav Argenberg, <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0</a>. Ảnh là bản thu nhỏ từ Wikimedia Commons.</p>
+        <p>Ảnh do người dùng cung cấp qua Google Drive, được bố trí theo địa điểm trong hành trình.</p>
       </div>
     </details>
   </section>
@@ -125,22 +128,22 @@
     <ol class="timeline__marks" id="timeline-marks"></ol>
   </nav>
 
+  <dialog class="photo-viewer" id="photo-viewer" aria-label="Ảnh địa điểm">
+    <button class="photo-viewer__close" type="button" data-photo-close aria-label="Đóng ảnh">×</button>
+    <button class="photo-viewer__nav photo-viewer__nav--prev" type="button" data-photo-step="-1" aria-label="Ảnh trước">‹</button>
+    <figure class="photo-viewer__figure">
+      <img id="photo-viewer-image" alt="">
+      <figcaption><span id="photo-viewer-caption"></span><small id="photo-viewer-count"></small></figcaption>
+    </figure>
+    <button class="photo-viewer__nav photo-viewer__nav--next" type="button" data-photo-step="1" aria-label="Ảnh tiếp theo">›</button>
+  </dialog>
+
   <dialog class="itinerary" id="itinerary" aria-labelledby="itinerary-title">
     <header>
       <div><p class="eyebrow">Lộ trình thật trên bản đồ</p><h2 id="itinerary-title">6 chặng · Bát Tràng → Lăng Bác</h2></div>
       <button class="chip" type="button" data-close>Đóng</button>
     </header>
     <ol class="itinerary__legs" id="itinerary-legs"></ol>
-  </dialog>
-
-  <dialog class="photo-viewer" id="photo-viewer" aria-label="Ảnh tư liệu">
-    <button class="photo-viewer__close" type="button" data-photo-close aria-label="Đóng ảnh">×</button>
-    <button class="photo-viewer__nav photo-viewer__nav--prev" type="button" data-photo-prev aria-label="Ảnh trước">‹</button>
-    <button class="photo-viewer__nav photo-viewer__nav--next" type="button" data-photo-next aria-label="Ảnh tiếp theo">›</button>
-    <figure class="photo-viewer__figure">
-      <img id="photo-viewer-image" alt="">
-      <figcaption id="photo-viewer-caption"></figcaption>
-    </figure>
   </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>

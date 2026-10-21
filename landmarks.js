@@ -1203,7 +1203,10 @@ function createCar(env, url, map) {
   scene.add(catcher);
   const holder = new THREE.Group();
   scene.add(holder);
-  const car = { scene, holder, sun, wheels: [], ready: false };
+  // The car's front faces local +Z, so exhaust must drift from the rear on -Z.
+  const smoke = particles({ count: 32, origin: [0, 0.38, -2.7], spread: [0.45, 0.16, 0.18], velocity: [0, 0.5, -1], life: 2.2, size: [0.55, 2], color: 0xaaa69f, opacity: 0.38, turbulence: 0.55 });
+  scene.add(smoke);
+  const car = { scene, holder, sun, smoke, wheels: [], ready: false };
 
   const draco = new DRACOLoader().setDecoderPath("https://cdn.jsdelivr.net/npm/three@0.177.0/examples/jsm/libs/draco/gltf/");
   new GLTFLoader().setDRACOLoader(draco).load(url, (gltf) => {
@@ -1372,6 +1375,14 @@ export function createLandmarkLayer(maplibregl, sites, { lake, carUrl } = {}) {
           vehicle.shadowDirty = false;
         }
         camera.projectionMatrix.copy(base).multiply(carMatrix);
+        const P = camera.projectionMatrix;
+        v0.set(0, 0, 0, 1).applyMatrix4(P);
+        v1.set(1, 0, 0, 1).applyMatrix4(P);
+        const pxPerM = Math.hypot(v1.x / v1.w - v0.x / v0.w, v1.y / v1.w - v0.y / v0.w) * 0.5 * Math.max(w, h);
+        car.smoke.material.uniforms.uTime.value = time;
+        car.smoke.material.uniforms.uPxPerM.value = pxPerM;
+        car.smoke.material.uniforms.uCenterW.value = v0.w;
+        animating = true;
         renderer.resetState();
         renderer.render(car.scene, camera);
       }
