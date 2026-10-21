@@ -177,7 +177,7 @@ function heroShots(stop) {
       return [
         { tech: "STEADICAM · STREET LEVEL", lens: "24mm", note: "Máy đi bộ ngang tầm mắt dọc phố Tạ Hiện.", len: 1.2, fx: { letterbox: 1 }, cam: (t) => lerpCam(C(a, 18.7, 80, 0), C(b, 18.9, 80, 12), ease(t)) },
         { tech: "WHIP PAN", lens: "24mm", note: "Quét máy thật nhanh sang ngang, nhòe chuyển động.", len: 0.45, fx: { whip: 1, letterbox: 1 }, cam: (t) => C(b, 18.9, 80, 12 + 95 * ease(t)) },
-        { tech: "TOP SHOT · 36 PHỐ PHƯỜNG", lens: "35mm", note: "Cẩu thẳng lên nhìn từ trên xuống mạng phố nghề.", len: 1.2, fx: { streets: 1 }, cam: (t) => lerpCam(C(b, 18.9, 80, 107), C(c, 16.4, 8, 0), ease(t)) },
+        { tech: "TOP SHOT · 36 PHỐ PHƯỜNG", lens: "35mm", note: "Cẩu lên góc cao để thấy mạng phố nghề và chiều cao mái nhà.", len: 1.2, fx: { streets: 1 }, cam: (t) => lerpCam(C(b, 18.9, 80, 107), C(c, 16.4, 48, 0), ease(t)) },
       ];
     }
     case "hoang-thanh": return [
@@ -246,6 +246,19 @@ function buildShots(legs) {
 function addCityLayers(map, data) {
   const style = map.getStyle();
   const firstSymbol = style.layers.find((l) => l.type === "symbol")?.id;
+  const renderHeight = ["to-number", ["get", "render_height"], 0];
+  const taggedHeight = ["to-number", ["get", "height"], 0];
+  const levels = ["to-number", ["get", "building:levels"], 0];
+  const osmId = ["abs", ["to-number", ["id"], 0]];
+  const ordinaryHeight = ["+", 8, ["floor", ["*", 15, ["/", ["%", ["*", osmId, 37], 101], 101]]]];
+  const tallBuildingHeight = ["+", 20, ["*", ["%", osmId, 15], 1.5]];
+  const estimatedHeight = ["case",
+    [">", renderHeight, 0], renderHeight,
+    [">", taggedHeight, 0], taggedHeight,
+    [">", levels, 0], ["*", levels, 3.2],
+    ["in", ["get", "building"], ["literal", ["apartments", "office", "hotel", "university", "hospital"]]], tallBuildingHeight,
+    ordinaryHeight,
+  ];
   // Warm the light basemap: paper land, jade water, soft parks.
   for (const l of style.layers) {
     if (l.id === "background") map.setPaintProperty(l.id, "background-color", "#f3efe6");
@@ -257,11 +270,11 @@ function addCityLayers(map, data) {
     type: "fill-extrusion",
     source: "openmaptiles",
     "source-layer": "building",
-    minzoom: 13.5,
+    minzoom: 12,
     filter: ["!", ["in", ["id"], ["literal", []]]],
     paint: {
-      "fill-extrusion-color": ["interpolate", ["linear"], ["coalesce", ["get", "render_height"], 6], 0, "#e7e1d5", 20, "#ddd5c6", 60, "#cfc6b4"],
-      "fill-extrusion-height": ["interpolate", ["linear"], ["zoom"], 13.5, 0, 14.5, ["coalesce", ["get", "render_height"], 6]],
+      "fill-extrusion-color": ["interpolate", ["linear"], estimatedHeight, 0, "#e7e1d5", 20, "#ddd5c6", 60, "#cfc6b4"],
+      "fill-extrusion-height": estimatedHeight,
       "fill-extrusion-base": ["coalesce", ["get", "render_min_height"], 0],
       "fill-extrusion-opacity": 0.95,
       "fill-extrusion-vertical-gradient": true,
