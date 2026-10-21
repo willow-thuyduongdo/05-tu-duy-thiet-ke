@@ -1117,7 +1117,7 @@ function buildScene(model, env) {
   scene.environment = env;
   scene.environmentIntensity = 0.55;
   bakeContactShadow(model);
-  model.traverse((node) => { node.frustumCulled = false; });
+  model.traverse((node) => { if (node.isMesh) node.frustumCulled = true; });
   scene.add(model);
   const box3 = new THREE.Box3().setFromObject(model);
   const size = box3.getSize(new THREE.Vector3());
@@ -1125,13 +1125,15 @@ function buildScene(model, env) {
   scene.add(new THREE.HemisphereLight(0xeef3f6, 0x6b6150, 1.1));
   const sun = new THREE.DirectionalLight(0xfff0d6, 3.2);
   sun.position.copy(SUN_DIR).multiplyScalar(radius * 1.8);
-  sun.castShadow = true;
-  sun.shadow.mapSize.set(2048, 2048);
+  sun.castShadow = false;
+  sun.shadow.mapSize.set(1024, 1024);
   sun.shadow.bias = -0.0005;
   sun.shadow.normalBias = 0.03;
   Object.assign(sun.shadow.camera, { left: -radius, right: radius, top: radius, bottom: -radius, near: 0.5, far: radius * 5 });
   scene.add(sun);
   scene.add(sun.target);
+  scene.userData.shadowLight = sun;
+  scene.userData.shadowReady = false;
   const fill = new THREE.DirectionalLight(0x9fb4c8, 0.6);
   fill.position.set(radius, radius * 0.5, -radius);
   scene.add(fill);
@@ -1182,14 +1184,14 @@ function lakeMesh(lake, toLocal) {
 // the three.js examples. Real length 4.53 m; front faces local +Z.
 const CAR_LENGTH = 4.53;
 const WHEEL_RADIUS = 0.34;
-function createCar(env, url) {
+function createCar(env, url, map) {
   const scene = new THREE.Scene();
   scene.environment = env;
   scene.environmentIntensity = 0.9;
   scene.add(new THREE.HemisphereLight(0xeef3f6, 0x6b6150, 1.0));
   const sun = new THREE.DirectionalLight(0xfff0d6, 3.0);
   sun.castShadow = true;
-  sun.shadow.mapSize.set(1024, 1024);
+  sun.shadow.mapSize.set(512, 512);
   sun.shadow.bias = -0.0005;
   sun.shadow.normalBias = 0.02;
   Object.assign(sun.shadow.camera, { left: -6, right: 6, top: 6, bottom: -6, near: 0.5, far: 40 });
@@ -1214,12 +1216,13 @@ function createCar(env, url) {
     for (const n of ["rim_fl", "rim_fr", "rim_rl", "rim_rr", "trim"]) set(n, chrome);
     set("glass", glass);
     for (const n of ["wheel_fl", "wheel_fr", "wheel_rl", "wheel_rr"]) { const w = model.getObjectByName(n); if (w) car.wheels.push(w); }
-    model.traverse((node) => { if (node.isMesh) { node.castShadow = true; node.receiveShadow = true; node.frustumCulled = false; } });
+    model.traverse((node) => { if (node.isMesh) { node.castShadow = true; node.receiveShadow = true; node.frustumCulled = true; } });
     const size = new THREE.Box3().setFromObject(model).getSize(new THREE.Vector3());
     model.scale.setScalar(CAR_LENGTH / Math.max(size.x, size.z));
     model.rotation.y = Math.PI; // the GLB's front wheels sit at -Z
     holder.add(model);
     car.ready = true;
+    map?.triggerRepaint();
   }, undefined, (error) => console.warn("Car model failed to load:", error?.message || error));
   return car;
 }
@@ -1227,17 +1230,26 @@ function createCar(env, url) {
 export function createLandmarkLayer(maplibregl, sites, { lake, carUrl } = {}) {
   let renderer;
   let map;
+  let env;
+  let activeSite = null;
   const camera = new THREE.Camera();
   const entries = [];
   const base = new THREE.Matrix4();
   const clock = new THREE.Clock();
   const v0 = new THREE.Vector4(), v1 = new THREE.Vector4(), inv = new THREE.Matrix4();
   let car = null;
-  const vehicle = { visible: false, lonlat: [0, 0], bearing: 0, distance: 0, scale: 1 };
+  const vehicle = { visible: false, lonlat: [0, 0], bearing: 0, distance: 0, scale: 1, shadowDirty: false };
   const carMatrix = new THREE.Matrix4();
   return {
     /** Place the illustrative car: position, heading (compass °), distance travelled (m), size multiplier. */
-    setVehicle(state) { Object.assign(vehicle, state); },
+    setVehicle(state) {
+      const nextDistance = state.distance ?? vehicle.distance;
+      const nextBearing = state.bearing ?? vehicle.bearing;
+      const bearingDelta = Math.abs((((nextBearing - vehicle.bearing + 540) % 360) - 180));
+      if (state.visible && (!vehicle.visible || Math.abs(nextDistance - vehicle.distance) > 24 || bearingDelta > 12)) vehicle.shadowDirty = true;
+      Object.assign(vehicle, state);
+    },
+    setActiveSite(id) { activeSite = id || null; map?.triggerRepaint(); },
     get debug() { return { vehicle, carReady: Boolean(car?.ready), wheels: car?.wheels.length ?? 0 }; },
     id: "landmarks-3d",
     type: "custom",
@@ -1248,15 +1260,15 @@ export function createLandmarkLayer(maplibregl, sites, { lake, carUrl } = {}) {
       renderer.autoClear = false;
       renderer.shadowMap.enabled = true;
       renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.shadowMap.autoUpdate = false;
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.0;
-      const env = makeEnvironment(renderer);
+      env = makeEnvironment(renderer);
       for (const site of sites) {
         const build = BUILDERS[site.id];
         if (!build) continue;
-        seed = 101 + entries.length * 17;
-        const scene = buildScene(build(), env);
+        const entrySeed = 101 + entries.length * 17;
         const mc = maplibregl.MercatorCoordinate.fromLngLat(site.lonlat, 0);
         const s = mc.meterInMercatorCoordinateUnits();
         const yaw = Math.PI - THREE.MathUtils.degToRad(site.bearing || 0);
@@ -1271,16 +1283,9 @@ export function createLandmarkLayer(maplibregl, sites, { lake, carUrl } = {}) {
           const sth = -(lat - site.lonlat[1]) * 110540;
           return [e * Math.cos(yaw) - sth * Math.sin(yaw), e * Math.sin(yaw) + sth * Math.cos(yaw)];
         };
-        const animated = [];
-        for (const fx of EFFECTS[site.id]?.() || []) { scene.add(fx); animated.push(fx); }
-        if (site.id === "ho-guom" && lake) {
-          const { water, islands } = lakeMesh(lake, toLocal);
-          scene.add(water, ...islands);
-          animated.push(water);
-        }
-        entries.push({ id: site.id, lonlat: site.lonlat, scene, transform, animated });
+        entries.push({ id: site.id, lonlat: site.lonlat, transform, toLocal, build, seed: entrySeed, scene: null, animated: [] });
       }
-      if (carUrl) car = createCar(env, carUrl);
+      if (carUrl) car = createCar(env, carUrl, map);
       renderer.resetState();
     },
     render(gl, args) {
@@ -1294,13 +1299,45 @@ export function createLandmarkLayer(maplibregl, sites, { lake, carUrl } = {}) {
       if (zoom < 13.2) return;
       const reach = 40000 / Math.pow(2, zoom - 12);
       const time = clock.getElapsedTime();
-      let animating = false;
+      const visible = [];
       for (const e of entries) {
         const dx = (e.lonlat[0] - center.lng) * 111320 * Math.cos((center.lat * Math.PI) / 180);
         const dy = (e.lonlat[1] - center.lat) * 110540;
-        if (Math.hypot(dx, dy) > reach) continue;
+        const distance = Math.hypot(dx, dy);
+        if (distance > reach) continue;
+        visible.push({ entry: e, distance });
+      }
+      visible.sort((a, b) => a.distance - b.distance);
+
+      const next = visible.find(({ entry }) => !entry.scene)?.entry;
+      if (next) {
+        seed = next.seed;
+        next.scene = buildScene(next.build(), env);
+        for (const fx of EFFECTS[next.id]?.() || []) { next.scene.add(fx); next.animated.push(fx); }
+        if (next.id === "ho-guom" && lake) {
+          const { water, islands } = lakeMesh(lake, next.toLocal);
+          next.scene.add(water, ...islands);
+          next.animated.push(water);
+        }
+        map.triggerRepaint();
+      }
+
+      let animating = Boolean(next);
+      const shadowEntries = new Set(visible.filter(({ entry }) => entry.scene).slice(0, 2).map(({ entry }) => entry));
+      for (const { entry: e } of visible) {
+        if (!e.scene) continue;
+        const light = e.scene.userData.shadowLight;
+        const useShadow = zoom >= 14.8 && shadowEntries.has(e);
+        if (light.castShadow !== useShadow) {
+          light.castShadow = useShadow;
+          if (useShadow) e.scene.userData.shadowReady = false;
+        }
+        if (useShadow && !e.scene.userData.shadowReady) {
+          renderer.shadowMap.needsUpdate = true;
+          e.scene.userData.shadowReady = true;
+        }
         camera.projectionMatrix.copy(base).multiply(e.transform);
-        if (e.animated.length) {
+        if (e.id === activeSite && e.animated.length) {
           animating = true;
           // Screen scale at the model origin, for metre-sized point sprites.
           const P = camera.projectionMatrix;
@@ -1330,6 +1367,10 @@ export function createLandmarkLayer(maplibregl, sites, { lake, carUrl } = {}) {
         // Keep the sun fixed in the world while the car turns.
         car.sun.position.copy(SUN_DIR).applyAxisAngle(new THREE.Vector3(0, 1, 0), -yaw).multiplyScalar(14);
         for (const w of car.wheels) w.rotation.x = vehicle.distance / WHEEL_RADIUS;
+        if (vehicle.shadowDirty) {
+          renderer.shadowMap.needsUpdate = true;
+          vehicle.shadowDirty = false;
+        }
         camera.projectionMatrix.copy(base).multiply(carMatrix);
         renderer.resetState();
         renderer.render(car.scene, camera);

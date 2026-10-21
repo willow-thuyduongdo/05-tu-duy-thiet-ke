@@ -1,5 +1,5 @@
 import * as maplibregl from "https://unpkg.com/maplibre-gl@6.14.0/dist/maplibre-gl.mjs";
-import { createLandmarkLayer } from "./landmarks.js?v=20261020h";
+import { createLandmarkLayer } from "./landmarks.js?v=20261021c";
 
 /* ============================================================== content */
 // Stops in walking-tour order. `face` = compass bearing the model front faces
@@ -225,6 +225,19 @@ function buildShots(legs) {
 function addCityLayers(map, data) {
   const style = map.getStyle();
   const firstSymbol = style.layers.find((l) => l.type === "symbol")?.id;
+  const renderHeight = ["to-number", ["get", "render_height"], 0];
+  const taggedHeight = ["to-number", ["get", "height"], 0];
+  const levels = ["to-number", ["get", "building:levels"], 0];
+  const osmId = ["to-number", ["get", "osm_id"], 0];
+  const ordinaryHeight = ["+", 8, ["*", ["%", osmId, 13], 1.2]];
+  const tallBuildingHeight = ["+", 20, ["*", ["%", osmId, 15], 1.5]];
+  const estimatedHeight = ["case",
+    [">", renderHeight, 0], renderHeight,
+    [">", taggedHeight, 0], taggedHeight,
+    [">", levels, 0], ["*", levels, 3.2],
+    ["in", ["get", "building"], ["literal", ["apartments", "office", "hotel", "university", "hospital"]]], tallBuildingHeight,
+    ordinaryHeight,
+  ];
   // Warm the light basemap: paper land, jade water, soft parks.
   for (const l of style.layers) {
     if (l.id === "background") map.setPaintProperty(l.id, "background-color", "#f3efe6");
@@ -239,8 +252,8 @@ function addCityLayers(map, data) {
     minzoom: 13.5,
     filter: ["!", ["in", ["id"], ["literal", []]]],
     paint: {
-      "fill-extrusion-color": ["interpolate", ["linear"], ["coalesce", ["get", "render_height"], 6], 0, "#e7e1d5", 20, "#ddd5c6", 60, "#cfc6b4"],
-      "fill-extrusion-height": ["interpolate", ["linear"], ["zoom"], 13.5, 0, 14.5, ["coalesce", ["get", "render_height"], 6]],
+      "fill-extrusion-color": ["interpolate", ["linear"], estimatedHeight, 0, "#e7e1d5", 20, "#ddd5c6", 60, "#cfc6b4"],
+      "fill-extrusion-height": ["interpolate", ["linear"], ["zoom"], 13.5, 0, 14.5, estimatedHeight],
       "fill-extrusion-base": ["coalesce", ["get", "render_min_height"], 0],
       "fill-extrusion-opacity": 0.95,
       "fill-extrusion-vertical-gradient": true,
@@ -267,30 +280,38 @@ function addCityLayers(map, data) {
 }
 
 /* ============================================================== UI */
-function renderStory(legs) {
+function renderStory(legs, galleries) {
   const story = $("#story");
   story.innerHTML = STOPS.map((s, i) => {
     const leg = legs[i - 1];
     const from = STOPS[i - 1];
+    const gallery = galleries[s.id] || [];
+    const firstPhoto = gallery[0];
+    const nextStop = STOPS[i + 1];
     const directions = leg ? `
       <details class="directions">
         <summary><span>Đường từ ${escapeHtml(from.title)}</span><small>${fmtKm(leg.distance_m)} · ${leg.mode === "driving" ? "xe" : "đi bộ"} ${fmtMin(leg.duration_s)}</small></summary>
         <ol class="steps">${leg.steps.filter((st) => st.type !== "depart" || st.name).map((st) => `<li>${escapeHtml(stepText(st))} <span>${st.distance ? fmtKm(st.distance) : ""}</span></li>`).join("")}</ol>
         <a class="gmaps" href="${gmapsLink(from.lonlat, s.lonlat, leg.mode)}" target="_blank" rel="noreferrer">Mở chỉ đường trên Google Maps ↗</a>
       </details>` : `<p class="directions"><a class="gmaps" href="https://www.google.com/maps/search/?api=1&query=${s.lonlat[1]},${s.lonlat[0]}" target="_blank" rel="noreferrer">Mở vị trí trên Google Maps ↗</a></p>`;
+    const driveButton = nextStop ? `<button class="card__next" type="button" data-drive-next="${i}" aria-label="Tự lái đến ${escapeHtml(nextStop.title)}"><span class="card__next-icon" aria-hidden="true">↗</span><span>Lái đến ${escapeHtml(nextStop.short)}</span><span class="card__next-arrow" aria-hidden="true">→</span></button>` : "";
     return `<article class="card" id="${s.id}" data-chapter="${i}" aria-labelledby="${s.id}-title">
-      <div class="card__photo">
-        <img src="${s.photo}" alt="${escapeHtml(s.alt)}" loading="lazy">
-        <div class="card__veil" aria-hidden="true">
-          <img class="v1" src="./assets/clouds/cloud-03.webp" alt=""><img class="v2" src="./assets/clouds/cloud-01.webp" alt="">
-          <img class="v3" src="./assets/clouds/cloud-06.webp" alt=""><img class="v4" src="./assets/clouds/cloud-02.webp" alt="">
+      <div class="card__photo" data-photo-stage>
+        <button class="card__photo-main" type="button" data-photo-view data-photo-chapter="${i}" data-photo-index="0" data-photo-src="${firstPhoto?.src || s.photo}" data-photo-alt="${escapeHtml(firstPhoto?.alt || s.alt)}" aria-label="Phóng to ảnh: ${escapeHtml(firstPhoto?.title || s.title)}">
+          <img data-gallery-image alt="" loading="lazy" decoding="async">
+          <span class="card__photo-hint">Nhấn để phóng to</span>
+        </button>
+        <div class="photo-gallery-controls" role="group" aria-label="Điều khiển ảnh">
+        <span class="photo-gallery-count" data-gallery-count aria-live="polite">${String(1).padStart(2, "0")} / ${String(gallery.length).padStart(2, "0")}</span>
+          <button type="button" class="photo-gallery-arrow" data-gallery-step="-1" aria-label="Ảnh trước">‹</button>
+          <button type="button" class="photo-gallery-arrow" data-gallery-step="1" aria-label="Ảnh tiếp theo">›</button>
         </div>
-        <span class="card__num">${String(i + 1).padStart(2, "0")} / 07</span>
       </div>
       <div class="card__body">
         <p class="card__kicker">${escapeHtml(s.kicker)}</p>
         <h2 id="${s.id}-title">${escapeHtml(s.title)}</h2>
         <p>${escapeHtml(s.text)}</p>
+        ${driveButton}
         <figure class="quote"><blockquote>${escapeHtml(s.quote.text)}</blockquote><figcaption>${escapeHtml(s.quote.who)}</figcaption></figure>
         <ul class="facts">${s.facts.map((f) => `<li>${escapeHtml(f)}</li>`).join("")}</ul>
         ${directions}
@@ -317,8 +338,8 @@ function renderItinerary(legs) {
 
 /* ============================================================== main */
 async function main() {
-  const [sites, routes, streets, lake] = await Promise.all(
-    ["./data/sites.geojson", "./data/routes.geojson", "./data/old-quarter.geojson", "./data/lake.geojson"].map((u) => fetch(`${u}?v=20261020h`).then((r) => r.json())),
+  const [sites, routes, streets, lake, galleries] = await Promise.all(
+    ["./data/sites.geojson", "./data/routes.geojson", "./data/old-quarter.geojson", "./data/lake.geojson", "./data/photo-galleries.json"].map((u) => fetch(`${u}?v=20261021c`).then((r) => r.json())),
   );
   for (const f of sites.features) {
     if (f.properties.kind !== "anchor") continue;
@@ -329,7 +350,7 @@ async function main() {
   const legs = routes.features.map(prepareLeg);
   const { shots, total } = buildShots(legs);
 
-  renderStory(legs);
+  renderStory(legs, galleries);
   renderNav(shots, total);
   renderItinerary(legs);
 
@@ -398,7 +419,9 @@ async function main() {
 
   map.on("load", () => {
     landmarks = addCityLayers(map, { streets, routes, lake: lake.features[0] });
+    landmarks.setActiveSite(activeChapter >= 0 ? STOPS[activeChapter].id : null);
     applyShot(progressUnits());
+    scheduleCameraFrame();
     document.body.classList.remove("is-loading");
     try {
       map.setSky({ "sky-color": "#9fc3dd", "horizon-color": "#f4ead6", "fog-color": "#efe9de", "sky-horizon-blend": 0.55, "horizon-fog-blend": 0.7, "fog-ground-blend": 0.6, "atmosphere-blend": 0 });
@@ -412,7 +435,13 @@ async function main() {
     hideTimer = setTimeout(() => { hideTimer = 0; refreshHidden(); }, 250);
   });
   map.on("idle", refreshHidden);
-  map.on("zoom", () => map.getContainer().classList.toggle("is-close", map.getZoom() > 16.6));
+  const updateMapZoom = () => {
+    const zoom = map.getZoom();
+    map.getContainer().classList.toggle("is-close", zoom > 16.6);
+    map.getContainer().classList.toggle("is-overview", zoom < 15.2);
+  };
+  map.on("zoom", updateMapZoom);
+  updateMapZoom();
 
   /* ---------- scroll → camera director ---------- */
   let explore = false;
@@ -426,6 +455,113 @@ async function main() {
   const navHud = $("#nav-hud");
   const cards = [...document.querySelectorAll(".card")];
   const fill = $("#timeline-fill");
+  const photoViewer = $("#photo-viewer");
+  const photoViewerImage = $("#photo-viewer-image");
+  const photoViewerCaption = $("#photo-viewer-caption");
+  let lastPhotoTrigger = null;
+  let currentViewerPhoto = null;
+  const licenseUrls = {
+    "CC BY-SA 4.0": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "CC BY-SA 3.0": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "CC BY-SA 2.5": "https://creativecommons.org/licenses/by-sa/2.5/",
+    "CC BY-SA 2.0": "https://creativecommons.org/licenses/by-sa/2.0/",
+    "CC BY 4.0": "https://creativecommons.org/licenses/by/4.0/",
+    "CC BY 3.0": "https://creativecommons.org/licenses/by/3.0/",
+    "CC BY 2.0": "https://creativecommons.org/licenses/by/2.0/",
+    "CC0 1.0": "https://creativecommons.org/publicdomain/zero/1.0/",
+  };
+  const galleryIndexes = STOPS.map(() => 0);
+
+  function setGalleryPhoto(chapter, index) {
+    const photos = galleries[STOPS[chapter].id] || [];
+    if (!photos.length) return null;
+    const normalizedIndex = (index + photos.length) % photos.length;
+    const photo = photos[normalizedIndex];
+    galleryIndexes[chapter] = normalizedIndex;
+    const card = cards[chapter];
+    const image = card.querySelector("[data-gallery-image]");
+    const trigger = card.querySelector("[data-photo-view]");
+    trigger.dataset.photoIndex = String(normalizedIndex);
+    trigger.dataset.photoSrc = photo.src;
+    trigger.dataset.photoAlt = photo.alt;
+    trigger.dataset.photoTitle = photo.title;
+    trigger.setAttribute("aria-label", `Phóng to ảnh: ${photo.title}`);
+    image.alt = photo.alt;
+    image.src = photo.src;
+    card.querySelector("[data-gallery-count]").textContent = `${String(normalizedIndex + 1).padStart(2, "0")} / ${String(photos.length).padStart(2, "0")}`;
+    return photo;
+  }
+
+  function renderViewerPhoto(chapter, index) {
+    const photo = setGalleryPhoto(chapter, index);
+    if (!photo) return;
+    currentViewerPhoto = { chapter, index: galleryIndexes[chapter] };
+    photoViewerImage.src = photo.src;
+    photoViewerImage.alt = photo.alt;
+    photoViewerCaption.replaceChildren();
+    const title = document.createElement("span");
+    title.className = "photo-viewer__title";
+    title.textContent = photo.title;
+    const credit = document.createElement("span");
+    credit.className = "photo-viewer__credit";
+    credit.append(`${photo.author} · `);
+    const license = document.createElement("a");
+    license.href = licenseUrls[photo.license];
+    license.target = "_blank";
+    license.rel = "noreferrer";
+    license.textContent = photo.license;
+    const source = document.createElement("a");
+    source.href = photo.source;
+    source.target = "_blank";
+    source.rel = "noreferrer";
+    source.textContent = "Nguồn ảnh";
+    credit.append(license, " · ", source);
+    photoViewerCaption.append(title, credit);
+    photoViewer.querySelector("[data-photo-prev]").disabled = galleries[STOPS[chapter].id].length < 2;
+    photoViewer.querySelector("[data-photo-next]").disabled = galleries[STOPS[chapter].id].length < 2;
+  }
+
+  document.addEventListener("click", (event) => {
+    const galleryStep = event.target.closest("[data-gallery-step]");
+    if (galleryStep) {
+      const card = galleryStep.closest(".card");
+      const chapter = Number(card.dataset.chapter);
+      setGalleryPhoto(chapter, galleryIndexes[chapter] + Number(galleryStep.dataset.galleryStep));
+      return;
+    }
+    const trigger = event.target.closest("[data-photo-view]");
+    if (!trigger?.dataset.photoSrc) return;
+    lastPhotoTrigger = trigger;
+    renderViewerPhoto(Number(trigger.dataset.photoChapter), Number(trigger.dataset.photoIndex));
+    photoViewer.showModal();
+  });
+  photoViewer.querySelector("[data-photo-prev]").addEventListener("click", () => {
+    if (currentViewerPhoto) renderViewerPhoto(currentViewerPhoto.chapter, currentViewerPhoto.index - 1);
+  });
+  photoViewer.querySelector("[data-photo-next]").addEventListener("click", () => {
+    if (currentViewerPhoto) renderViewerPhoto(currentViewerPhoto.chapter, currentViewerPhoto.index + 1);
+  });
+  photoViewer.addEventListener("keydown", (event) => {
+    if (!currentViewerPhoto) return;
+    if (event.key === "ArrowLeft") { event.preventDefault(); renderViewerPhoto(currentViewerPhoto.chapter, currentViewerPhoto.index - 1); }
+    if (event.key === "ArrowRight") { event.preventDefault(); renderViewerPhoto(currentViewerPhoto.chapter, currentViewerPhoto.index + 1); }
+  });
+  photoViewer.querySelector("[data-photo-close]").addEventListener("click", () => photoViewer.close());
+  photoViewer.addEventListener("click", (event) => { if (event.target === photoViewer) photoViewer.close(); });
+  photoViewer.addEventListener("close", () => {
+    photoViewerImage.removeAttribute("src");
+    currentViewerPhoto = null;
+    lastPhotoTrigger?.focus();
+  });
+
+  function prepareGallery(chapter) {
+    cards.forEach((card, cardIndex) => {
+      const image = card.querySelector("[data-gallery-image]");
+      if (cardIndex !== chapter) image.removeAttribute("src");
+    });
+    if (chapter < 0) return;
+    setGalleryPhoto(chapter, galleryIndexes[chapter]);
+  }
 
   function progressUnits() { return window.scrollY / unitPx(); }
 
@@ -436,14 +572,72 @@ async function main() {
   }
 
   function jumpToShot(index) {
+    cancelAutoDrive();
     const s = shots[index];
     window.scrollTo({ top: (s.start + 0.02) * unitPx(), behavior: reduceMotion ? "auto" : "smooth" });
   }
   document.addEventListener("click", (e) => {
+    const driveButton = e.target.closest("[data-drive-next]");
+    if (driveButton) {
+      e.preventDefault();
+      startAutoDrive(Number(driveButton.dataset.driveNext), driveButton);
+      return;
+    }
     const btn = e.target.closest("[data-jump-shot], [data-jump]");
     if (!btn) return;
     e.preventDefault();
     jumpToShot(Number(btn.dataset.jumpShot ?? btn.dataset.jump ?? 0));
+  });
+
+  let autoDriveFrame = 0;
+  function cancelAutoDrive() {
+    if (autoDriveFrame) cancelAnimationFrame(autoDriveFrame);
+    autoDriveFrame = 0;
+    document.querySelectorAll("[data-drive-next]").forEach((button) => {
+      button.disabled = false;
+      button.classList.remove("is-driving");
+      button.querySelector("span:nth-child(2)").textContent = `Lái đến ${STOPS[Number(button.dataset.driveNext) + 1]?.short || "điểm tiếp"}`;
+    });
+  }
+
+  function startAutoDrive(chapter, button) {
+    cancelAutoDrive();
+    const destination = chapter + 1;
+    const routeShot = shots.find((shot) => shot.leg && shot.chapter === destination);
+    if (!routeShot) return;
+    const arrivalShot = shots.find((shot) => shot.chapter === destination && !shot.leg);
+    if (reduceMotion) {
+      jumpToShot(arrivalShot.index);
+      return;
+    }
+    const from = (routeShot.start + 0.005) * unitPx();
+    const to = (arrivalShot.start + arrivalShot.len * 0.34) * unitPx();
+    const duration = Math.min(18000, Math.max(8000, 6500 + routeShot.leg.length / 1.2));
+    let startedAt = 0;
+    button.disabled = true;
+    button.classList.add("is-driving");
+    button.querySelector("span:nth-child(2)").textContent = `Đang đến ${STOPS[destination].short}…`;
+    const driveFrame = (now) => {
+      if (!startedAt) startedAt = now;
+      const t = clamp01((now - startedAt) / duration);
+      // Route camera and vehicle use cubic ease-in-out: gradual acceleration, then braking.
+      window.scrollTo({ top: lerp(from, to, t), left: 0, behavior: "instant" });
+      if (t < 1) autoDriveFrame = requestAnimationFrame(driveFrame);
+      else {
+        autoDriveFrame = 0;
+        window.scrollTo({ top: to, left: 0, behavior: "instant" });
+        button.disabled = false;
+        button.classList.remove("is-driving");
+        button.querySelector("span:nth-child(2)").textContent = `Lái đến ${STOPS[destination].short}`;
+      }
+    };
+    autoDriveFrame = requestAnimationFrame(driveFrame);
+  }
+
+  window.addEventListener("wheel", cancelAutoDrive, { passive: true });
+  window.addEventListener("touchstart", cancelAutoDrive, { passive: true });
+  window.addEventListener("keydown", (event) => {
+    if (["ArrowDown", "ArrowUp", "PageDown", "PageUp", "Home", "End", " "].includes(event.key)) cancelAutoDrive();
   });
 
   function updateTimecode(u) {
@@ -495,6 +689,8 @@ async function main() {
       activeChapter = heroChapter;
       cards.forEach((c) => c.classList.toggle("is-active", Number(c.dataset.chapter) === heroChapter));
       markers.forEach((m, i) => m.getElement().classList.toggle("is-active", i === heroChapter));
+      prepareGallery(heroChapter);
+      landmarks?.setActiveSite(heroChapter >= 0 ? STOPS[heroChapter].id : null);
       document.querySelectorAll("[data-jump-shot]").forEach((b) => {
         const s = shots[Number(b.dataset.jumpShot)];
         if (s.chapter === shot.chapter) b.setAttribute("aria-current", "step");
@@ -556,33 +752,50 @@ async function main() {
   function framePadding() {
     const w = window.innerWidth, h = window.innerHeight;
     if (shots[activeShot]?.chapter === 7) return w < 760 ? { top: 0, bottom: 0, left: 0, right: 0 } : { top: 60, bottom: 60, left: Math.round(w * 0.45), right: 0 };
-    return w < 760 ? { top: 70, bottom: Math.round(h * 0.42), left: 0, right: 0 } : { top: 60, bottom: 60, left: 0, right: Math.round(Math.min(460, w * 0.4)) };
+    return w < 760 ? { top: 70, bottom: Math.round(h * 0.42), left: 0, right: 0 } : { top: 60, bottom: 60, left: 0, right: Math.round(Math.min(650, w * 0.48)) };
   }
 
-  // Damped follow: the camera eases toward the scroll target like a gimbal.
+  // Animate only while camera moves. Let MapLibre sleep between scroll events.
+  let cameraFrame = 0;
   let last = performance.now();
   function frame(now) {
-    requestAnimationFrame(frame);
+    cameraFrame = 0;
+    if (explore) return;
     const dt = Math.min(0.25, (now - last) / 1000);
     last = now;
-    if (explore) return;
     const k = reduceMotion ? 1 : 1 - Math.exp(-dt * 7);
-    const far = metres(current.center, target.center) > 3000 || Math.abs(current.zoom - target.zoom) > 3;
-    current = far && reduceMotion ? { ...target } : lerpCam(current, target, k);
+    const centerError = metres(current.center, target.center);
+    const zoomError = Math.abs(current.zoom - target.zoom);
+    const pitchError = Math.abs(current.pitch - target.pitch);
+    const bearingError = Math.abs((((target.bearing - current.bearing + 540) % 360) - 180));
+    if (centerError < 0.2 && zoomError < 0.001 && pitchError < 0.02 && bearingError < 0.02) return;
+    current = lerpCam(current, target, k);
     map.jumpTo({ ...current, padding: framePadding() });
+    cameraFrame = requestAnimationFrame(frame);
+  }
+
+  function scheduleCameraFrame() {
+    if (explore || cameraFrame) return;
+    last = performance.now();
+    cameraFrame = requestAnimationFrame(frame);
   }
 
   let scheduled = false;
   const onScroll = () => {
     if (scheduled) return;
     scheduled = true;
-    requestAnimationFrame(() => { scheduled = false; if (!explore) applyShot(progressUnits()); });
+    requestAnimationFrame(() => {
+      scheduled = false;
+      if (!explore) {
+        applyShot(progressUnits());
+        scheduleCameraFrame();
+      }
+    });
   };
   window.addEventListener("scroll", onScroll, { passive: true });
-  window.addEventListener("resize", () => { const u = progressUnits(); sizeTrack(); window.scrollTo(0, u * unitPx()); applyShot(u); });
+  window.addEventListener("resize", () => { const u = progressUnits(); sizeTrack(); window.scrollTo(0, u * unitPx()); applyShot(u); scheduleCameraFrame(); });
   applyShot(progressUnits());
-  current = { ...target };
-  requestAnimationFrame(frame);
+  scheduleCameraFrame();
 
   /* ---------- controls ---------- */
   const exploreBtn = $("#explore-toggle");
@@ -595,7 +808,11 @@ async function main() {
     for (const h of ["scrollZoom", "dragPan", "dragRotate", "keyboard", "doubleClickZoom", "touchZoomRotate", "touchPitch"]) map[h][explore ? "enable" : "disable"]();
     root.style.setProperty("--cover", "0");
     root.style.setProperty("--dutch", "0deg");
-    if (!explore) { current = { center: map.getCenter().toArray(), zoom: map.getZoom(), pitch: map.getPitch(), bearing: map.getBearing() }; applyShot(progressUnits()); }
+    if (!explore) {
+      current = { center: map.getCenter().toArray(), zoom: map.getZoom(), pitch: map.getPitch(), bearing: map.getBearing() };
+      applyShot(progressUnits());
+      scheduleCameraFrame();
+    }
   });
 
   const dialog = $("#itinerary");
