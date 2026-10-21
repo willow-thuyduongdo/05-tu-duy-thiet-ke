@@ -1126,7 +1126,8 @@ function buildScene(model, env) {
   const sun = new THREE.DirectionalLight(0xfff0d6, 3.2);
   sun.position.copy(SUN_DIR).multiplyScalar(radius * 1.8);
   sun.castShadow = false;
-  sun.shadow.mapSize.set(1024, 1024);
+  const shadowSize = window.innerWidth < 760 ? 512 : 1024;
+  sun.shadow.mapSize.set(shadowSize, shadowSize);
   sun.shadow.bias = -0.0005;
   sun.shadow.normalBias = 0.03;
   Object.assign(sun.shadow.camera, { left: -radius, right: radius, top: radius, bottom: -radius, near: 0.5, far: radius * 5 });
@@ -1191,7 +1192,8 @@ function createCar(env, url, map) {
   scene.add(new THREE.HemisphereLight(0xeef3f6, 0x6b6150, 1.0));
   const sun = new THREE.DirectionalLight(0xfff0d6, 3.0);
   sun.castShadow = true;
-  sun.shadow.mapSize.set(512, 512);
+  const shadowSize = window.innerWidth < 760 ? 256 : 512;
+  sun.shadow.mapSize.set(shadowSize, shadowSize);
   sun.shadow.bias = -0.0005;
   sun.shadow.normalBias = 0.02;
   Object.assign(sun.shadow.camera, { left: -6, right: 6, top: 6, bottom: -6, near: 0.5, far: 40 });
@@ -1204,7 +1206,7 @@ function createCar(env, url, map) {
   const holder = new THREE.Group();
   scene.add(holder);
   // The car's front faces local +Z, so exhaust must drift from the rear on -Z.
-  const smoke = particles({ count: 32, origin: [0, 0.38, -2.7], spread: [0.45, 0.16, 0.18], velocity: [0, 0.5, -1], life: 2.2, size: [0.55, 2], color: 0xaaa69f, opacity: 0.38, turbulence: 0.55 });
+  const smoke = particles({ count: window.innerWidth < 760 ? 16 : 32, origin: [0, 0.38, -2.7], spread: [0.45, 0.16, 0.18], velocity: [0, 0.5, -1], life: 2.2, size: [0.55, 2], color: 0xaaa69f, opacity: 0.38, turbulence: 0.55 });
   scene.add(smoke);
   const car = { scene, holder, sun, smoke, wheels: [], ready: false };
 
@@ -1241,17 +1243,31 @@ export function createLandmarkLayer(maplibregl, sites, { lake, carUrl } = {}) {
   const clock = new THREE.Clock();
   const v0 = new THREE.Vector4(), v1 = new THREE.Vector4(), inv = new THREE.Matrix4();
   let car = null;
-  const vehicle = { visible: false, lonlat: [0, 0], bearing: 0, distance: 0, scale: 1, shadowDirty: false };
+  let carLoadStarted = false;
+  let sceneBuildQueued = false;
+  const vehicle = { visible: false, animate: false, lonlat: [0, 0], bearing: 0, distance: 0, scale: 1, shadowDirty: false };
   const carMatrix = new THREE.Matrix4();
+  const preloadVehicle = () => {
+    if (carLoadStarted || !carUrl || !env) return;
+    carLoadStarted = true;
+    car = createCar(env, carUrl, map);
+  };
   return {
     /** Place the illustrative car: position, heading (compass °), distance travelled (m), size multiplier. */
     setVehicle(state) {
       const nextDistance = state.distance ?? vehicle.distance;
       const nextBearing = state.bearing ?? vehicle.bearing;
       const bearingDelta = Math.abs((((nextBearing - vehicle.bearing + 540) % 360) - 180));
-      if (state.visible && (!vehicle.visible || Math.abs(nextDistance - vehicle.distance) > 24 || bearingDelta > 12)) vehicle.shadowDirty = true;
+      const mobile = window.innerWidth < 760;
+      const shadowDistance = mobile ? 84 : 24;
+      const shadowTurn = mobile ? 35 : 12;
+      const animationChanged = state.animate != null && Boolean(state.animate) !== vehicle.animate;
+      if (state.visible && (!vehicle.visible || Math.abs(nextDistance - vehicle.distance) > shadowDistance || bearingDelta > shadowTurn)) vehicle.shadowDirty = true;
       Object.assign(vehicle, state);
+      if (state.visible) preloadVehicle();
+      if (animationChanged) map?.triggerRepaint();
     },
+    preloadVehicle,
     setActiveSite(id) { activeSite = id || null; map?.triggerRepaint(); },
     get debug() { return { vehicle, carReady: Boolean(car?.ready), wheels: car?.wheels.length ?? 0 }; },
     id: "landmarks-3d",
@@ -1259,7 +1275,7 @@ export function createLandmarkLayer(maplibregl, sites, { lake, carUrl } = {}) {
     renderingMode: "3d",
     onAdd(m, gl) {
       map = m;
-      renderer = new THREE.WebGLRenderer({ canvas: m.getCanvas(), context: gl, antialias: true });
+      renderer = new THREE.WebGLRenderer({ canvas: m.getCanvas(), context: gl, antialias: window.innerWidth >= 760 });
       renderer.autoClear = false;
       renderer.shadowMap.enabled = true;
       renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -1288,7 +1304,6 @@ export function createLandmarkLayer(maplibregl, sites, { lake, carUrl } = {}) {
         };
         entries.push({ id: site.id, lonlat: site.lonlat, transform, toLocal, build, seed: entrySeed, scene: null, animated: [] });
       }
-      if (carUrl) car = createCar(env, carUrl, map);
       renderer.resetState();
     },
     render(gl, args) {
@@ -1300,7 +1315,7 @@ export function createLandmarkLayer(maplibregl, sites, { lake, carUrl } = {}) {
       const center = map.getCenter();
       const zoom = map.getZoom();
       if (zoom < 13.2) return;
-      const reach = 40000 / Math.pow(2, zoom - 12);
+      const reach = (window.innerWidth < 760 ? 26000 : 40000) / Math.pow(2, zoom - 12);
       const time = clock.getElapsedTime();
       const visible = [];
       for (const e of entries) {
@@ -1313,20 +1328,28 @@ export function createLandmarkLayer(maplibregl, sites, { lake, carUrl } = {}) {
       visible.sort((a, b) => a.distance - b.distance);
 
       const next = visible.find(({ entry }) => !entry.scene)?.entry;
-      if (next) {
-        seed = next.seed;
-        next.scene = buildScene(next.build(), env);
-        for (const fx of EFFECTS[next.id]?.() || []) { next.scene.add(fx); next.animated.push(fx); }
-        if (next.id === "ho-guom" && lake) {
-          const { water, islands } = lakeMesh(lake, next.toLocal);
-          next.scene.add(water, ...islands);
-          next.animated.push(water);
-        }
-        map.triggerRepaint();
+      if (next && !sceneBuildQueued) {
+        sceneBuildQueued = true;
+        const buildWhenIdle = () => {
+          sceneBuildQueued = false;
+          if (!map || next.scene) return;
+          seed = next.seed;
+          next.scene = buildScene(next.build(), env);
+          for (const fx of EFFECTS[next.id]?.() || []) { next.scene.add(fx); next.animated.push(fx); }
+          if (next.id === "ho-guom" && lake) {
+            const { water, islands } = lakeMesh(lake, next.toLocal);
+            next.scene.add(water, ...islands);
+            next.animated.push(water);
+          }
+          map.triggerRepaint();
+        };
+        if (window.requestIdleCallback) window.requestIdleCallback(buildWhenIdle, { timeout: 1200 });
+        else window.setTimeout(buildWhenIdle, 40);
       }
 
-      let animating = Boolean(next);
-      const shadowEntries = new Set(visible.filter(({ entry }) => entry.scene).slice(0, 2).map(({ entry }) => entry));
+      let animating = false;
+      const shadowLimit = window.innerWidth < 760 ? 1 : 2;
+      const shadowEntries = new Set(visible.filter(({ entry }) => entry.scene).slice(0, shadowLimit).map(({ entry }) => entry));
       for (const { entry: e } of visible) {
         if (!e.scene) continue;
         const light = e.scene.userData.shadowLight;
@@ -1379,10 +1402,12 @@ export function createLandmarkLayer(maplibregl, sites, { lake, carUrl } = {}) {
         v0.set(0, 0, 0, 1).applyMatrix4(P);
         v1.set(1, 0, 0, 1).applyMatrix4(P);
         const pxPerM = Math.hypot(v1.x / v1.w - v0.x / v0.w, v1.y / v1.w - v0.y / v0.w) * 0.5 * Math.max(w, h);
-        car.smoke.material.uniforms.uTime.value = time;
+        if (vehicle.animate) {
+          car.smoke.material.uniforms.uTime.value = time;
+          animating = true;
+        }
         car.smoke.material.uniforms.uPxPerM.value = pxPerM;
         car.smoke.material.uniforms.uCenterW.value = v0.w;
-        animating = true;
         renderer.resetState();
         renderer.render(car.scene, camera);
       }

@@ -1,5 +1,4 @@
 import * as maplibregl from "https://unpkg.com/maplibre-gl@6.14.0/dist/maplibre-gl.mjs";
-import { createLandmarkLayer } from "./landmarks.js?v=20261021m";
 
 /* ============================================================== content */
 // Stops in walking-tour order. `face` = compass bearing the model front faces
@@ -9,10 +8,10 @@ const STOPS = [
   {
     id: "bat-trang", short: "Gốm", title: "Làng gốm Bát Tràng", kicker: "Gia Lâm · bên sông Bắc Hưng Hải",
     text: "Làng nghề hơn 500 năm nay có Bảo tàng gốm Bát Tràng (1+1>2 Architects): bảy khối hình bàn xoay gốm lồng nhau, bậc thang như hẻm núi, ốp gạch đất, bê tông sợi và gốm mosaic, sân lễ hội lộ thiên dưới chân và vườn trên mái. Cách đó vài trăm mét, lò bầu cổ năm bầu nung vẫn đứng trong chợ gốm.",
-    photo: "./assets/bat-trang.jpg", alt: "Người thợ Bát Tràng bên những sản phẩm gốm mộc",
+    photo: "./assets/bat-trang.webp", alt: "Người thợ Bát Tràng bên những sản phẩm gốm mộc",
     gallery: [
-      { src: "./assets/gallery/bat-trang-village.jpg", alt: "Các quầy bày đồ gốm trong chợ Bát Tràng dưới bóng cây" },
-      { src: "./assets/gallery/bat-trang-drive.jpg", alt: "Khách trải nghiệm nặn gốm tại làng gốm Bát Tràng" },
+      { src: "./assets/gallery/bat-trang-village.webp", alt: "Các quầy bày đồ gốm trong chợ Bát Tràng dưới bóng cây" },
+      { src: "./assets/gallery/bat-trang-drive.webp", alt: "Khách trải nghiệm nặn gốm tại làng gốm Bát Tràng" },
     ],
     quote: { who: "Ca dao", text: "Ước gì anh lấy được nàng / Để anh mua gạch Bát Tràng về xây." },
     facts: ["7 khối bàn xoay", "4 tầng + vườn mái", "6.300 m² sàn", "lò bầu 5 bầu nung"], face: 180,
@@ -20,18 +19,18 @@ const STOPS = [
   {
     id: "pho-co", short: "Phố", title: "36 phố phường", kicker: "Phố Cổ · Hoàn Kiếm",
     text: "Phố Cổ hình thành từ những phường nghề sát kinh thành. Tên phố giữ lại nghề xưa: Hàng Bạc, Hàng Đào, Hàng Mã, Hàng Thiếc. Trên bản đồ, các phố mang chữ “Hàng” được tô sáng.",
-    photo: "./assets/pho-co.jpg", alt: "Mái nhà, biển hiệu và dòng xe trên một con phố Hà Nội",
-    gallery: [{ src: "./assets/gallery/pho-co-gia-ngu.jpg", alt: "Phố Gia Ngư trong một buổi tối ở Hà Nội" }],
+    photo: "./assets/pho-co.webp", alt: "Mái nhà, biển hiệu và dòng xe trên một con phố Hà Nội",
+    gallery: [{ src: "./assets/gallery/pho-co-gia-ngu.webp", alt: "Phố Gia Ngư trong một buổi tối ở Hà Nội" }],
     quote: { who: "Ca dao", text: "Rủ nhau chơi khắp Long Thành / Ba mươi sáu phố rành rành chẳng sai." },
     facts: ["45 phố “Hàng” trên OSM", "phường nghề"], face: 0,
   },
   {
     id: "ma-may", short: "Nhà", title: "Nhà cổ 87 Mã Mây", kicker: "Nhà phố · cuối thế kỷ XIX",
     text: "Ngôi nhà mở ra theo chiều sâu: gian hàng phía trước, sân trong lấy sáng, nhà chính, rồi lớp sinh hoạt phía sau. Mặt tiền hẹp, nở hậu, kể cách sống và buôn bán của một gia đình phố thị.",
-    photo: "./assets/ma-may.jpg", alt: "Không gian gỗ trong ngôi nhà cổ số 87 Mã Mây",
+    photo: "./assets/ma-may.webp", alt: "Không gian gỗ trong ngôi nhà cổ số 87 Mã Mây",
     gallery: [
-      { src: "./assets/gallery/ma-may-courtyard.jpg", alt: "Sân trong nhà cổ 87 Mã Mây với mái ngói và hàng hiên gỗ" },
-      { src: "./assets/gallery/ma-may-drive.jpg", alt: "Mặt tiền Ngôi nhà Di sản 87 Mã Mây" },
+      { src: "./assets/gallery/ma-may-courtyard.webp", alt: "Sân trong nhà cổ 87 Mã Mây với mái ngói và hàng hiên gỗ" },
+      { src: "./assets/gallery/ma-may-drive.webp", alt: "Mặt tiền Ngôi nhà Di sản 87 Mã Mây" },
     ],
     quote: { who: "Người kể chuyện", text: "Mặt tiền chỉ năm mét, nhưng phải đi hết hai mươi tám mét mới tới gian sau." },
     facts: ["sâu 28 m", "mặt tiền 5 → 6 m", "157,6 m²"], face: 275,
@@ -39,10 +38,10 @@ const STOPS = [
   {
     id: "ho-guom", short: "Hồ Gươm", title: "Tháp Rùa · Hồ Gươm", kicker: "Hồ Hoàn Kiếm · 1884–1886",
     text: "Hồ gắn với truyền thuyết vua Lê trả gươm báu cho Rùa Vàng. Tháp Rùa ba tầng cửa cuốn trên gò giữa hồ là khoảng lặng ở tâm thành phố.",
-    photo: "./assets/ho-guom.jpg", alt: "Tháp Rùa trên đảo nhỏ giữa Hồ Gươm",
+    photo: "./assets/ho-guom.webp", alt: "Tháp Rùa trên đảo nhỏ giữa Hồ Gươm",
     gallery: [
-      { src: "./assets/gallery/ho-guom-turtle-tower.jpg", alt: "Tháp Rùa trong nắng chiều bên Hồ Gươm" },
-      { src: "./assets/gallery/ho-guom-drive.jpg", alt: "Du khách bên hồ Hoàn Kiếm dưới tán cây cổ thụ" },
+      { src: "./assets/gallery/ho-guom-turtle-tower.webp", alt: "Tháp Rùa trong nắng chiều bên Hồ Gươm" },
+      { src: "./assets/gallery/ho-guom-drive.webp", alt: "Du khách bên hồ Hoàn Kiếm dưới tán cây cổ thụ" },
     ],
     quote: { who: "Truyền thuyết Hồ Gươm", text: "Rùa Vàng nổi lên giữa hồ: “Xin bệ hạ hoàn gươm lại cho Long Quân.”" },
     facts: ["cao 8,8 m", "tầng 1: 6,28 × 4,54 m", "3 tầng + vọng lâu"], face: 270,
@@ -50,10 +49,10 @@ const STOPS = [
   {
     id: "van-mieu", short: "Văn Miếu", title: "Khuê Văn Các", kicker: "Văn Miếu · xây năm 1805",
     text: "Văn Miếu lập năm 1070, Quốc Tử Giám năm 1076. Khuê Văn Các đứng trên bốn trụ gạch, gác gỗ sơn son, bốn cửa tròn tỏa tia và tám mái — biểu tượng Thăng Long hiếu học.",
-    photo: "./assets/van-mieu.jpg", alt: "Khoảng sân và kiến trúc cổ tại Văn Miếu – Quốc Tử Giám",
+    photo: "./assets/van-mieu.webp", alt: "Khoảng sân và kiến trúc cổ tại Văn Miếu – Quốc Tử Giám",
     gallery: [
-      { src: "./assets/gallery/van-mieu-khue-van-cac.jpg", alt: "Khuê Văn Các tại Văn Miếu – Quốc Tử Giám" },
-      { src: "./assets/gallery/van-mieu-drive.jpg", alt: "Điện Đại Thành và đỉnh hương tại Văn Miếu – Quốc Tử Giám" },
+      { src: "./assets/gallery/van-mieu-khue-van-cac.webp", alt: "Khuê Văn Các tại Văn Miếu – Quốc Tử Giám" },
+      { src: "./assets/gallery/van-mieu-drive.webp", alt: "Điện Đại Thành và đỉnh hương tại Văn Miếu – Quốc Tử Giám" },
     ],
     quote: { who: "Văn bia khoa 1442 · Thân Nhân Trung", text: "Hiền tài là nguyên khí của quốc gia." },
     facts: ["đế 6,8 m", "4 trụ 1 × 1 m", "8 mái"], face: 200,
@@ -61,16 +60,16 @@ const STOPS = [
   {
     id: "hoang-thanh", short: "Thành", title: "Đoan Môn · Hoàng thành", kicker: "Kinh đô · UNESCO 2010",
     text: "Cổng chính phía nam của Cấm thành, mặt bằng chữ U, năm cửa vòm; cửa giữa dành cho vua. Công trình hiện còn do nhà Lê sơ dựng, tu bổ thời Nguyễn, trên nền Ngũ Môn Lâu thời Lý.",
-    photo: "./assets/hoang-thanh.jpg", alt: "Đoan Môn, cổng chính phía nam của Hoàng Thành Thăng Long",
-    gallery: [{ src: "./assets/gallery/hoang-thanh-doan-mon.jpg", alt: "Cổng Đoan Môn ở Hoàng thành Thăng Long" }],
+    photo: "./assets/hoang-thanh.webp", alt: "Đoan Môn, cổng chính phía nam của Hoàng Thành Thăng Long",
+    gallery: [{ src: "./assets/gallery/hoang-thanh-doan-mon.webp", alt: "Cổng Đoan Môn ở Hoàng thành Thăng Long" }],
     quote: { who: "Chiếu dời đô · 1010", text: "Xem khắp đất Việt ta, chỉ nơi này là thắng địa." },
     facts: ["dài 46,5 m", "cao ≈ 6 m", "5 cửa vòm"], face: 186,
   },
   {
     id: "lang-bac", short: "Ba Đình", title: "Lăng Chủ tịch Hồ Chí Minh", kicker: "Ba Đình · 1945 / 1975",
     text: "Quảng trường Ba Đình là nơi đọc Tuyên ngôn Độc lập ngày 2/9/1945. Lăng khánh thành năm 1975, ba lớp: bệ đá, thân hàng cột vuông, mái bậc; ốp đá granite xám.",
-    photo: "./assets/lang-bac.jpg", alt: "Lăng Chủ tịch Hồ Chí Minh tại quảng trường Ba Đình",
-    gallery: [{ src: "./assets/gallery/lang-bac-mausoleum.jpg", alt: "Lăng Chủ tịch Hồ Chí Minh nhìn từ góc thấp, bên lá cờ đỏ sao vàng" }],
+    photo: "./assets/lang-bac.webp", alt: "Lăng Chủ tịch Hồ Chí Minh tại quảng trường Ba Đình",
+    gallery: [{ src: "./assets/gallery/lang-bac-mausoleum.webp", alt: "Lăng Chủ tịch Hồ Chí Minh nhìn từ góc thấp, bên lá cờ đỏ sao vàng" }],
     quote: { who: "Tuyên ngôn Độc lập · 2/9/1945", text: "Tất cả mọi người đều sinh ra có quyền bình đẳng." },
     facts: ["rộng 41,2 m", "cao 21,6 m", "3 lớp"], face: 101,
   },
@@ -89,6 +88,7 @@ const fmtMin = (s) => `${Math.max(1, Math.round(s / 60))} phút`;
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const PLAYBACK_DURATION_SECONDS = 600;
 const escapeHtml = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+const responsivePhotoSrc = (src) => window.innerWidth < 760 && src.endsWith(".webp") && !src.includes("/assets/clouds/") ? src.replace(/\.webp$/, ".mobile.webp") : src;
 
 function lerpCam(a, b, t) {
   return {
@@ -148,6 +148,15 @@ function stepText(s) {
     case "merge": case "on ramp": case "off ramp": return `Nhập làn${road}`;
     default: return mod ? `Đi ${mod}${road}` : `Đi tiếp${road}`;
   }
+}
+function routeStepIndex(steps, distance) {
+  let low = 0, high = steps.length - 1;
+  while (low < high) {
+    const middle = Math.ceil((low + high) / 2);
+    if (steps[middle].start <= distance) low = middle;
+    else high = middle - 1;
+  }
+  return low;
 }
 const gmapsLink = (from, to, mode) =>
   `https://www.google.com/maps/dir/?api=1&origin=${from[1]},${from[0]}&destination=${to[1]},${to[0]}&travelmode=${mode === "driving" ? "driving" : "walking"}`;
@@ -243,6 +252,11 @@ function buildShots(legs) {
 }
 
 /* ============================================================== map style */
+const OLD_QUARTER_BOUNDS = {
+  type: "Polygon",
+  coordinates: [[[105.8455, 21.03], [105.856, 21.03], [105.856, 21.0395], [105.8455, 21.0395], [105.8455, 21.03]]],
+};
+
 function addCityLayers(map, data) {
   const style = map.getStyle();
   const firstSymbol = style.layers.find((l) => l.type === "symbol")?.id;
@@ -259,6 +273,11 @@ function addCityLayers(map, data) {
     ["in", ["get", "building"], ["literal", ["apartments", "office", "hotel", "university", "hospital"]]], tallBuildingHeight,
     ordinaryHeight,
   ];
+  const quarterHeight = ["case",
+    [">", ["to-number", ["get", "height"], 0], 0], ["to-number", ["get", "height"], 0],
+    [">", ["to-number", ["get", "building:levels"], 0], 0], ["*", ["to-number", ["get", "building:levels"], 0], 3.2],
+    ["+", 8, ["floor", ["*", 15, ["/", ["%", ["*", ["abs", ["to-number", ["id"], 0]], 37], 101], 101]]]],
+  ];
   // Warm the light basemap: paper land, jade water, soft parks.
   for (const l of style.layers) {
     if (l.id === "background") map.setPaintProperty(l.id, "background-color", "#f3efe6");
@@ -271,12 +290,26 @@ function addCityLayers(map, data) {
     source: "openmaptiles",
     "source-layer": "building",
     minzoom: 12,
-    filter: ["!", ["in", ["id"], ["literal", []]]],
+    filter: ["all", ["!", ["within", OLD_QUARTER_BOUNDS]], ["!", ["in", ["id"], ["literal", []]]]],
     paint: {
       "fill-extrusion-color": ["interpolate", ["linear"], estimatedHeight, 0, "#e7e1d5", 20, "#ddd5c6", 60, "#cfc6b4"],
       "fill-extrusion-height": estimatedHeight,
       "fill-extrusion-base": ["coalesce", ["get", "render_min_height"], 0],
       "fill-extrusion-opacity": 0.95,
+      "fill-extrusion-vertical-gradient": true,
+    },
+  }, firstSymbol);
+  map.addSource("old-quarter-buildings", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
+  map.addLayer({
+    id: "old-quarter-buildings-3d",
+    type: "fill-extrusion",
+    source: "old-quarter-buildings",
+    minzoom: 14,
+    paint: {
+      "fill-extrusion-color": ["interpolate", ["linear"], quarterHeight, 0, "#e7e1d5", 20, "#ddd5c6", 60, "#cfc6b4"],
+      "fill-extrusion-height": quarterHeight,
+      "fill-extrusion-base": ["to-number", ["get", "min_height"], 0],
+      "fill-extrusion-opacity": 0.98,
       "fill-extrusion-vertical-gradient": true,
     },
   }, firstSymbol);
@@ -293,11 +326,6 @@ function addCityLayers(map, data) {
   map.addLayer({ id: "route-line", type: "line", source: "routes", layout: { "line-cap": "round", "line-join": "round" }, paint: { "line-color": "#c27a14", "line-width": ["interpolate", ["linear"], ["zoom"], 11, 1.4, 18, 4], "line-dasharray": [1.2, 1.6], "line-opacity": 0.85 } });
   map.addSource("route-progress", { type: "geojson", data: { type: "Feature", geometry: { type: "LineString", coordinates: [] } } });
   map.addLayer({ id: "route-progress", type: "line", source: "route-progress", layout: { "line-cap": "round", "line-join": "round" }, paint: { "line-color": "#b0420f", "line-width": ["interpolate", ["linear"], ["zoom"], 11, 3, 18, 7] } });
-  const sites = STOPS.filter((s) => s.id !== "pho-co").map((s) => ({ id: s.id, lonlat: s.lonlat, bearing: s.face }));
-  if (STOPS[0].kiln) sites.push({ id: "bat-trang-kiln", lonlat: STOPS[0].kiln, bearing: 180 });
-  const layer = createLandmarkLayer(maplibregl, sites, { lake: data.lake, carUrl: "./assets/models/ferrari.glb" });
-  map.addLayer(layer);
-  return layer;
 }
 
 /* ============================================================== UI */
@@ -318,7 +346,7 @@ function renderStory(legs) {
     return `<article class="card" id="${s.id}" data-chapter="${i}" aria-labelledby="${s.id}-title">
       <div class="card__photo" data-photo-stage>
         <button class="card__photo-main" type="button" data-photo-view data-photo-chapter="${i}" aria-label="Phóng to ảnh: ${escapeHtml(s.title)}">
-          <img class="card__image" id="${s.id}-photo" data-gallery-index="0" src="${photos[0].src}" alt="${escapeHtml(photos[0].alt)}" loading="lazy" decoding="async">
+          <img class="card__image" id="${s.id}-photo" data-gallery-index="0" data-src="${photos[0].src}" alt="${escapeHtml(photos[0].alt)}" decoding="async">
           <span class="card__photo-hint">Nhấn để phóng to</span>
         </button>
         ${photos.length > 1 ? `<div class="photo-gallery-controls" role="group" aria-label="Ảnh ${escapeHtml(s.title)}">
@@ -371,7 +399,11 @@ async function main() {
   }
   const legs = routes.features.map(prepareLeg);
   const { shots, total } = buildShots(legs);
-
+  const doanMonRing = sites.features.find((f) => f.properties.id === "hoang-thanh" && f.properties.kind === "footprint")?.geometry.coordinates[0];
+  const doanMonBounds = doanMonRing ? doanMonRing.reduce((bounds, point) => [
+    Math.min(bounds[0], point[0]), Math.min(bounds[1], point[1]),
+    Math.max(bounds[2], point[0]), Math.max(bounds[3], point[1]),
+  ], [Infinity, Infinity, -Infinity, -Infinity]) : null;
   renderStory(legs);
   renderNav(shots, total);
   renderItinerary(legs);
@@ -385,6 +417,7 @@ async function main() {
   let autoplayProgress = 0;
   function setAutoplay(active) {
     autoplay = Boolean(active);
+    if (shots[activeShot]?.leg) landmarks?.setVehicle({ animate: autoplay || Boolean(autoDriveFrame) });
     if (autoplay) {
       const progress = progressUnits();
       if (progress >= total - 0.01) {
@@ -409,13 +442,18 @@ async function main() {
     maxPitch: 85,
     maxZoom: 22.5,
     attributionControl: false,
-    canvasContextAttributes: { antialias: true },
+    canvasContextAttributes: { antialias: window.innerWidth >= 760 },
+    pixelRatio: window.innerWidth < 760 ? Math.min(window.devicePixelRatio || 1, 2) : window.devicePixelRatio,
     fadeDuration: 0,
   });
   map.addControl(new maplibregl.AttributionControl({ compact: true }), "bottom-right");
   for (const h of ["scrollZoom", "dragPan", "dragRotate", "keyboard", "doubleClickZoom", "touchZoomRotate", "touchPitch", "boxZoom"]) map[h].disable();
 
   let landmarks = null;
+  let landmarkLayerPromise = null;
+  let oldQuarterBuildingsPromise = null;
+  let clearCitadelNeighbors = false;
+  const baseBuildingFilters = [];
   const markers = STOPS.map((s, i) => {
     const el = document.createElement("button");
     el.type = "button";
@@ -453,11 +491,82 @@ async function main() {
       const rings = g.type === "Polygon" ? [g.coordinates[0]] : g.type === "MultiPolygon" ? g.coordinates.map((p) => p[0]) : [];
       if (rings.some((r) => probes.some((pt) => inside(pt, r)))) { hiddenIds.add(f.id); changed = true; }
     }
-    if (changed) map.setFilter("city-3d", ["!", ["in", ["id"], ["literal", [...hiddenIds]]]]);
+    if (changed) updateCityBuildingVisibility();
+  }
+
+  function updateCityBuildingVisibility() {
+    if (map.getLayer("city-3d")) map.setLayoutProperty("city-3d", "visibility", clearCitadelNeighbors ? "none" : "visible");
+    for (const entry of baseBuildingFilters) {
+      map.setLayoutProperty(entry.id, "visibility", clearCitadelNeighbors ? "none" : entry.visibility);
+    }
+  }
+
+  function loadOldQuarterBuildings() {
+    if (oldQuarterBuildingsPromise) return oldQuarterBuildingsPromise;
+    oldQuarterBuildingsPromise = fetch("./data/old-quarter-buildings.geojson?v=20261021p", { priority: "low" })
+      .then((response) => {
+        if (!response.ok) throw new Error(`Old Quarter buildings returned ${response.status}`);
+        return response.json();
+      })
+      .then((buildings) => {
+        map.getSource("old-quarter-buildings")?.setData(buildings);
+        return buildings;
+      })
+      .catch((error) => {
+        oldQuarterBuildingsPromise = null;
+        console.warn("Old Quarter 3D buildings failed to load:", error.message);
+        return null;
+      });
+    return oldQuarterBuildingsPromise;
+  }
+
+  function loadLandmarkLayer() {
+    if (landmarks) return Promise.resolve(landmarks);
+    if (!landmarkLayerPromise) {
+      landmarkLayerPromise = import("./landmarks.js?v=20261021aj").then(({ createLandmarkLayer }) => {
+        const landmarkSites = STOPS.filter((s) => s.id !== "pho-co").map((s) => ({ id: s.id, lonlat: s.lonlat, bearing: s.face }));
+        if (STOPS[0].kiln) landmarkSites.push({ id: "bat-trang-kiln", lonlat: STOPS[0].kiln, bearing: 180 });
+        const layer = createLandmarkLayer(maplibregl, landmarkSites, { lake: lake.features[0], carUrl: "./assets/models/ferrari.glb" });
+        map.addLayer(layer);
+        landmarks = layer;
+        applyShot(progressUnits());
+        scheduleCameraFrame();
+        return landmarks;
+      }).catch((error) => {
+        landmarkLayerPromise = null;
+        console.warn("3D landmark layer failed to load:", error.message);
+        return null;
+      });
+    }
+    return landmarkLayerPromise;
+  }
+
+  const loadDeferredImages = (selector) => {
+    document.querySelectorAll(`${selector}[data-src]`).forEach((image) => {
+      image.src = responsivePhotoSrc(image.dataset.src);
+      image.removeAttribute("data-src");
+    });
+  };
+  let introPhotosStarted = false;
+  let cloudsStarted = false;
+  function loadIntroPhotos() {
+    if (introPhotosStarted) return;
+    introPhotosStarted = true;
+    loadDeferredImages(reduceMotion ? ".backdrop img:first-child" : ".backdrop img");
+  }
+  function loadCloudPhotos() {
+    if (cloudsStarted || reduceMotion || document.body.classList.contains("is-loading")) return;
+    cloudsStarted = true;
+    loadDeferredImages(".clouds img");
   }
 
   map.on("load", () => {
-    landmarks = addCityLayers(map, { streets, routes, lake: lake.features[0] });
+    for (const layer of map.getStyle().layers) {
+      if (layer.source === "openmaptiles" && layer["source-layer"] === "building") {
+        baseBuildingFilters.push({ id: layer.id, visibility: layer.layout?.visibility ?? "visible" });
+      }
+    }
+    addCityLayers(map, { streets, routes, lake: lake.features[0] });
     applyShot(progressUnits());
     document.body.classList.remove("is-loading");
     try {
@@ -465,6 +574,10 @@ async function main() {
     } catch (error) { console.warn("Sky unsupported:", error.message); }
     map.setLight({ anchor: "map", color: "#fff1d8", intensity: 0.35, position: [1.4, 210, 35] });
     setAutoplay(!reduceMotion);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      loadIntroPhotos();
+      loadCloudPhotos();
+    }));
   });
   // Animated layers keep repainting, so "idle" rarely fires: scan when tiles arrive.
   let hideTimer = 0;
@@ -482,9 +595,15 @@ async function main() {
   let activeShot = -1;
   let activeChapter = -2;
   let lastProgressKey = "";
+  let lastOldQuarterOpacity = -1;
   const root = document.documentElement;
   const slate = $("#slate");
   const navHud = $("#nav-hud");
+  const navMode = $("#nav-mode");
+  const navTo = $("#nav-to");
+  const navLeft = $("#nav-left");
+  const navStep = $("#nav-step");
+  const timecode = $("#timecode");
   const cards = [...document.querySelectorAll(".card")];
   const fill = $("#timeline-fill");
   const photoViewer = $("#photo-viewer");
@@ -493,6 +612,21 @@ async function main() {
   const photoViewerCount = $("#photo-viewer-count");
   let lastPhotoTrigger = null;
   let currentViewerPhoto = null;
+  const preloadedGalleryPhotos = new Map();
+
+  function preloadGalleryPhoto(chapter, index = 0) {
+    const stop = STOPS[chapter];
+    if (!stop) return;
+    const photos = [{ src: stop.photo, alt: stop.alt }, ...(stop.gallery || [])];
+    const photo = photos[((index % photos.length) + photos.length) % photos.length];
+    const src = responsivePhotoSrc(photo.src);
+    if (preloadedGalleryPhotos.has(src)) return;
+    const image = new Image();
+    image.decoding = "async";
+    image.fetchPriority = "low";
+    image.src = src;
+    preloadedGalleryPhotos.set(src, image);
+  }
 
   function setGalleryPhoto(chapter, index) {
     const stop = STOPS[chapter];
@@ -501,7 +635,10 @@ async function main() {
     const photo = photos[normalized];
     const card = cards[chapter];
     const image = card.querySelector(".card__image");
-    image.src = photo.src;
+    image.src = responsivePhotoSrc(photo.src);
+    image.loading = "eager";
+    image.fetchPriority = "high";
+    image.removeAttribute("data-src");
     image.alt = photo.alt;
     image.dataset.galleryIndex = String(normalized);
     const count = card.querySelector("[data-gallery-count]");
@@ -512,7 +649,7 @@ async function main() {
   function updatePhotoViewer(chapter, index) {
     const current = setGalleryPhoto(chapter, index);
     currentViewerPhoto = { chapter, index: current.index };
-    photoViewerImage.src = current.photo.src;
+    photoViewerImage.src = responsivePhotoSrc(current.photo.src);
     photoViewerImage.alt = current.photo.alt;
     photoViewerCaption.textContent = `${STOPS[chapter].title} · ${current.photo.alt}`;
     photoViewerCount.textContent = `${String(current.index + 1).padStart(2, "0")} / ${String(current.total).padStart(2, "0")}`;
@@ -616,10 +753,13 @@ async function main() {
       if (!startedAt) startedAt = now;
       const t = clamp01((now - startedAt) / duration);
       window.scrollTo({ top: lerp(from, to, t), left: 0, behavior: "instant" });
+      applyShot(progressUnits());
+      scheduleCameraFrame();
       if (t < 1) autoDriveFrame = requestAnimationFrame(driveFrame);
       else {
         autoDriveFrame = 0;
         window.scrollTo({ top: to, left: 0, behavior: "instant" });
+        applyShot(progressUnits());
         button.disabled = false;
         button.classList.remove("is-driving");
         button.querySelector("span:nth-child(2)").textContent = `Lái đến ${STOPS[destination].short}`;
@@ -643,17 +783,21 @@ async function main() {
     const seconds = (u / total) * PLAYBACK_DURATION_SECONDS;
     const f = Math.floor((seconds % 1) * 24);
     const s = Math.floor(seconds) % 60, m = Math.floor(seconds / 60) % 60;
-    $("#timecode").textContent = `00:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}:${String(f).padStart(2, "0")}`;
+    const value = `00:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}:${String(f).padStart(2, "0")}`;
+    if (timecode.textContent !== value) timecode.textContent = value;
   }
 
   function applyShot(u) {
     const shot = shotAt(u);
     const t = clamp01((u - shot.start) / shot.len);
-    target = shot.cam(t);
+    target = shot.chapter === 5 && !shot.leg ? fitDoanMonCamera(shot.cam(t), shot) : shot.cam(t);
+    if (shot.chapter >= 0 && !landmarks && map.getLayer("city-3d")) void loadLandmarkLayer();
+    if (shot.chapter === 1 && map.getSource("old-quarter-buildings") && (!shot.leg || t >= 0.72)) void loadOldQuarterBuildings();
     const fx = shot.fx || {};
     const cover = reduceMotion ? 0 : shot.cover ? shot.cover(t) : 0;
     root.style.setProperty("--cover", cover.toFixed(3));
     document.body.classList.toggle("fx-clouds", cover > 0.001);
+    if (cover > 0.001) loadCloudPhotos();
     document.body.classList.toggle("fx-intro", shot.index === 0 && t < 0.36);
     document.body.classList.toggle("fx-tilt-on", Boolean(fx.tilt));
     document.body.classList.toggle("fx-whip-on", Boolean(fx.whip) && !reduceMotion);
@@ -681,12 +825,22 @@ async function main() {
       void slate.offsetWidth;
       slate.classList.add("is-changing");
     }
+    const hideCitadelNeighbors = shot.chapter === 5 && !shot.leg;
+    if (hideCitadelNeighbors !== clearCitadelNeighbors) {
+      clearCitadelNeighbors = hideCitadelNeighbors;
+      updateCityBuildingVisibility();
+    }
+    if (!shot.leg && shots[shot.index + 1]?.leg) landmarks?.preloadVehicle?.();
 
     // Story card: visible on hero shots of its chapter; photo clouds part on arrival.
     const heroChapter = shot.leg || shot.chapter < 0 || shot.chapter > 6 ? -1 : shot.chapter;
     if (heroChapter !== activeChapter) {
       activeChapter = heroChapter;
       cards.forEach((c) => c.classList.toggle("is-active", Number(c.dataset.chapter) === heroChapter));
+      if (heroChapter >= 0) {
+        setGalleryPhoto(heroChapter, 0);
+        preloadGalleryPhoto(heroChapter + 1);
+      }
       markers.forEach((m, i) => m.getElement().classList.toggle("is-active", i === heroChapter));
       document.querySelectorAll("[data-jump-shot]").forEach((b) => {
         const s = shots[Number(b.dataset.jumpShot)];
@@ -704,9 +858,10 @@ async function main() {
     if (shot.leg) {
       const leg = shot.leg;
       const d = travelProgress(t) * leg.length;
-      const step = [...leg.steps].reverse().find((s) => s.start <= d) || leg.steps[0];
-      const next = leg.steps[leg.steps.indexOf(step) + 1];
-      navHud.hidden = false;
+      const stepIndex = routeStepIndex(leg.steps, d);
+      const step = leg.steps[stepIndex] || leg.steps[0];
+      const next = leg.steps[stepIndex + 1];
+      if (navHud.hidden) navHud.hidden = false;
       const carAt = pointAt(leg, d);
       const zoomNow = map.getZoom();
       landmarks?.setVehicle({
@@ -714,15 +869,21 @@ async function main() {
         lonlat: carAt,
         bearing: heading(carAt, pointAt(leg, d + 12)),
         distance: d,
+        animate: autoplay || Boolean(autoDriveFrame),
         // Illustrative size boost on wide shots so the car stays readable.
         scale: Math.min(3, Math.max(1, Math.pow(2, 20 - zoomNow))),
       });
-      $("#nav-mode").textContent = leg.mode === "driving" ? "ĐANG DI CHUYỂN · XE" : "ĐANG ĐI BỘ";
-      $("#nav-to").textContent = `Đến ${STOPS[shot.chapter].title}`;
+      const mode = leg.mode === "driving" ? "ĐANG DI CHUYỂN · XE" : "ĐANG ĐI BỘ";
+      if (navMode.textContent !== mode) navMode.textContent = mode;
+      const destination = `Đến ${STOPS[shot.chapter].title}`;
+      if (navTo.textContent !== destination) navTo.textContent = destination;
       const left = leg.length - d;
-      $("#nav-left").textContent = `Còn ${fmtKm(left)} · ${fmtMin((left / leg.length) * leg.duration_s)}`;
-      $("#nav-step").textContent = stepText(next && next.start - d < 120 ? next : step);
-      const key = `${shot.index}:${Math.round(d / 8)}`;
+      const remaining = `Còn ${fmtKm(left)} · ${fmtMin((left / leg.length) * leg.duration_s)}`;
+      if (navLeft.textContent !== remaining) navLeft.textContent = remaining;
+      const instruction = stepText(next && next.start - d < 120 ? next : step);
+      if (navStep.textContent !== instruction) navStep.textContent = instruction;
+      const progressStep = leg.length > 5000 ? (window.innerWidth < 760 ? 40 : 24) : 8;
+      const key = `${shot.index}:${Math.floor(d / progressStep)}`;
       if (key !== lastProgressKey && map.getSource("route-progress")) {
         lastProgressKey = key;
         map.getSource("route-progress").setData({ type: "Feature", geometry: { type: "LineString", coordinates: sliceTo(leg, d) } });
@@ -738,18 +899,64 @@ async function main() {
 
     if (map.getLayer("old-quarter-line")) {
       const on = fx.streets ? smooth(0.2, 0.7, t) : 0;
-      map.setPaintProperty("old-quarter-line", "line-opacity", on);
-      map.setPaintProperty("old-quarter-glow", "line-opacity", on * 0.5);
-      map.setPaintProperty("old-quarter-label", "text-opacity", on);
+      if (Math.abs(on - lastOldQuarterOpacity) > 0.001) {
+        lastOldQuarterOpacity = on;
+        map.setPaintProperty("old-quarter-line", "line-opacity", on);
+        map.setPaintProperty("old-quarter-glow", "line-opacity", on * 0.5);
+        map.setPaintProperty("old-quarter-label", "text-opacity", on);
+      }
     }
   }
 
   // Keep the subject clear of the story card (rule of thirds on desktop,
   // upper half on phones).
-  function framePadding() {
+  function framePadding(shot = shots[activeShot]) {
     const w = window.innerWidth, h = window.innerHeight;
-    if (shots[activeShot]?.chapter === 7) return w < 760 ? { top: 0, bottom: 0, left: 0, right: 0 } : { top: 60, bottom: 60, left: Math.round(w * 0.45), right: 0 };
+    if (shot?.chapter === 7) return w < 760 ? { top: 0, bottom: 0, left: 0, right: 0 } : { top: 60, bottom: 60, left: Math.round(w * 0.45), right: 0 };
+    if (shot?.leg) return w < 760 ? { top: 0, bottom: 0, left: 0, right: 0 } : { top: 60, bottom: 60, left: 0, right: Math.round(Math.min(598, w * 0.52)) };
+    if (shot?.chapter === 5 && w < 760) return { top: 70, bottom: Math.round(h * 0.56), left: 0, right: 0 };
     return w < 760 ? { top: 70, bottom: Math.round(h * 0.42), left: 0, right: 0 } : { top: 60, bottom: 60, left: 0, right: Math.round(Math.min(598, w * 0.52)) };
+  }
+
+  const doanMonFitCache = new Map();
+  function fitDoanMonCamera(camera, shot) {
+    if (!doanMonBounds || !map.cameraForBounds) return camera;
+    const padding = framePadding(shot);
+    const margin = Math.round(Math.min(window.innerWidth, window.innerHeight) * 0.08);
+    const fittedPadding = {
+      top: padding.top + margin,
+      bottom: padding.bottom + margin,
+      left: padding.left + margin,
+      right: padding.right + margin,
+    };
+    const bearing = Math.round(camera.bearing);
+    const pitch = Math.round(camera.pitch);
+    const visibleWidth = window.innerWidth < 760
+      ? window.innerWidth
+      : Math.max(1, Math.min(window.innerWidth - 24, $("#story").getBoundingClientRect().left - 16) - 24);
+    const widthCorrection = Math.max(0, Math.log2(map.getContainer().clientWidth / visibleWidth));
+    const key = `${window.innerWidth}x${window.innerHeight}:${bearing}:${pitch}:${JSON.stringify(fittedPadding)}:${visibleWidth}`;
+    if (!doanMonFitCache.has(key)) {
+      try {
+        const fitted = map.cameraForBounds([[doanMonBounds[0], doanMonBounds[1]], [doanMonBounds[2], doanMonBounds[3]]], {
+          bearing,
+          pitch,
+          padding: 0,
+          maxZoom: 21.5,
+        });
+        if (!fitted?.center) {
+          doanMonFitCache.set(key, { center: camera.center, zoom: camera.zoom });
+        } else {
+          // Fit to the exposed map width; the model is shorter than the OSM footprint around it.
+          doanMonFitCache.set(key, { center: fitted.center.toArray(), zoom: Math.min(21.2, fitted.zoom - widthCorrection + 0.35) });
+        }
+      } catch (error) {
+        doanMonFitCache.set(key, { center: camera.center, zoom: camera.zoom });
+        return camera;
+      }
+    }
+    const fitted = doanMonFitCache.get(key);
+    return { ...camera, ...fitted };
   }
 
   // Animate only while the camera moves or the tour plays.
@@ -763,6 +970,7 @@ async function main() {
     if (autoplay) {
       autoplayProgress = Math.min(total, autoplayProgress + (dt * total) / PLAYBACK_DURATION_SECONDS);
       window.scrollTo(0, autoplayProgress * unitPx());
+      applyShot(autoplayProgress);
       if (autoplayProgress >= total) setAutoplay(false);
     }
     const k = reduceMotion ? 1 : 1 - Math.exp(-dt * 7);
@@ -772,7 +980,10 @@ async function main() {
     const bearingError = Math.abs((((target.bearing - current.bearing + 540) % 360) - 180));
     const moving = centerError >= 0.2 || zoomError >= 0.001 || pitchError >= 0.02 || bearingError >= 0.02;
     if (moving) {
-      current = lerpCam(current, target, k);
+      const followed = lerpCam(current, target, k);
+      // Keep the moving vehicle at the camera center while the lens and heading ease.
+      if (shots[activeShot]?.leg) followed.center = [...target.center];
+      current = followed;
       map.jumpTo({ ...current, padding: framePadding() });
     }
     if (moving || autoplay) cameraFrame = requestAnimationFrame(frame);
@@ -786,6 +997,7 @@ async function main() {
 
   let scheduled = false;
   const onScroll = () => {
+    if (autoplay || autoDriveFrame) return;
     if (scheduled) return;
     scheduled = true;
     requestAnimationFrame(() => {
@@ -810,7 +1022,14 @@ async function main() {
     if (e.target instanceof Element && e.target.closest("button, a, input, textarea, select, summary")) return;
     pauseAutoplay();
   });
-  window.addEventListener("resize", () => { const u = progressUnits(); sizeTrack(); window.scrollTo(0, u * unitPx()); applyShot(u); scheduleCameraFrame(); });
+  window.addEventListener("resize", () => {
+    map.setPixelRatio(window.innerWidth < 760 ? Math.min(window.devicePixelRatio || 1, 2) : window.devicePixelRatio);
+    const u = progressUnits();
+    sizeTrack();
+    window.scrollTo(0, u * unitPx());
+    applyShot(u);
+    scheduleCameraFrame();
+  });
   applyShot(progressUnits());
   current = { ...target };
   scheduleCameraFrame();
