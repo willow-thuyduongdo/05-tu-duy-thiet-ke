@@ -30,7 +30,6 @@ const STOPS = [
     photo: "./assets/ma-may.webp", alt: "Không gian gỗ trong ngôi nhà cổ số 87 Mã Mây",
     gallery: [
       { src: "./assets/gallery/ma-may-courtyard.webp", alt: "Sân trong nhà cổ 87 Mã Mây với mái ngói và hàng hiên gỗ" },
-      { src: "./assets/gallery/ma-may-drive.webp", alt: "Mặt tiền Ngôi nhà Di sản 87 Mã Mây" },
     ],
     quote: { who: "Người kể chuyện", text: "Mặt tiền chỉ năm mét, nhưng phải đi hết hai mươi tám mét mới tới gian sau." },
     facts: ["sâu 28 m", "mặt tiền 5 → 6 m", "157,6 m²"], face: 275,
@@ -41,7 +40,6 @@ const STOPS = [
     photo: "./assets/ho-guom.webp", alt: "Tháp Rùa trên đảo nhỏ giữa Hồ Gươm",
     gallery: [
       { src: "./assets/gallery/ho-guom-turtle-tower.webp", alt: "Tháp Rùa trong nắng chiều bên Hồ Gươm" },
-      { src: "./assets/gallery/ho-guom-drive.webp", alt: "Du khách bên hồ Hoàn Kiếm dưới tán cây cổ thụ" },
     ],
     quote: { who: "Truyền thuyết Hồ Gươm", text: "Rùa Vàng nổi lên giữa hồ: “Xin bệ hạ hoàn gươm lại cho Long Quân.”" },
     facts: ["cao 8,8 m", "tầng 1: 6,28 × 4,54 m", "3 tầng + vọng lâu"], face: 270,
@@ -388,7 +386,7 @@ function renderItinerary(legs) {
 async function main() {
   const [sites, routes, streets, lake, driveGallery] = await Promise.all([
     ...["./data/sites.geojson", "./data/routes.geojson", "./data/old-quarter.geojson", "./data/lake.geojson"].map((u) => fetch(`${u}?v=20261020h`).then((r) => r.json())),
-    fetch("./data/drive-gallery.json?v=20261021m").then((r) => r.json()),
+    fetch("./data/drive-gallery.json?v=20261022b").then((r) => r.json()),
   ]);
   for (const stop of STOPS) stop.gallery = [...(stop.gallery || []), ...(driveGallery[stop.id] || [])];
   for (const f of sites.features) {
@@ -452,8 +450,30 @@ async function main() {
   let landmarks = null;
   let landmarkLayerPromise = null;
   let oldQuarterBuildingsPromise = null;
-  let clearCitadelNeighbors = false;
+  let activeBuildingChapter = -1;
   const baseBuildingFilters = [];
+  const buildingClearanceMeters = new Map([[0, 42], [2, 42], [5, 42], [6, 46]]);
+  const buildingClearanceBounds = new Map([...buildingClearanceMeters].map(([chapter, radius]) => {
+    const [lng, lat] = STOPS[chapter].lonlat;
+    const deltaLat = radius / 110540;
+    const deltaLng = radius / (111320 * Math.cos((lat * Math.PI) / 180));
+    return [chapter, {
+      type: "Polygon",
+      coordinates: [[[lng - deltaLng, lat - deltaLat], [lng + deltaLng, lat - deltaLat], [lng + deltaLng, lat + deltaLat], [lng - deltaLng, lat + deltaLat], [lng - deltaLng, lat - deltaLat]]],
+    }];
+  }));
+  const buildingClearanceProbes = new Map([...buildingClearanceMeters].map(([chapter, radius]) => {
+    const [lng, lat] = STOPS[chapter].lonlat;
+    const latStep = 14 / 110540;
+    const lngStep = 14 / (111320 * Math.cos((lat * Math.PI) / 180));
+    const points = [];
+    for (let y = -radius; y <= radius; y += 14) {
+      for (let x = -radius; x <= radius; x += 14) {
+        points.push([lng + x * lngStep, lat + y * latStep]);
+      }
+    }
+    return [chapter, points];
+  }));
   const markers = STOPS.map((s, i) => {
     const el = document.createElement("button");
     el.type = "button";
@@ -474,6 +494,7 @@ async function main() {
       return [[cx, cy], ...ring.map((p) => [lerp(p[0], cx, 0.3), lerp(p[1], cy, 0.3)])];
     });
   const hiddenIds = new Set();
+  const activeClearanceIds = new Set();
   const inside = (pt, ring) => {
     let c = false;
     for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
@@ -485,19 +506,43 @@ async function main() {
   function refreshHidden() {
     if (!map.getLayer("city-3d") || map.getZoom() < 14) return;
     let changed = false;
+    const clearanceProbes = buildingClearanceProbes.get(activeBuildingChapter) || [];
     for (const f of map.querySourceFeatures("openmaptiles", { sourceLayer: "building" })) {
-      if (f.id == null || hiddenIds.has(f.id)) continue;
+      if (f.id == null) continue;
       const g = f.geometry;
       const rings = g.type === "Polygon" ? [g.coordinates[0]] : g.type === "MultiPolygon" ? g.coordinates.map((p) => p[0]) : [];
-      if (rings.some((r) => probes.some((pt) => inside(pt, r)))) { hiddenIds.add(f.id); changed = true; }
+      if (!hiddenIds.has(f.id) && rings.some((r) => probes.some((pt) => inside(pt, r)))) {
+        hiddenIds.add(f.id);
+        changed = true;
+      }
+      if (clearanceProbes.length && !activeClearanceIds.has(f.id) && rings.some((r) => clearanceProbes.some((pt) => inside(pt, r)))) {
+        activeClearanceIds.add(f.id);
+        changed = true;
+      }
     }
     if (changed) updateCityBuildingVisibility();
   }
 
   function updateCityBuildingVisibility() {
-    if (map.getLayer("city-3d")) map.setLayoutProperty("city-3d", "visibility", clearCitadelNeighbors ? "none" : "visible");
+    const bounds = buildingClearanceBounds.get(activeBuildingChapter);
+    const localExclusion = bounds ? [["!", ["within", bounds]]] : [];
+    const hiddenBuildingIds = ["!", ["in", ["id"], ["literal", [...hiddenIds, ...activeClearanceIds]]]];
+    const hideDoanMonNeighbors = activeBuildingChapter === 5;
+    if (map.getLayer("city-3d")) {
+      map.setFilter("city-3d", ["all",
+        ["!", ["within", OLD_QUARTER_BOUNDS]],
+        hiddenBuildingIds,
+        ...localExclusion,
+      ]);
+      map.setLayoutProperty("city-3d", "visibility", hideDoanMonNeighbors ? "none" : "visible");
+    }
     for (const entry of baseBuildingFilters) {
-      map.setLayoutProperty(entry.id, "visibility", clearCitadelNeighbors ? "none" : entry.visibility);
+      map.setFilter(entry.id, ["all", ...(entry.filter ? [entry.filter] : []), hiddenBuildingIds, ...localExclusion]);
+      map.setLayoutProperty(entry.id, "visibility", hideDoanMonNeighbors && entry.type === "fill-extrusion" ? "none" : entry.visibility);
+    }
+    if (map.getLayer("old-quarter-buildings-3d")) {
+      map.setFilter("old-quarter-buildings-3d", bounds ? ["all", ...localExclusion] : null);
+      map.setLayoutProperty("old-quarter-buildings-3d", "visibility", hideDoanMonNeighbors ? "none" : "visible");
     }
   }
 
@@ -563,7 +608,7 @@ async function main() {
   map.on("load", () => {
     for (const layer of map.getStyle().layers) {
       if (layer.source === "openmaptiles" && layer["source-layer"] === "building") {
-        baseBuildingFilters.push({ id: layer.id, visibility: layer.layout?.visibility ?? "visible" });
+        baseBuildingFilters.push({ id: layer.id, type: layer.type, visibility: layer.layout?.visibility ?? "visible", filter: layer.filter ?? null });
       }
     }
     addCityLayers(map, { streets, routes, lake: lake.features[0] });
@@ -609,6 +654,7 @@ async function main() {
   const photoViewer = $("#photo-viewer");
   const photoViewerImage = $("#photo-viewer-image");
   const photoViewerCaption = $("#photo-viewer-caption");
+  const photoViewerCredit = $("#photo-viewer-credit");
   const photoViewerCount = $("#photo-viewer-count");
   let lastPhotoTrigger = null;
   let currentViewerPhoto = null;
@@ -652,6 +698,24 @@ async function main() {
     photoViewerImage.src = responsivePhotoSrc(current.photo.src);
     photoViewerImage.alt = current.photo.alt;
     photoViewerCaption.textContent = `${STOPS[chapter].title} · ${current.photo.alt}`;
+    photoViewerCredit.replaceChildren();
+    const source = current.photo.source;
+    if (source && current.photo.author && current.photo.license && current.photo.licenseUrl) {
+      const sourceLink = document.createElement("a");
+      sourceLink.href = source;
+      sourceLink.target = "_blank";
+      sourceLink.rel = "noreferrer";
+      sourceLink.textContent = `Ảnh: ${current.photo.author}`;
+      const licenseLink = document.createElement("a");
+      licenseLink.href = current.photo.licenseUrl;
+      licenseLink.target = "_blank";
+      licenseLink.rel = "noreferrer";
+      licenseLink.textContent = current.photo.license;
+      photoViewerCredit.append(sourceLink, document.createTextNode(" · "), licenseLink, document.createTextNode(" · Đã chuyển WebP và thu nhỏ"));
+      photoViewerCredit.hidden = false;
+    } else {
+      photoViewerCredit.hidden = true;
+    }
     photoViewerCount.textContent = `${String(current.index + 1).padStart(2, "0")} / ${String(current.total).padStart(2, "0")}`;
   }
 
@@ -825,10 +889,12 @@ async function main() {
       void slate.offsetWidth;
       slate.classList.add("is-changing");
     }
-    const hideCitadelNeighbors = shot.chapter === 5 && !shot.leg;
-    if (hideCitadelNeighbors !== clearCitadelNeighbors) {
-      clearCitadelNeighbors = hideCitadelNeighbors;
+    const buildingChapter = !shot.leg && buildingClearanceMeters.has(shot.chapter) ? shot.chapter : -1;
+    if (buildingChapter !== activeBuildingChapter) {
+      activeBuildingChapter = buildingChapter;
+      activeClearanceIds.clear();
       updateCityBuildingVisibility();
+      refreshHidden();
     }
     if (!shot.leg && shots[shot.index + 1]?.leg) landmarks?.preloadVehicle?.();
 
@@ -948,7 +1014,7 @@ async function main() {
           doanMonFitCache.set(key, { center: camera.center, zoom: camera.zoom });
         } else {
           // Fit to the exposed map width; the model is shorter than the OSM footprint around it.
-          doanMonFitCache.set(key, { center: fitted.center.toArray(), zoom: Math.min(21.2, fitted.zoom - widthCorrection + 0.35) });
+          doanMonFitCache.set(key, { center: fitted.center.toArray(), zoom: Math.min(21.7, fitted.zoom - widthCorrection + 1.1) });
         }
       } catch (error) {
         doanMonFitCache.set(key, { center: camera.center, zoom: camera.zoom });

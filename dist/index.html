@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://tiles.openfreemap.org">
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Charm:wght@400;700&family=JetBrains+Mono:wght@400;600&family=Vujahday+Script&display=swap" rel="stylesheet">
   <link href="https://unpkg.com/maplibre-gl@6.14.0/dist/maplibre-gl.css" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css?v=20261021p">
+  <link rel="stylesheet" href="./styles.css?v=20261022b">
   <script type="importmap">
     {
       "imports": {
@@ -24,7 +24,7 @@
       }
     }
   </script>
-  <script type="module" src="./app.js?v=20261021al"></script>
+  <script type="module" src="./app.js?v=20261022c"></script>
   <title>Hà Nội xưa — bảy cảnh quay</title>
 </head>
 <body class="is-loading">
@@ -133,7 +133,11 @@
     <button class="photo-viewer__nav photo-viewer__nav--prev" type="button" data-photo-step="-1" aria-label="Ảnh trước">‹</button>
     <figure class="photo-viewer__figure">
       <img id="photo-viewer-image" alt="">
-      <figcaption><span id="photo-viewer-caption"></span><small id="photo-viewer-count"></small></figcaption>
+      <figcaption>
+        <span id="photo-viewer-caption"></span>
+        <small class="photo-viewer__credit" id="photo-viewer-credit" hidden></small>
+        <small id="photo-viewer-count"></small>
+      </figcaption>
     </figure>
     <button class="photo-viewer__nav photo-viewer__nav--next" type="button" data-photo-step="1" aria-label="Ảnh tiếp theo">›</button>
   </dialog>

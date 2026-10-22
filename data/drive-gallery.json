@@ -53,14 +53,6 @@
     {
       "src": "./assets/gallery/drive/pho-co/drive-08.jpg",
       "alt": "Khách trên phố ẩm thực Hà Nội buổi tối."
-    },
-    {
-      "src": "./assets/gallery/drive/pho-co/drive-09.jpg",
-      "alt": "Khách trên phố ẩm thực Hà Nội buổi tối."
-    },
-    {
-      "src": "./assets/gallery/drive/pho-co/drive-10.jpg",
-      "alt": "Khách trên phố ẩm thực Hà Nội buổi tối."
     }
   ],
   "lang-bac": [
@@ -91,158 +83,102 @@
   ],
   "ma-may": [
     {
-      "src": "./assets/gallery/drive/ma-may/drive-01.jpg",
-      "alt": "Du khách trước Ngôi nhà Di sản 87 Mã Mây."
+      "src": "./assets/gallery/ma-may/ma-may-01.webp",
+      "alt": "Sân trong nhà cổ 87 Mã Mây nhìn từ hiên tầng trên.",
+      "author": "Christophe95",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "source": "https://commons.wikimedia.org/wiki/File:Heritage_House_in_Hanoi.jpg"
     },
     {
-      "src": "./assets/gallery/drive/ma-may/drive-02.jpg",
-      "alt": "Du khách trước Ngôi nhà Di sản 87 Mã Mây."
+      "src": "./assets/gallery/ma-may/ma-may-02.webp",
+      "alt": "Giếng trời và khung gỗ trong nhà cổ 87 Mã Mây.",
+      "author": "Guerinf",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "source": "https://commons.wikimedia.org/wiki/File:Maison_longue_traditionnelle_(2).jpg"
     },
     {
-      "src": "./assets/gallery/drive/ma-may/drive-03.jpg",
-      "alt": "Du khách trước Ngôi nhà Di sản 87 Mã Mây."
+      "src": "./assets/gallery/ma-may/ma-may-03.webp",
+      "alt": "Lối đi qua nhiều gian nhà cổ 87 Mã Mây.",
+      "author": "Guerinf",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "source": "https://commons.wikimedia.org/wiki/File:Maison_longue_traditionnelle_(3).jpg"
     },
     {
-      "src": "./assets/gallery/drive/ma-may/drive-04.jpg",
-      "alt": "Du khách trước Ngôi nhà Di sản 87 Mã Mây."
+      "src": "./assets/gallery/ma-may/ma-may-04.webp",
+      "alt": "Khoảng thông tầng nhìn từ bên dưới trong nhà cổ 87 Mã Mây.",
+      "author": "Guerinf",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "source": "https://commons.wikimedia.org/wiki/File:Maison_longue_traditionnelle_(5).jpg"
     },
     {
-      "src": "./assets/gallery/drive/ma-may/drive-05.jpg",
-      "alt": "Du khách trước Ngôi nhà Di sản 87 Mã Mây."
-    },
-    {
-      "src": "./assets/gallery/drive/ma-may/drive-06.jpg",
-      "alt": "Du khách trước Ngôi nhà Di sản 87 Mã Mây."
-    },
-    {
-      "src": "./assets/gallery/drive/ma-may/drive-07.jpg",
-      "alt": "Du khách trước Ngôi nhà Di sản 87 Mã Mây."
-    },
-    {
-      "src": "./assets/gallery/drive/ma-may/drive-08.jpg",
-      "alt": "Du khách trước Ngôi nhà Di sản 87 Mã Mây."
-    },
-    {
-      "src": "./assets/gallery/drive/ma-may/drive-09.jpg",
-      "alt": "Du khách trước Ngôi nhà Di sản 87 Mã Mây."
-    },
-    {
-      "src": "./assets/gallery/drive/ma-may/drive-10.jpg",
-      "alt": "Du khách trước Ngôi nhà Di sản 87 Mã Mây."
-    },
-    {
-      "src": "./assets/gallery/drive/ma-may/drive-11.jpg",
-      "alt": "Du khách trước Ngôi nhà Di sản 87 Mã Mây."
+      "src": "./assets/gallery/ma-may/ma-may-05.webp",
+      "alt": "Khung nhà gỗ nhìn xuống sân trong nhà cổ 87 Mã Mây.",
+      "author": "Christophe95",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "source": "https://commons.wikimedia.org/wiki/File:Heritage_House_(Hanoi).jpg"
     }
   ],
   "ho-guom": [
     {
-      "src": "./assets/gallery/drive/ho-guom/drive-01.jpg",
-      "alt": "Du khách bên Hồ Hoàn Kiếm."
+      "src": "./assets/gallery/ho-guom/ho-guom-01.webp",
+      "alt": "Tháp Rùa và ánh đèn phản chiếu trên Hồ Gươm về đêm.",
+      "author": "Radek Kucharski",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+      "source": "https://commons.wikimedia.org/wiki/File:Hoan_Kiem_Lake_at_night.jpg"
     },
     {
-      "src": "./assets/gallery/drive/ho-guom/drive-02.jpg",
-      "alt": "Du khách tại khu vực Hồ Hoàn Kiếm."
+      "src": "./assets/gallery/ho-guom/ho-guom-02.webp",
+      "alt": "Cầu Thê Húc và ánh đèn ven Hồ Gươm ban đêm.",
+      "author": "Christophe95",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "source": "https://commons.wikimedia.org/wiki/File:Hoan_Kiem_Lake_at_night_1.jpg"
     },
     {
-      "src": "./assets/gallery/drive/ho-guom/drive-03.jpg",
-      "alt": "Du khách tại khu vực Hồ Hoàn Kiếm."
+      "src": "./assets/gallery/ho-guom/ho-guom-03.webp",
+      "alt": "Tháp Rùa nhìn dọc mặt nước Hồ Gươm.",
+      "author": "Dennis G. Jarvis",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+      "source": "https://commons.wikimedia.org/wiki/File:Turtle_Tower%2C_Hoan_Kiem_Lake%2C_Hanoi_(3531374428).jpg"
     },
     {
-      "src": "./assets/gallery/drive/ho-guom/drive-04.jpg",
-      "alt": "Du khách bên Hồ Hoàn Kiếm."
+      "src": "./assets/gallery/ho-guom/ho-guom-04.webp",
+      "alt": "Toàn cảnh Tháp Rùa trên mặt nước Hồ Gươm.",
+      "author": "Holiday Point",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+      "source": "https://commons.wikimedia.org/wiki/File:Turtle_Tower%2C_Hoan_Kiem_Lake%2C_Hanoi%2C_Vietnam_(8120856071).jpg"
     },
     {
-      "src": "./assets/gallery/drive/ho-guom/drive-05.jpg",
-      "alt": "Du khách bên Hồ Hoàn Kiếm."
+      "src": "./assets/gallery/ho-guom/ho-guom-05.webp",
+      "alt": "Hồ Gươm lúc hoàng hôn.",
+      "author": "Vyacheslav Argenberg",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "source": "https://commons.wikimedia.org/wiki/File:Hanoi%2C_Vietnam%2C_Sunset_at_Hoan_Kiem_Lake.jpg"
     },
     {
-      "src": "./assets/gallery/drive/ho-guom/drive-06.jpg",
-      "alt": "Du khách bên Hồ Hoàn Kiếm."
+      "src": "./assets/gallery/ho-guom/ho-guom-06.webp",
+      "alt": "Hồ Gươm về đêm với ánh đèn thành phố.",
+      "author": "Turgidson",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "source": "https://commons.wikimedia.org/wiki/File:Hoan_Kiem_Lake_in_Hanoi%2C_Vietnam.png"
     },
     {
-      "src": "./assets/gallery/drive/ho-guom/drive-07.jpg",
-      "alt": "Du khách bên Hồ Hoàn Kiếm."
-    },
-    {
-      "src": "./assets/gallery/drive/ho-guom/drive-08.jpg",
-      "alt": "Du khách bên Hồ Hoàn Kiếm."
-    },
-    {
-      "src": "./assets/gallery/drive/ho-guom/drive-09.jpg",
-      "alt": "Du khách bên Hồ Hoàn Kiếm."
-    },
-    {
-      "src": "./assets/gallery/drive/ho-guom/drive-10.jpg",
-      "alt": "Du khách bên Hồ Hoàn Kiếm."
-    },
-    {
-      "src": "./assets/gallery/drive/ho-guom/drive-11.jpg",
-      "alt": "Du khách bên Hồ Hoàn Kiếm."
-    },
-    {
-      "src": "./assets/gallery/drive/ho-guom/drive-12.jpg",
-      "alt": "Du khách bên Hồ Hoàn Kiếm."
-    },
-    {
-      "src": "./assets/gallery/drive/ho-guom/drive-13.jpg",
-      "alt": "Du khách bên Hồ Hoàn Kiếm."
-    },
-    {
-      "src": "./assets/gallery/drive/ho-guom/drive-14.jpg",
-      "alt": "Du khách bên Hồ Hoàn Kiếm."
-    },
-    {
-      "src": "./assets/gallery/drive/ho-guom/drive-15.jpg",
-      "alt": "Du khách bên Hồ Hoàn Kiếm."
-    },
-    {
-      "src": "./assets/gallery/drive/ho-guom/drive-16.jpg",
-      "alt": "Du khách bên Hồ Hoàn Kiếm."
-    },
-    {
-      "src": "./assets/gallery/drive/ho-guom/drive-17.jpg",
-      "alt": "Du khách bên Hồ Hoàn Kiếm."
-    },
-    {
-      "src": "./assets/gallery/drive/ho-guom/drive-18.jpg",
-      "alt": "Du khách bên Hồ Hoàn Kiếm."
-    },
-    {
-      "src": "./assets/gallery/drive/ho-guom/drive-19.jpg",
-      "alt": "Du khách bên Hồ Hoàn Kiếm."
-    },
-    {
-      "src": "./assets/gallery/drive/ho-guom/drive-20.jpg",
-      "alt": "Du khách bên Hồ Hoàn Kiếm."
-    },
-    {
-      "src": "./assets/gallery/drive/ho-guom/drive-21.jpg",
-      "alt": "Du khách bên Hồ Hoàn Kiếm."
-    },
-    {
-      "src": "./assets/gallery/drive/ho-guom/drive-22.jpg",
-      "alt": "Du khách bên Hồ Hoàn Kiếm."
-    },
-    {
-      "src": "./assets/gallery/drive/ho-guom/drive-23.jpg",
-      "alt": "Du khách bên Hồ Hoàn Kiếm."
-    },
-    {
-      "src": "./assets/gallery/drive/ho-guom/drive-24.jpg",
-      "alt": "Du khách bên Hồ Hoàn Kiếm."
-    },
-    {
-      "src": "./assets/gallery/drive/ho-guom/drive-25.jpg",
-      "alt": "Du khách bên Hồ Hoàn Kiếm."
-    },
-    {
-      "src": "./assets/gallery/drive/ho-guom/drive-26.jpg",
-      "alt": "Du khách bên Hồ Hoàn Kiếm."
-    },
-    {
-      "src": "./assets/gallery/drive/ho-guom/drive-27.jpg",
-      "alt": "Du khách bên Hồ Hoàn Kiếm."
+      "src": "./assets/gallery/ho-guom/ho-guom-07.webp",
+      "alt": "Tháp Rùa ở giữa Hồ Gươm trong ảnh chụp ban ngày.",
+      "author": "Rolf Müller",
+      "license": "CC BY-SA 2.5",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.5/",
+      "source": "https://commons.wikimedia.org/wiki/File:Hoan_kiem_lake_turtle_tower_hanoi_2007_01.jpg"
     }
   ],
   "van-mieu": [
@@ -301,6 +237,64 @@
     {
       "src": "./assets/gallery/drive/van-mieu/drive-14.jpg",
       "alt": "Khách tham quan Văn Miếu – Quốc Tử Giám."
+    }
+  ],
+  "hoang-thanh": [
+    {
+      "src": "./assets/gallery/hoang-thanh/hoang-thanh-01.webp",
+      "alt": "Đoan Môn nhìn chính diện, phía trước là vườn cây.",
+      "author": "Christophe95",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "source": "https://commons.wikimedia.org/wiki/File:Doan_Mon_Gate_1.jpg"
+    },
+    {
+      "src": "./assets/gallery/hoang-thanh/hoang-thanh-02.webp",
+      "alt": "Một góc khác của cổng Đoan Môn.",
+      "author": "Christophe95",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "source": "https://commons.wikimedia.org/wiki/File:Doan_Mon_Gate_2.jpg"
+    },
+    {
+      "src": "./assets/gallery/hoang-thanh/hoang-thanh-03.webp",
+      "alt": "Chi tiết rồng trang trí trên mái Đoan Môn.",
+      "author": "CEphoto, Uwe Aranas",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "source": "https://commons.wikimedia.org/wiki/File:Hanoi_Vietnam_%C4%90oan-m%C3%B4n-01.jpg"
+    },
+    {
+      "src": "./assets/gallery/hoang-thanh/hoang-thanh-04.webp",
+      "alt": "Khách tham quan trong khu Hoàng thành Thăng Long.",
+      "author": "Isabell Schulz",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+      "source": "https://commons.wikimedia.org/wiki/File:Th%C4%83ng_Long_Imperial_Citadel%2C_Hanoi_(44506676010).jpg"
+    },
+    {
+      "src": "./assets/gallery/hoang-thanh/hoang-thanh-05.webp",
+      "alt": "Tháp cung điện Kính Thiên và họa tiết hoa sen.",
+      "author": "Vuong Tri Binh",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "source": "https://commons.wikimedia.org/wiki/File:Kinh_Thien_palace_tower_at_the_entrance_gate_with_lotus_decorations.jpg"
+    },
+    {
+      "src": "./assets/gallery/hoang-thanh/hoang-thanh-06.webp",
+      "alt": "Khu khảo cổ Hoàng thành Thăng Long tại Hoàng Diệu 18.",
+      "author": "Christophe95",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "source": "https://commons.wikimedia.org/wiki/File:Hoang_Thanh_Historical_Site_2.jpg"
+    },
+    {
+      "src": "./assets/gallery/hoang-thanh/hoang-thanh-07.webp",
+      "alt": "Bưu thiếp xưa chụp Cửa Nam của thành Hà Nội.",
+      "author": "Không rõ tác giả",
+      "license": "Public Domain Mark 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
+      "source": "https://commons.wikimedia.org/wiki/File:Hano%C3%AF_-_La_Porte_du_Sud_de_la_Citadelle.jpg"
     }
   ]
 }
