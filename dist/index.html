@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://tiles.openfreemap.org">
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Charm:wght@400;700&family=JetBrains+Mono:wght@400;600&family=Vujahday+Script&display=swap" rel="stylesheet">
   <link href="https://unpkg.com/maplibre-gl@6.14.0/dist/maplibre-gl.css" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css?v=20261022b">
+  <link rel="stylesheet" href="./styles.css?v=20261022c">
   <script type="importmap">
     {
       "imports": {
@@ -24,10 +24,25 @@
       }
     }
   </script>
-  <script type="module" src="./app.js?v=20261022c"></script>
+  <script type="module" src="./app.js?v=20261022g"></script>
   <title>Hà Nội xưa — bảy cảnh quay</title>
 </head>
-<body class="is-loading">
+<body class="is-loading" aria-busy="true">
+  <div class="startup-loader" id="startup-loader" role="region" aria-label="Đang tải hành trình Hà Nội xưa">
+    <div class="startup-loader__content">
+      <span class="startup-loader__brand">Hà Nội xưa</span>
+      <span class="startup-loader__spinner" aria-hidden="true"></span>
+      <p class="startup-loader__status" id="startup-status" role="status" aria-live="polite">Đang chuẩn bị dữ liệu hành trình…</p>
+      <div class="startup-loader__progress" role="progressbar" aria-label="Tiến độ tải dữ liệu" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <span id="startup-progress"></span>
+      </div>
+      <span class="startup-loader__percent" id="startup-percent">0%</span>
+      <div class="startup-loader__error" id="startup-error" hidden>
+        <p id="startup-error-message">Chưa tải được dữ liệu.</p>
+        <button class="chip" id="startup-retry" type="button">Tải lại</button>
+      </div>
+    </div>
+  </div>
   <a class="skip-link" href="#story">Bỏ qua phần quay, đọc nội dung</a>
 
   <div class="stage" aria-hidden="false">
@@ -152,6 +167,6 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <div class="scroll-track" id="scroll-track" aria-hidden="true"></div>
-  <noscript><p class="noscript">Trang cần JavaScript và WebGL để hiển thị bản đồ 3D.</p></noscript>
+  <noscript><style>.startup-loader{display:none!important}</style><p class="noscript">Trang cần JavaScript và WebGL để hiển thị bản đồ 3D.</p></noscript>
 </body>
 </html>

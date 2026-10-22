@@ -87,6 +87,53 @@ const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").match
 const PLAYBACK_DURATION_SECONDS = 600;
 const escapeHtml = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const responsivePhotoSrc = (src) => window.innerWidth < 760 && src.endsWith(".webp") && !src.includes("/assets/clouds/") ? src.replace(/\.webp$/, ".mobile.webp") : src;
+let startupProgress = 0;
+let startupFailed = false;
+let startupTimeoutId = 0;
+
+function updateStartupLoader(value, message) {
+  startupProgress = Math.max(startupProgress, Math.min(100, Math.max(0, value)));
+  const progress = $(".startup-loader__progress");
+  progress.setAttribute("aria-valuenow", String(Math.round(startupProgress)));
+  $("#startup-progress").style.transform = `scaleX(${startupProgress / 100})`;
+  $("#startup-percent").textContent = `${Math.round(startupProgress)}%`;
+  if (message) $("#startup-status").textContent = message;
+}
+
+function setApplicationInert(inert) {
+  for (const element of document.body.children) {
+    if (element.id === "startup-loader" || element.tagName === "NOSCRIPT") continue;
+    if (inert) element.setAttribute("inert", "");
+    else element.removeAttribute("inert");
+  }
+}
+
+function showStartupError(error) {
+  if (startupFailed) return;
+  startupFailed = true;
+  window.clearTimeout(startupTimeoutId);
+  console.error(error);
+  document.body.classList.add("is-loading");
+  document.body.setAttribute("aria-busy", "true");
+  $("#startup-status").textContent = "Chưa thể mở hành trình.";
+  $("#startup-error-message").textContent = "Kiểm tra kết nối mạng rồi tải lại trang.";
+  $("#startup-error").hidden = false;
+  $("#startup-retry").onclick = () => location.reload();
+}
+
+function waitForMapIdle(map, timeoutMs = 45000) {
+  return new Promise((resolve, reject) => {
+    const timer = window.setTimeout(() => {
+      map.off("idle", onIdle);
+      reject(new Error("Map did not become idle before startup timeout."));
+    }, timeoutMs);
+    const onIdle = () => {
+      window.clearTimeout(timer);
+      resolve();
+    };
+    map.once("idle", onIdle);
+  });
+}
 
 function lerpCam(a, b, t) {
   return {
@@ -384,9 +431,17 @@ function renderItinerary(legs) {
 
 /* ============================================================== main */
 async function main() {
+  setApplicationInert(true);
+  startupTimeoutId = window.setTimeout(() => showStartupError(new Error("Startup did not complete before timeout.")), 90000);
+  updateStartupLoader(3, "Đang đọc dữ liệu hành trình…");
+  const fetchJson = async (url) => {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`${url} returned ${response.status}`);
+    return response.json();
+  };
   const [sites, routes, streets, lake, driveGallery] = await Promise.all([
-    ...["./data/sites.geojson", "./data/routes.geojson", "./data/old-quarter.geojson", "./data/lake.geojson"].map((u) => fetch(`${u}?v=20261020h`).then((r) => r.json())),
-    fetch("./data/drive-gallery.json?v=20261022b").then((r) => r.json()),
+    ...["./data/sites.geojson?v=20261020h", "./data/routes.geojson?v=20261020h", "./data/old-quarter.geojson?v=20261020h", "./data/lake.geojson?v=20261020h"].map(fetchJson),
+    fetchJson("./data/drive-gallery.json?v=20261022b"),
   ]);
   for (const stop of STOPS) stop.gallery = [...(stop.gallery || []), ...(driveGallery[stop.id] || [])];
   for (const f of sites.features) {
@@ -395,6 +450,7 @@ async function main() {
     if (stop) stop.lonlat = f.geometry.coordinates;
     if (f.properties.id === "bat-trang-kiln") STOPS[0].kiln = f.geometry.coordinates;
   }
+  updateStartupLoader(12, "Dữ liệu hành trình đã sẵn sàng.");
   const legs = routes.features.map(prepareLeg);
   const { shots, total } = buildShots(legs);
   const doanMonRing = sites.features.find((f) => f.properties.id === "hoang-thanh" && f.properties.kind === "footprint")?.geometry.coordinates[0];
@@ -452,27 +508,22 @@ async function main() {
   let oldQuarterBuildingsPromise = null;
   let activeBuildingChapter = -1;
   const baseBuildingFilters = [];
-  const buildingClearanceMeters = new Map([[0, 42], [2, 42], [5, 42], [6, 46]]);
-  const buildingClearanceBounds = new Map([...buildingClearanceMeters].map(([chapter, radius]) => {
+  const buildingClearanceMeters = new Map([[0, 42], [2, 50], [5, 42], [6, 46]]);
+  const buildingClearanceAreas = new Map([...buildingClearanceMeters].map(([chapter, radius]) => {
     const [lng, lat] = STOPS[chapter].lonlat;
     const deltaLat = radius / 110540;
     const deltaLng = radius / (111320 * Math.cos((lat * Math.PI) / 180));
+    const ring = Array.from({ length: 64 }, (_, index) => {
+      const angle = (index / 64) * Math.PI * 2;
+      return [lng + Math.cos(angle) * deltaLng, lat + Math.sin(angle) * deltaLat];
+    });
+    ring.push(ring[0]);
     return [chapter, {
-      type: "Polygon",
-      coordinates: [[[lng - deltaLng, lat - deltaLat], [lng + deltaLng, lat - deltaLat], [lng + deltaLng, lat + deltaLat], [lng - deltaLng, lat + deltaLat], [lng - deltaLng, lat - deltaLat]]],
+      origin: [lng, lat],
+      radius,
+      bounds: [lng - deltaLng, lat - deltaLat, lng + deltaLng, lat + deltaLat],
+      polygon: { type: "Polygon", coordinates: [ring] },
     }];
-  }));
-  const buildingClearanceProbes = new Map([...buildingClearanceMeters].map(([chapter, radius]) => {
-    const [lng, lat] = STOPS[chapter].lonlat;
-    const latStep = 14 / 110540;
-    const lngStep = 14 / (111320 * Math.cos((lat * Math.PI) / 180));
-    const points = [];
-    for (let y = -radius; y <= radius; y += 14) {
-      for (let x = -radius; x <= radius; x += 14) {
-        points.push([lng + x * lngStep, lat + y * latStep]);
-      }
-    }
-    return [chapter, points];
   }));
   const markers = STOPS.map((s, i) => {
     const el = document.createElement("button");
@@ -485,16 +536,23 @@ async function main() {
 
   // Sample points inside each landmark footprint; OSM building blocks that
   // contain one are hidden so the detailed model replaces them.
-  const probes = sites.features
+  const probeGroups = sites.features
     .filter((f) => f.properties.kind === "footprint")
-    .flatMap((f) => {
+    .map((f) => {
       const ring = f.geometry.coordinates[0].slice(0, -1);
       const cx = ring.reduce((a, p) => a + p[0], 0) / ring.length;
       const cy = ring.reduce((a, p) => a + p[1], 0) / ring.length;
-      return [[cx, cy], ...ring.map((p) => [lerp(p[0], cx, 0.3), lerp(p[1], cy, 0.3)])];
+      const bounds = ring.reduce((b, p) => [Math.min(b[0], p[0]), Math.min(b[1], p[1]), Math.max(b[2], p[0]), Math.max(b[3], p[1])], [Infinity, Infinity, -Infinity, -Infinity]);
+      return { bounds, points: [[cx, cy], ...ring.map((p) => [lerp(p[0], cx, 0.3), lerp(p[1], cy, 0.3)])] };
     });
   const hiddenIds = new Set();
   const activeClearanceIds = new Set();
+  const activeOldQuarterClearanceIds = new Set();
+  const checkedLandmarkBuildings = new Set();
+  const checkedClearanceBuildings = new Map([...buildingClearanceMeters.keys()].map((chapter) => [chapter, new Set()]));
+  const matchedClearanceBuildings = new Map([...buildingClearanceMeters.keys()].map((chapter) => [chapter, new Set()]));
+  const checkedOldQuarterClearanceBuildings = new Map([...buildingClearanceMeters.keys()].map((chapter) => [chapter, new Set()]));
+  const matchedOldQuarterClearanceBuildings = new Map([...buildingClearanceMeters.keys()].map((chapter) => [chapter, new Set()]));
   const inside = (pt, ring) => {
     let c = false;
     for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
@@ -503,29 +561,98 @@ async function main() {
     }
     return c;
   };
+  const overlaps = (a, b) => a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1];
+  const pointInBounds = (pt, b) => pt[0] >= b[0] && pt[0] <= b[2] && pt[1] >= b[1] && pt[1] <= b[3];
+  function featureRings(feature) {
+    const g = feature.geometry;
+    const sourceRings = g.type === "Polygon" ? [g.coordinates[0]] : g.type === "MultiPolygon" ? g.coordinates.map((p) => p[0]) : [];
+    return sourceRings.map((ring) => ({
+      ring,
+      bounds: ring.reduce((b, p) => [Math.min(b[0], p[0]), Math.min(b[1], p[1]), Math.max(b[2], p[0]), Math.max(b[3], p[1])], [Infinity, Infinity, -Infinity, -Infinity]),
+    }));
+  }
+  function featureKey(id, rings) {
+    return `${id}:${rings.map(({ bounds }) => bounds.map((v) => v.toFixed(6)).join(",")).join(";")}`;
+  }
+  function matchesProbeGroup(rings, groups) {
+    return groups.some((group) => rings.some(({ ring, bounds }) => overlaps(bounds, group.bounds)
+      && group.points.some((pt) => pointInBounds(pt, bounds) && inside(pt, ring))));
+  }
+  function matchesClearance(rings, area) {
+    const [lng, lat] = area.origin;
+    const metersPerLng = 111320 * Math.cos((lat * Math.PI) / 180);
+    const radiusSquared = area.radius * area.radius;
+    return rings.some(({ ring, bounds }) => {
+      if (!overlaps(bounds, area.bounds)) return false;
+      if (inside(area.origin, ring)) return true;
+      for (let i = 1; i < ring.length; i++) {
+        const [x1Lng, y1Lat] = ring[i - 1];
+        const [x2Lng, y2Lat] = ring[i];
+        const x1 = (x1Lng - lng) * metersPerLng;
+        const y1 = (y1Lat - lat) * 110540;
+        const dx = (x2Lng - x1Lng) * metersPerLng;
+        const dy = (y2Lat - y1Lat) * 110540;
+        const lengthSquared = dx * dx + dy * dy;
+        const t = lengthSquared ? Math.max(0, Math.min(1, -(x1 * dx + y1 * dy) / lengthSquared)) : 0;
+        const x = x1 + t * dx;
+        const y = y1 + t * dy;
+        if (x * x + y * y <= radiusSquared) return true;
+      }
+      return false;
+    });
+  }
   function refreshHidden() {
     if (!map.getLayer("city-3d") || map.getZoom() < 14) return;
     let changed = false;
-    const clearanceProbes = buildingClearanceProbes.get(activeBuildingChapter) || [];
+    const clearanceArea = buildingClearanceAreas.get(activeBuildingChapter);
+    const checkedClearance = checkedClearanceBuildings.get(activeBuildingChapter);
+    const matchedClearance = matchedClearanceBuildings.get(activeBuildingChapter);
     for (const f of map.querySourceFeatures("openmaptiles", { sourceLayer: "building" })) {
       if (f.id == null) continue;
-      const g = f.geometry;
-      const rings = g.type === "Polygon" ? [g.coordinates[0]] : g.type === "MultiPolygon" ? g.coordinates.map((p) => p[0]) : [];
-      if (!hiddenIds.has(f.id) && rings.some((r) => probes.some((pt) => inside(pt, r)))) {
-        hiddenIds.add(f.id);
-        changed = true;
+      const rings = featureRings(f);
+      const key = featureKey(f.id, rings);
+      if (!checkedLandmarkBuildings.has(key)) {
+        checkedLandmarkBuildings.add(key);
+        if (matchesProbeGroup(rings, probeGroups)) {
+          hiddenIds.add(f.id);
+          changed = true;
+        }
       }
-      if (clearanceProbes.length && !activeClearanceIds.has(f.id) && rings.some((r) => clearanceProbes.some((pt) => inside(pt, r)))) {
-        activeClearanceIds.add(f.id);
-        changed = true;
+      if (clearanceArea && checkedClearance && !checkedClearance.has(key)) {
+        checkedClearance.add(key);
+        if (matchesClearance(rings, clearanceArea)) {
+          matchedClearance.add(f.id);
+          if (!activeClearanceIds.has(f.id)) {
+            activeClearanceIds.add(f.id);
+            changed = true;
+          }
+        }
+      }
+    }
+    const checkedOldQuarter = checkedOldQuarterClearanceBuildings.get(activeBuildingChapter);
+    const matchedOldQuarter = matchedOldQuarterClearanceBuildings.get(activeBuildingChapter);
+    if (clearanceArea && checkedOldQuarter && map.getSource("old-quarter-buildings")) {
+      for (const f of map.querySourceFeatures("old-quarter-buildings")) {
+        if (f.id == null) continue;
+        const rings = featureRings(f);
+        const key = featureKey(f.id, rings);
+        if (checkedOldQuarter.has(key)) continue;
+        checkedOldQuarter.add(key);
+        if (matchesClearance(rings, clearanceArea)) {
+          matchedOldQuarter.add(f.id);
+          if (!activeOldQuarterClearanceIds.has(f.id)) {
+            activeOldQuarterClearanceIds.add(f.id);
+            changed = true;
+          }
+        }
       }
     }
     if (changed) updateCityBuildingVisibility();
   }
 
   function updateCityBuildingVisibility() {
-    const bounds = buildingClearanceBounds.get(activeBuildingChapter);
-    const localExclusion = bounds ? [["!", ["within", bounds]]] : [];
+    const area = buildingClearanceAreas.get(activeBuildingChapter);
+    const localExclusion = area ? [["!", ["within", area.polygon]]] : [];
     const hiddenBuildingIds = ["!", ["in", ["id"], ["literal", [...hiddenIds, ...activeClearanceIds]]]];
     const hideDoanMonNeighbors = activeBuildingChapter === 5;
     if (map.getLayer("city-3d")) {
@@ -541,34 +668,34 @@ async function main() {
       map.setLayoutProperty(entry.id, "visibility", hideDoanMonNeighbors && entry.type === "fill-extrusion" ? "none" : entry.visibility);
     }
     if (map.getLayer("old-quarter-buildings-3d")) {
-      map.setFilter("old-quarter-buildings-3d", bounds ? ["all", ...localExclusion] : null);
+      const hiddenOldQuarterIds = ["!", ["in", ["id"], ["literal", [...activeOldQuarterClearanceIds]]]];
+      map.setFilter("old-quarter-buildings-3d", area ? ["all", hiddenOldQuarterIds, ...localExclusion] : null);
       map.setLayoutProperty("old-quarter-buildings-3d", "visibility", hideDoanMonNeighbors ? "none" : "visible");
     }
   }
 
-  function loadOldQuarterBuildings() {
-    if (oldQuarterBuildingsPromise) return oldQuarterBuildingsPromise;
-    oldQuarterBuildingsPromise = fetch("./data/old-quarter-buildings.geojson?v=20261021p", { priority: "low" })
-      .then((response) => {
-        if (!response.ok) throw new Error(`Old Quarter buildings returned ${response.status}`);
-        return response.json();
-      })
-      .then((buildings) => {
-        map.getSource("old-quarter-buildings")?.setData(buildings);
-        return buildings;
-      })
-      .catch((error) => {
-        oldQuarterBuildingsPromise = null;
-        console.warn("Old Quarter 3D buildings failed to load:", error.message);
-        return null;
-      });
-    return oldQuarterBuildingsPromise;
+  let oldQuarterBuildingsApplied = false;
+  function loadOldQuarterBuildings({ apply = true } = {}) {
+    if (!oldQuarterBuildingsPromise) {
+      oldQuarterBuildingsPromise = fetchJson("./data/old-quarter-buildings.geojson?v=20261021p")
+        .catch((error) => {
+          oldQuarterBuildingsPromise = null;
+          throw error;
+        });
+    }
+    return oldQuarterBuildingsPromise.then((buildings) => {
+      if (apply && !oldQuarterBuildingsApplied && map.getSource("old-quarter-buildings")) {
+        map.getSource("old-quarter-buildings").setData(buildings);
+        oldQuarterBuildingsApplied = true;
+      }
+      return buildings;
+    });
   }
 
   function loadLandmarkLayer() {
     if (landmarks) return Promise.resolve(landmarks);
     if (!landmarkLayerPromise) {
-      landmarkLayerPromise = import("./landmarks.js?v=20261021aj").then(({ createLandmarkLayer }) => {
+      landmarkLayerPromise = import("./landmarks.js?v=20261022b").then(({ createLandmarkLayer }) => {
         const landmarkSites = STOPS.filter((s) => s.id !== "pho-co").map((s) => ({ id: s.id, lonlat: s.lonlat, bearing: s.face }));
         if (STOPS[0].kiln) landmarkSites.push({ id: "bat-trang-kiln", lonlat: STOPS[0].kiln, bearing: 180 });
         const layer = createLandmarkLayer(maplibregl, landmarkSites, { lake: lake.features[0], carUrl: "./assets/models/ferrari.glb" });
@@ -600,34 +727,138 @@ async function main() {
     loadDeferredImages(reduceMotion ? ".backdrop img:first-child" : ".backdrop img");
   }
   function loadCloudPhotos() {
-    if (cloudsStarted || reduceMotion || document.body.classList.contains("is-loading")) return;
+    if (cloudsStarted || reduceMotion) return;
     cloudsStarted = true;
     loadDeferredImages(".clouds img");
   }
 
-  map.on("load", () => {
-    for (const layer of map.getStyle().layers) {
-      if (layer.source === "openmaptiles" && layer["source-layer"] === "building") {
-        baseBuildingFilters.push({ id: layer.id, type: layer.type, visibility: layer.layout?.visibility ?? "visible", filter: layer.filter ?? null });
-      }
+  function preloadImage(src) {
+    return new Promise((resolve) => {
+      const image = new Image();
+      let settled = false;
+      const finish = (loaded) => {
+        if (settled) return;
+        settled = true;
+        image.onload = null;
+        image.onerror = null;
+        resolve(loaded);
+      };
+      const decode = () => {
+        if (!image.naturalWidth) return finish(false);
+        if (typeof image.decode !== "function") return finish(true);
+        image.decode().then(() => finish(true), () => finish(false));
+      };
+      image.decoding = "async";
+      image.fetchPriority = "low";
+      image.onload = decode;
+      image.onerror = () => finish(false);
+      image.src = responsivePhotoSrc(src);
+      if (image.complete) decode();
+    });
+  }
+
+  async function preloadStartupPhotos() {
+    const sources = new Set();
+    const addSource = (src) => {
+      if (!src) return;
+      const url = new URL(src, location.href);
+      url.pathname = url.pathname.replace(/\.mobile\.webp$/, ".webp");
+      sources.add(url.href);
+    };
+    for (const stop of STOPS) {
+      addSource(stop.photo);
+      for (const photo of stop.gallery || []) addSource(photo.src);
     }
-    addCityLayers(map, { streets, routes, lake: lake.features[0] });
-    applyShot(progressUnits());
-    document.body.classList.remove("is-loading");
+    for (const image of document.querySelectorAll(".backdrop img, .clouds img")) {
+      if (reduceMotion && image.closest(".clouds")) continue;
+      addSource(image.dataset.src || image.currentSrc || image.src);
+    }
+    const list = [...sources].filter(Boolean);
+    let completed = 0;
+    let next = 0;
+    let failures = 0;
+    const workers = Array.from({ length: Math.min(4, list.length) }, async () => {
+      while (next < list.length) {
+        const src = list[next++];
+        if (!await preloadImage(src)) failures++;
+        completed++;
+        if (startupProgress < 65) {
+          updateStartupLoader(12 + (48 * completed) / list.length, `Đang chuẩn bị ảnh ${completed}/${list.length}…`);
+        }
+      }
+    });
+    await Promise.all(workers);
+    if (failures) throw new Error(`${failures} startup image(s) failed to load.`);
+  }
+
+  loadIntroPhotos();
+  loadCloudPhotos();
+  const startupPhotosPromise = preloadStartupPhotos();
+  startupPhotosPromise.catch(() => {});
+  const startupBuildingsPromise = loadOldQuarterBuildings({ apply: false });
+  startupBuildingsPromise.catch(() => {});
+
+  let mapLoaded = false;
+  const mapLoadTimeout = window.setTimeout(() => {
+    if (!mapLoaded && !startupFailed) showStartupError(new Error("Map style did not load before startup timeout."));
+  }, 45000);
+  map.on("load", async () => {
+    if (startupFailed) return;
+    mapLoaded = true;
+    window.clearTimeout(mapLoadTimeout);
     try {
-      map.setSky({ "sky-color": "#9fc3dd", "horizon-color": "#f4ead6", "fog-color": "#efe9de", "sky-horizon-blend": 0.55, "horizon-fog-blend": 0.7, "fog-ground-blend": 0.6, "atmosphere-blend": 0 });
-    } catch (error) { console.warn("Sky unsupported:", error.message); }
-    map.setLight({ anchor: "map", color: "#fff1d8", intensity: 0.35, position: [1.4, 210, 35] });
-    setAutoplay(!reduceMotion);
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      loadIntroPhotos();
-      loadCloudPhotos();
-    }));
+      for (const layer of map.getStyle().layers) {
+        if (layer.source === "openmaptiles" && layer["source-layer"] === "building") {
+          baseBuildingFilters.push({ id: layer.id, type: layer.type, visibility: layer.layout?.visibility ?? "visible", filter: layer.filter ?? null });
+        }
+      }
+      addCityLayers(map, { streets, routes, lake: lake.features[0] });
+      applyShot(progressUnits());
+      try {
+        map.setSky({ "sky-color": "#9fc3dd", "horizon-color": "#f4ead6", "fog-color": "#efe9de", "sky-horizon-blend": 0.55, "horizon-fog-blend": 0.7, "fog-ground-blend": 0.6, "atmosphere-blend": 0 });
+      } catch (error) { console.warn("Sky unsupported:", error.message); }
+      map.setLight({ anchor: "map", color: "#fff1d8", intensity: 0.35, position: [1.4, 210, 35] });
+      updateStartupLoader(66, "Đang tải bản đồ và mô hình 3D…");
+      const landmarkPromise = loadLandmarkLayer();
+      const modelPromise = landmarkPromise.then((landmark) => {
+        if (!landmark) throw new Error("The landmark layer failed to load.");
+        return landmark.prepareAll?.((done, total) => {
+          updateStartupLoader(68 + (18 * done) / Math.max(1, total), `Đang dựng mô hình ${done}/${total}…`);
+        });
+      });
+      const vehiclePromise = landmarkPromise.then((landmark) => landmark?.preloadVehicle?.());
+      const [landmark] = await Promise.all([
+        landmarkPromise,
+        modelPromise,
+        vehiclePromise,
+        startupPhotosPromise,
+        startupBuildingsPromise,
+        waitForMapIdle(map),
+        document.fonts?.ready || Promise.resolve(),
+      ]);
+      if (startupFailed) return;
+      if (!landmark) throw new Error("The landmark layer failed to load.");
+      await preloadTourMapTiles();
+      if (startupFailed) return;
+      updateStartupLoader(94, "Đang hoàn tất bản đồ trình bày…");
+      if (landmark.debug?.carReady === false) throw new Error("The presentation vehicle model failed to load.");
+      if (startupFailed) return;
+      updateStartupLoader(100, "Hành trình đã sẵn sàng.");
+      await new Promise((resolve) => window.setTimeout(resolve, 240));
+      if (startupFailed) return;
+      window.clearTimeout(startupTimeoutId);
+      setApplicationInert(false);
+      document.body.classList.remove("is-loading");
+      document.body.setAttribute("aria-busy", "false");
+      setAutoplay(!reduceMotion);
+    } catch (error) {
+      showStartupError(error);
+    }
   });
   // Animated layers keep repainting, so "idle" rarely fires: scan when tiles arrive.
   let hideTimer = 0;
   map.on("sourcedata", (e) => {
-    if (e.sourceId !== "openmaptiles" || hideTimer) return;
+    if ((e.sourceId !== "openmaptiles" && e.sourceId !== "old-quarter-buildings") || hideTimer) return;
     hideTimer = setTimeout(() => { hideTimer = 0; refreshHidden(); }, 250);
   });
   map.on("idle", refreshHidden);
@@ -893,6 +1124,9 @@ async function main() {
     if (buildingChapter !== activeBuildingChapter) {
       activeBuildingChapter = buildingChapter;
       activeClearanceIds.clear();
+      activeOldQuarterClearanceIds.clear();
+      for (const id of matchedClearanceBuildings.get(buildingChapter) || []) activeClearanceIds.add(id);
+      for (const id of matchedOldQuarterClearanceBuildings.get(buildingChapter) || []) activeOldQuarterClearanceIds.add(id);
       updateCityBuildingVisibility();
       refreshHidden();
     }
@@ -1025,6 +1259,41 @@ async function main() {
     return { ...camera, ...fitted };
   }
 
+  async function preloadTourMapTiles() {
+    const opening = {
+      center: map.getCenter().toArray(),
+      zoom: map.getZoom(),
+      pitch: map.getPitch(),
+      bearing: map.getBearing(),
+      padding: map.getPadding(),
+    };
+    const warmOrder = Array.from({ length: STOPS.length }, (_, index) => index).filter((index) => index !== 0).concat(0);
+    for (let step = 0; step < warmOrder.length; step++) {
+      const index = warmOrder[step];
+      const chapterShots = shots.filter((item) => item.chapter === index && !item.leg);
+      const warmShots = index === 0
+        ? [
+          { shot: chapterShots[0], t: 0.55 },
+          { shot: chapterShots[0], t: 1 },
+          { shot: chapterShots[1], t: 1 },
+          { shot: chapterShots[3], t: 0.5 },
+          { shot: chapterShots.at(-1), t: 1 },
+        ]
+        : [{ shot: chapterShots[0], t: 0 }];
+      for (let warmIndex = 0; warmIndex < warmShots.length; warmIndex++) {
+        const { shot, t } = warmShots[warmIndex];
+        const camera = index === 5 ? fitDoanMonCamera(shot.cam(t), shot) : shot.cam(t);
+        map.jumpTo({ ...camera, padding: framePadding(shot) });
+        await waitForMapIdle(map, 15000);
+        await landmarks?.precompileVisible?.();
+        const progress = 86 + (7 * (step + (warmIndex + 1) / warmShots.length)) / warmOrder.length;
+        updateStartupLoader(progress, `Đang tải bản đồ điểm ${index + 1}/${STOPS.length}…`);
+      }
+    }
+    map.jumpTo(opening);
+    await waitForMapIdle(map, 15000);
+  }
+
   // Animate only while the camera moves or the tour plays.
   let cameraFrame = 0;
   let last = performance.now();
@@ -1135,7 +1404,5 @@ async function main() {
 }
 
 main().catch((error) => {
-  console.error(error);
-  document.body.classList.remove("is-loading");
-  $("#slate-note").textContent = "Không tải được dữ liệu bản đồ. Kiểm tra kết nối mạng và WebGL.";
+  showStartupError(error);
 });

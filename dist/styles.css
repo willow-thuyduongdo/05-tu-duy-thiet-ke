@@ -586,7 +586,42 @@ body:not(.fx-whip-on) .fx-whip { display: none; }
 .maplibregl-ctrl-attrib { background: rgba(252, 249, 242, 0.7) !important; color: var(--ink-3); font-size: 10px; }
 .maplibregl-ctrl-attrib a { color: var(--ink-2); }
 
+body.is-loading { overflow: hidden; }
 body.is-loading .story, body.is-loading .slate { opacity: 0; }
+
+.startup-loader {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #fff;
+  opacity: 1;
+  transition: opacity 320ms ease, visibility 0s linear 320ms;
+}
+body:not(.is-loading) .startup-loader { visibility: hidden; opacity: 0; pointer-events: none; }
+.startup-loader__content { display: grid; width: min(340px, 100%); justify-items: center; text-align: center; }
+.startup-loader__brand { color: #2b2116; font-family: var(--brush-read); font-size: 34px; font-weight: 700; line-height: 1.2; }
+.startup-loader__spinner {
+  width: 34px;
+  height: 34px;
+  margin: 32px 0 20px;
+  border: 2px solid rgba(181, 112, 26, 0.18);
+  border-top-color: var(--amber);
+  border-radius: 50%;
+  animation: startup-spin 900ms linear infinite;
+}
+.startup-loader__status { min-height: 24px; margin: 0; color: var(--ink-2); font-size: 13px; }
+.startup-loader__progress { width: min(250px, 100%); height: 2px; margin-top: 22px; overflow: hidden; background: #eeeae3; }
+.startup-loader__progress span { display: block; width: 100%; height: 100%; background: var(--amber); transform: scaleX(0); transform-origin: left; transition: transform 240ms ease; }
+.startup-loader__percent { margin-top: 9px; color: var(--ink-3); font-family: var(--mono); font-size: 10px; }
+.startup-loader__error { display: grid; justify-items: center; gap: 10px; margin-top: 18px; }
+.startup-loader__error p { margin: 0; color: #8c3024; font-size: 13px; }
+.startup-loader__error .chip { min-height: 36px; padding: 0 16px; }
+.startup-loader[hidden], .startup-loader__error[hidden] { display: none; }
+
+@keyframes startup-spin { to { transform: rotate(360deg); } }
 
 @keyframes backdrop {
   0% { opacity: 0; transform: scale(1.04); }
@@ -653,6 +688,8 @@ body.is-loading .story, body.is-loading .slate { opacity: 0; }
 
 @media (prefers-reduced-motion: reduce) {
   .fx-grain, .rec i, .scroll-hint i { animation: none; }
+  .startup-loader__spinner { animation: none; }
+  .startup-loader, .startup-loader__progress span { transition-duration: 0.01ms; }
   .backdrop img { animation: none; }
   .backdrop img:first-child { opacity: 1; }
   #map, .card, .letterbox, .slate { transition: none; }

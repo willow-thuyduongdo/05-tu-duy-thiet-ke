@@ -1208,7 +1208,9 @@ function createCar(env, url, map) {
   // The car's front faces local +Z, so exhaust must drift from the rear on -Z.
   const smoke = particles({ count: window.innerWidth < 760 ? 16 : 32, origin: [0, 0.38, -2.7], spread: [0.45, 0.16, 0.18], velocity: [0, 0.5, -1], life: 2.2, size: [0.55, 2], color: 0xaaa69f, opacity: 0.38, turbulence: 0.55 });
   scene.add(smoke);
-  const car = { scene, holder, sun, smoke, wheels: [], ready: false };
+  let resolveReady;
+  const readyPromise = new Promise((resolve) => { resolveReady = resolve; });
+  const car = { scene, holder, sun, smoke, wheels: [], ready: false, readyPromise };
 
   const draco = new DRACOLoader().setDecoderPath("https://cdn.jsdelivr.net/npm/three@0.177.0/examples/jsm/libs/draco/gltf/");
   new GLTFLoader().setDRACOLoader(draco).load(url, (gltf) => {
@@ -1227,8 +1229,12 @@ function createCar(env, url, map) {
     model.rotation.y = Math.PI; // the GLB's front wheels sit at -Z
     holder.add(model);
     car.ready = true;
+    resolveReady(true);
     map?.triggerRepaint();
-  }, undefined, (error) => console.warn("Car model failed to load:", error?.message || error));
+  }, undefined, (error) => {
+    console.warn("Car model failed to load:", error?.message || error);
+    resolveReady(false);
+  });
   return car;
 }
 
@@ -1244,13 +1250,69 @@ export function createLandmarkLayer(maplibregl, sites, { lake, carUrl } = {}) {
   const v0 = new THREE.Vector4(), v1 = new THREE.Vector4(), inv = new THREE.Matrix4();
   let car = null;
   let carLoadStarted = false;
+  const canCastShadow = (entry) => !entry.id.startsWith("bat-trang");
   let sceneBuildQueued = false;
   const vehicle = { visible: false, animate: false, lonlat: [0, 0], bearing: 0, distance: 0, scale: 1, shadowDirty: false };
   const carMatrix = new THREE.Matrix4();
   const preloadVehicle = () => {
-    if (carLoadStarted || !carUrl || !env) return;
+    if (carLoadStarted || !carUrl || !env) return car?.readyPromise || Promise.resolve(false);
     carLoadStarted = true;
     car = createCar(env, carUrl, map);
+    return car.readyPromise;
+  };
+  const buildEntry = (entry) => {
+    if (entry.scene) return;
+    seed = entry.seed;
+    entry.scene = buildScene(entry.build(), env);
+    for (const fx of EFFECTS[entry.id]?.() || []) { entry.scene.add(fx); entry.animated.push(fx); }
+    if (entry.id === "ho-guom" && lake) {
+      const { water, islands } = lakeMesh(lake, entry.toLocal);
+      entry.scene.add(water, ...islands);
+      entry.animated.push(water);
+    }
+  };
+  const prepareAll = (onProgress = () => {}) => new Promise((resolve, reject) => {
+    let index = 0;
+    const prepareNext = () => {
+      try {
+        if (index < entries.length) buildEntry(entries[index]);
+        index++;
+        onProgress(Math.min(index, entries.length), entries.length);
+        if (index >= entries.length) {
+          map?.triggerRepaint();
+          resolve(true);
+        } else if (window.requestIdleCallback) {
+          window.requestIdleCallback(prepareNext, { timeout: 120 });
+        } else {
+          window.setTimeout(prepareNext, 24);
+        }
+      } catch (error) {
+        reject(error);
+      }
+    };
+    if (window.requestIdleCallback) window.requestIdleCallback(prepareNext, { timeout: 120 });
+    else window.setTimeout(prepareNext, 0);
+  });
+  const precompileVisible = async () => {
+    if (!map || !renderer) return;
+    const center = map.getCenter();
+    const zoom = map.getZoom();
+    const reach = (window.innerWidth < 760 ? 26000 : 40000) / Math.pow(2, zoom - 12);
+    const visible = entries.map((entry) => {
+      const dx = (entry.lonlat[0] - center.lng) * 111320 * Math.cos((center.lat * Math.PI) / 180);
+      const dy = (entry.lonlat[1] - center.lat) * 110540;
+      return { entry, distance: Math.hypot(dx, dy) };
+    }).filter(({ entry, distance }) => entry.scene && distance <= reach).sort((a, b) => a.distance - b.distance);
+    const shadowLimit = window.innerWidth < 760 ? 1 : 2;
+    const shadowEntries = new Set(visible.slice(0, shadowLimit).map(({ entry }) => entry));
+    for (const { entry } of visible) {
+      const light = entry.scene.userData.shadowLight;
+      light.castShadow = canCastShadow(entry) && zoom >= 14.8 && shadowEntries.has(entry);
+      camera.projectionMatrix.copy(base).multiply(entry.transform);
+      if (renderer.compileAsync) await renderer.compileAsync(entry.scene, camera);
+      else renderer.compile(entry.scene, camera);
+    }
+    renderer.resetState();
   };
   return {
     /** Place the illustrative car: position, heading (compass °), distance travelled (m), size multiplier. */
@@ -1268,6 +1330,8 @@ export function createLandmarkLayer(maplibregl, sites, { lake, carUrl } = {}) {
       if (animationChanged) map?.triggerRepaint();
     },
     preloadVehicle,
+    prepareAll,
+    precompileVisible,
     setActiveSite(id) { activeSite = id || null; map?.triggerRepaint(); },
     get debug() { return { vehicle, carReady: Boolean(car?.ready), wheels: car?.wheels.length ?? 0 }; },
     id: "landmarks-3d",
@@ -1333,14 +1397,7 @@ export function createLandmarkLayer(maplibregl, sites, { lake, carUrl } = {}) {
         const buildWhenIdle = () => {
           sceneBuildQueued = false;
           if (!map || next.scene) return;
-          seed = next.seed;
-          next.scene = buildScene(next.build(), env);
-          for (const fx of EFFECTS[next.id]?.() || []) { next.scene.add(fx); next.animated.push(fx); }
-          if (next.id === "ho-guom" && lake) {
-            const { water, islands } = lakeMesh(lake, next.toLocal);
-            next.scene.add(water, ...islands);
-            next.animated.push(water);
-          }
+          buildEntry(next);
           map.triggerRepaint();
         };
         if (window.requestIdleCallback) window.requestIdleCallback(buildWhenIdle, { timeout: 1200 });
@@ -1353,7 +1410,7 @@ export function createLandmarkLayer(maplibregl, sites, { lake, carUrl } = {}) {
       for (const { entry: e } of visible) {
         if (!e.scene) continue;
         const light = e.scene.userData.shadowLight;
-        const useShadow = zoom >= 14.8 && shadowEntries.has(e);
+        const useShadow = canCastShadow(e) && zoom >= 14.8 && shadowEntries.has(e);
         if (light.castShadow !== useShadow) {
           light.castShadow = useShadow;
           if (useShadow) e.scene.userData.shadowReady = false;
